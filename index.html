@@ -1,1070 +1,160 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OM Group · Compact Directory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>OM Directory | Login</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #f0f4f9; 
+        body {
+            background: linear-gradient(135deg, #2d236e 0%, #1e1b4b 100%);
             min-height: 100vh;
-        }
-        /* Smooth scroll & selection */
-        html { scroll-behavior: smooth; }
-        ::selection { background: #93bbfc; color: #1e3a8a; }
-
-        /* Highlight Text Style */
-        mark.search-highlight {
-            background-color: #fef08a;
-            color: #854d0e;
-            padding: 0 2px;
-            border-radius: 3px;
-            font-weight: 700;
-        }
-
-        /* Glass morphism */
-        .glass-card { 
-            background: rgba(255,255,255,0.92); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.5);
-        }
-
-        /* Animated gradient header */
-        .animated-header {
-            background: linear-gradient(135deg, #0f172a, #1e3a8a, #312e81, #1e3a8a);
-            background-size: 300% 300%;
-            animation: gradientShift 8s ease infinite;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Result grid */
-        .result-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 640px) { .result-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .result-grid { grid-template-columns: repeat(3, 1fr); } }
-
-        /* Employee Card with hover animation */
-        .emp-card {
-            background: white;
-            border-radius: 1.25rem;
-            padding: 1rem 1rem 0.75rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border: 1px solid #e9eef3;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-        .emp-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #1e3a8a, #3b82f6, #60a5fa);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .emp-card:hover {
-            border-color: #93bbfc;
-            box-shadow: 0 12px 30px rgba(37,99,235,0.12);
-            transform: translateY(-3px);
-        }
-        .emp-card:hover::before { opacity: 1; }
-
-        /* Stats boxes with pulse */
-        .stat-box {
-            background: white;
-            border-radius: 1rem;
-            padding: 0.5rem 0.8rem;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .stat-box:hover {
-            border-color: #93bbfc;
-            box-shadow: 0 4px 12px rgba(37,99,235,0.08);
-            transform: scale(1.02);
-        }
-        .stat-box .stat-icon {
-            transition: transform 0.3s ease;
-        }
-        .stat-box:hover .stat-icon {
-            transform: rotate(8deg) scale(1.1);
-        }
-
-        /* Badges */
-        .badge-emp { 
-            background: #1e3a8a; 
-            color: white; 
-            font-weight: 700; 
-            font-size: 0.65rem; 
-            padding: 0.15rem 0.7rem; 
-            border-radius: 30px; 
-            letter-spacing: 0.3px;
-            transition: all 0.2s ease;
-        }
-        .badge-emp:hover { background: #2563eb; transform: scale(1.05); }
-        .badge-company { 
-            background: #eef2ff; 
-            color: #1e4b8a; 
-            font-size: 0.6rem; 
-            font-weight: 600; 
-            padding: 0.1rem 0.6rem; 
-            border-radius: 20px; 
-            border: 1px solid #d0ddf5;
-            transition: all 0.2s ease;
-        }
-        .badge-company:hover { background: #dbeafe; }
-
-        .info-line {
-            font-size: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
-            color: #334155;
-            margin-bottom: 0.2rem;
-            transition: all 0.15s ease;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .info-line i { width: 1rem; color: #64748b; transition: all 0.2s ease; }
-        .info-line:hover i { color: #2563eb; transform: scale(1.1); }
 
-        .branch-tag { 
-            background: #f8fafc; 
-            border-radius: 30px; 
-            padding: 0.1rem 0.7rem; 
-            font-size: 0.6rem; 
-            font-weight: 500; 
-            border: 1px solid #e2e8f0; 
-            color: #1e293b;
-            transition: all 0.2s ease;
-        }
-        .branch-tag:hover { background: #e2e8f0; }
-
-        /* Search box */
-        .search-wrap input {
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            font-size: 0.9rem;
-            border-radius: 30px;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            transition: all 0.25s ease;
-        }
-        .search-wrap input:focus {
-            background: white;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
-            outline: none;
-        }
-        .search-wrap i {
-            left: 0.9rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        .search-wrap:focus-within i { color: #2563eb; }
-
-        /* Buttons with animations */
-        .btn-upload {
-            background: #059669;
-            color: white;
-            font-weight: 600;
-            padding: 0.35rem 0.9rem;
-            border-radius: 0.75rem;
-            font-size: 0.7rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .btn-upload:hover {
-            background: #047857;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(5,150,105,0.3);
-        }
-        .btn-upload:active { transform: scale(0.95); }
-
-        .btn-delete-header {
-            background: #dc2626;
-            color: white;
-            font-weight: 600;
-            padding: 0.35rem 0.9rem;
-            border-radius: 0.75rem;
-            font-size: 0.7rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .btn-delete-header:hover {
-            background: #b91c1c;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(220,38,38,0.3);
-        }
-        .btn-delete-header:active { transform: scale(0.95); }
-
-        .btn-add {
-            background: #1e3a8a;
-            color: white;
-            font-weight: 600;
-            padding: 0.5rem 1.2rem;
-            border-radius: 0.75rem;
-            font-size: 0.8rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn-add:hover {
-            background: #1e4b9a;
-            transform: scale(1.04);
-            box-shadow: 0 4px 12px rgba(30,58,138,0.3);
-        }
-        .btn-add:active { transform: scale(0.96); }
-
-        .btn-loadmore {
-            background: #1e3a8a;
-            color: white;
-            font-weight: 600;
-            padding: 0.5rem 1.5rem;
+        .login-card {
+            background: #ffffff;
             border-radius: 20px;
-            font-size: 0.75rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .btn-loadmore:hover {
-            background: #2563eb;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
-        }
-
-        .btn-reset {
-            background: rgba(51,65,85,0.5);
-            color: #e2e8f0;
-            padding: 0.5rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(71,85,105,0.3);
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .btn-reset:hover {
-            background: rgba(51,65,85,0.8);
-            transform: rotate(45deg);
-        }
-
-        /* Modal overlay & responsive fixes */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-            animation: fadeIn 0.25s ease;
-        }
-        .modal-overlay.active { display: flex; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-box {
-            background: white;
-            border-radius: 1.5rem;
-            max-width: 520px;
+            padding: 40px;
             width: 100%;
-            max-height: 90vh; /* Prevents overflow from viewport */
-            overflow-y: auto; /* Adds scrollbar inside modal if content exceeds screen height */
-            padding: 1.5rem 1.8rem;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.35);
-            animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 400px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
         }
 
-        /* Custom Modal Scrollbar */
-        .modal-box::-webkit-scrollbar {
-            width: 6px;
-        }
-        .modal-box::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-        .modal-box::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .modal-box::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: scale(0.92) translateY(30px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .modal-box input, .modal-box select {
-            width: 100%;
-            padding: 0.45rem 0.75rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 0.75rem;
-            font-size: 0.8rem;
-            background: #f8fafc;
-            transition: all 0.2s ease;
-        }
-        .modal-box input:focus, .modal-box select:focus {
-            outline: none;
-            border-color: #2563eb;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
-        }
-
-        .modal-box .btn-primary {
-            background: #1e3a8a;
+        .brand-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #3b3086;
             color: white;
-            font-weight: 600;
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.75rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .modal-box .btn-primary:hover {
-            background: #1e4b9a;
-            transform: scale(1.04);
-            box-shadow: 0 4px 12px rgba(30,58,138,0.25);
-        }
-
-        .modal-box .btn-danger {
-            background: #dc2626;
-            color: white;
-            font-weight: 600;
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.75rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .modal-box .btn-danger:hover:not(:disabled) {
-            background: #b91c1c;
-            transform: scale(1.04);
-            box-shadow: 0 4px 12px rgba(220,38,38,0.25);
-        }
-        .modal-box .btn-danger:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .modal-box .btn-secondary {
-            background: #e2e8f0;
-            color: #1e293b;
-            font-weight: 600;
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.75rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .modal-box .btn-secondary:hover {
-            background: #cbd5e1;
-            transform: scale(1.04);
-        }
-
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-        .form-grid .full { grid-column: 1 / -1; }
-
-        /* Preview box with animation */
-        .preview-box {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 0.6rem 0.8rem;
-            min-height: 50px;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-        .preview-box.found-preview {
-            border-color: #22c55e;
-            background: #f0fdf4;
-        }
-        .preview-box.not-found-preview {
-            border-color: #ef4444;
-            background: #fef2f2;
-        }
-
-        .passcode-input { 
-            letter-spacing: 0.3rem; 
-            font-weight: 600;
-            font-size: 1rem !important;
-        }
-
-        /* Toast with slide */
-        .toast-compact {
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            font-size: 0.65rem;
-            background: #e6f7ec;
-            border: 1px solid #b3e0c6;
-            color: #0b5e3b;
-            animation: slideDown 0.3s ease;
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 9999;
-        }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 1.5rem 0.5rem;
-            background: white;
-            border-radius: 1.5rem;
-            border: 2px dashed #cbd5e1;
-            transition: all 0.3s ease;
-        }
-        .empty-state i { 
-            font-size: 2.5rem; 
-            color: #93c5fd;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-
-        .emp-avatar {
-            width: 2.2rem;
-            height: 2.2rem;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #e0e7ff, #dbeafe);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: #1e3a8a;
-            border: 2px solid #dbeafe;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
         }
-        .emp-card:hover .emp-avatar {
-            border-color: #93bbfc;
-            transform: scale(1.05);
+
+        .btn-login {
+            background-color: #3b3086;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-login:hover {
+            background-color: #2b236d;
+            color: white;
         }
     </style>
 </head>
 <body>
 
-<!-- Header with animated gradient -->
-<header class="animated-header text-white shadow-lg compact-header" style="padding: 0.6rem 1rem;">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-3">
-            <div class="bg-white/15 p-2 rounded-xl backdrop-blur-sm transition-all hover:scale-105 cursor-default">
-                <i class="fa-solid fa-address-book text-xl text-blue-200"></i>
-            </div>
-            <div>
-                <h1 class="text-xl font-extrabold tracking-wide">OM Directory</h1>
-                <p class="text-blue-200 text-[0.6rem] leading-tight opacity-90">Smart Auto‑Merge · 0% Duplicate | Design By Vimal</p>
-            </div>
+    <div class="login-card text-center">
+        <div class="brand-icon">
+            <i class="fa-solid fa-address-book"></i>
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="document.getElementById('excelFileInput').click()" class="btn-upload">
-                <i class="fa-solid fa-file-excel"></i> Upload
+        <h4 class="fw-bold mb-1 text-dark">OM Directory</h4>
+        <p class="text-muted small mb-4">Sign in to access admin panel</p>
+
+        <form onsubmit="event.preventDefault(); handleLogin();">
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold text-secondary">USERNAME</label>
+                <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+            </div>
+
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold text-secondary">PASSWORD</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+            </div>
+
+            <div id="msg" class="small fw-bold mb-3"></div>
+
+            <button type="submit" class="btn btn-login">
+                Login <i class="fa-solid fa-arrow-right ms-2"></i>
             </button>
-            <input type="file" id="excelFileInput" accept=".xls,.xlsx" class="hidden" onchange="handleExcelUpload(event)">
-            <button onclick="openDeleteModal()" class="btn-delete-header">
-                <i class="fa-solid fa-trash-can"></i> Delete
-            </button>
-            <button onclick="resetToInitialData()" title="Reset" class="btn-reset">
-                <i class="fa-solid fa-rotate-right"></i>
-            </button>
-        </div>
-    </div>
-</header>
-
-<!-- Main -->
-<main class="max-w-7xl mx-auto px-3 mt-3">
-
-    <!-- Stats Row -->
-    <div class="grid grid-cols-3 gap-2 mb-3">
-        <div class="stat-box flex items-center justify-between">
-            <div><p class="text-[0.5rem] font-semibold text-slate-500 uppercase tracking-wider">Records</p><h3 id="statTotal" class="text-lg font-bold text-slate-800">0</h3></div>
-            <div class="stat-icon w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-users"></i></div>
-        </div>
-        <div class="stat-box flex items-center justify-between">
-            <div><p class="text-[0.5rem] font-semibold text-slate-500 uppercase tracking-wider">Status</p><h3 class="text-xs font-bold text-emerald-600"><i class="fa-solid fa-circle-check"></i> Saved</h3></div>
-            <div class="stat-icon w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm"><i class="fa-solid fa-database"></i></div>
-        </div>
-        <div class="stat-box flex items-center justify-between">
-            <div><p class="text-[0.5rem] font-semibold text-slate-500 uppercase tracking-wider">Dedup</p><p class="text-[0.55rem] text-slate-600"><strong class="text-blue-700">EMP CODE</strong></p></div>
-            <div class="stat-icon w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm"><i class="fa-solid fa-shield-halved"></i></div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toastNotification" class="hidden toast-compact flex items-center gap-2">
-        <span id="toastMessage"><i class="fa-solid fa-circle-check"></i> Updated</span>
-        <button onclick="hideToast()" class="text-emerald-800 font-bold text-sm leading-none hover:scale-125 transition">&times;</button>
-    </div>
-
-    <!-- Search Box + Add Button -->
-    <div class="glass-card rounded-2xl shadow-md p-3 border border-slate-200/60 mb-3">
-        <div class="flex flex-col sm:flex-row items-center gap-2">
-            <div class="relative flex-1 w-full search-wrap">
-                <input type="text" id="searchInput" 
-                    placeholder="EMP Code / Name e.g. 15743, Ankur..." 
-                    class="w-full pl-9 pr-20 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-blue-600 focus:bg-white text-sm transition">
-                <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <button onclick="clearSearch()" id="clearBtn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-0.5 rounded-lg text-[0.6rem] font-medium transition-all hover:scale-105">Clear</button>
-            </div>
-            <button onclick="openModal()" class="btn-add">
-                <i class="fa-solid fa-user-plus"></i> Add Staff
-            </button>
-        </div>
-        <p class="text-[0.5rem] text-slate-500 mt-1 flex flex-wrap items-center gap-2">
-            <span><i class="fa-solid fa-arrow-up text-emerald-500"></i> Upload Excel → auto‑merge by <strong class="text-slate-700">EMP CODE</strong></span>
-            <span class="text-slate-300">|</span>
-            <span><i class="fa-regular fa-pen-to-square text-blue-500"></i> Add manually</span>
-            <span class="text-slate-300">|</span>
-            <span><i class="fa-regular fa-trash-can text-red-500"></i> Delete (passcode: 9877)</span>
-        </p>
-    </div>
-
-    <!-- Results Grid Container -->
-    <div>
-        <div id="resultArea" class="result-grid">
-            <div class="empty-state">
-                <i class="fa-regular fa-id-card"></i>
-                <h3 class="text-md font-semibold text-slate-700 mt-1">Search Staff</h3>
-                <p class="text-slate-500 text-xs">Enter Employee Code Or Employee Name</p>
-            </div>
-        </div>
-
-        <!-- Load More Section -->
-        <div id="loadMoreArea" class="text-center my-4 hidden">
-            <button onclick="loadMoreRecords()" class="btn-loadmore shadow-md">
-                <i class="fa-solid fa-angles-down mr-1"></i> Load More Staff
-            </button>
-        </div>
-    </div>
-
-</main>
-
-<!-- ===== MODAL: Add Staff ===== -->
-<div id="addModal" class="modal-overlay">
-    <div class="modal-box">
-        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
-            <h2 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-user-plus text-blue-600 mr-2"></i>Add New Staff</h2>
-            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-2xl transition hover:rotate-90">&times;</button>
-        </div>
-        <form id="addForm" class="space-y-3" onsubmit="addManualRecord(event)">
-            <div class="form-grid">
-                <div class="full">
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Employee Code *</label>
-                    <input type="text" id="f_empCode" placeholder="e.g. 50123" required>
-                </div>
-                <div class="full">
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Full Name *</label>
-                    <input type="text" id="f_name" placeholder="MR. EXAMPLE NAME" required>
-                </div>
-                <div>
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Designation</label>
-                    <input type="text" id="f_designation" placeholder="Manager / Executive">
-                </div>
-                <div>
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Company</label>
-                    <input type="text" id="f_company" placeholder="PDA / ICD BAWAL" value="PDA">
-                </div>
-                <div>
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Branch Code</label>
-                    <input type="text" id="f_branchCode" placeholder="e.g. 1418">
-                </div>
-                <div>
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Branch Name</label>
-                    <input type="text" id="f_branchName" placeholder="Branch / State">
-                </div>
-                <div class="full">
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Mobile Number</label>
-                    <input type="text" id="f_mobile" placeholder="9876543210">
-                </div>
-                <div class="full">
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Email</label>
-                    <input type="email" id="f_email" placeholder="name@company.com">
-                </div>
-                <div>
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Extension</label>
-                    <input type="text" id="f_extn" placeholder="Ext. 123">
-                </div>
-                <div>
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Landline</label>
-                    <input type="text" id="f_landline" placeholder="0124-123456">
-                </div>
-                <div class="full">
-                    <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Address (optional)</label>
-                    <input type="text" id="f_address" placeholder="Full office address">
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-3 mt-2 border-t border-slate-100 sticky bottom-0 bg-white">
-                <button type="button" onclick="closeModal()" class="btn-secondary text-xs">Cancel</button>
-                <button type="submit" class="btn-primary text-xs"><i class="fa-regular fa-floppy-disk mr-1"></i> Save</button>
-            </div>
         </form>
     </div>
-</div>
 
-<!-- ===== MODAL: Delete Staff ===== -->
-<div id="deleteModal" class="modal-overlay">
-    <div class="modal-box">
-        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
-            <h2 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-trash-can text-red-600 mr-2"></i>Delete Staff</h2>
-            <button onclick="closeDeleteModal()" class="text-slate-400 hover:text-slate-700 text-2xl transition hover:rotate-90">&times;</button>
-        </div>
-        <form id="deleteForm" class="space-y-3" onsubmit="deleteRecord(event)">
-            <div class="full">
-                <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Enter Employee Code *</label>
-                <input type="text" id="d_empCode" placeholder="e.g. 50039" required oninput="livePreview()">
-            </div>
-            
-            <div class="full">
-                <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Employee Details</label>
-                <div id="deletePreview" class="preview-box flex items-center">
-                    <span class="text-slate-400 text-xs">Enter EMP Code to see details...</span>
-                </div>
-            </div>
+    <!-- Supabase CDN Script Loaded FIRST -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-            <div class="full">
-                <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Security Passcode *</label>
-                <input type="password" id="d_passcode" placeholder="Enter 4-digit passcode" class="passcode-input" maxlength="4" required>
-                <p class="text-[0.5rem] text-slate-400 mt-1">Default passcode: <strong class="text-slate-600">9877</strong></p>
-            </div>
-            <div class="flex justify-end gap-2 pt-3 mt-2 border-t border-slate-100">
-                <button type="button" onclick="closeDeleteModal()" class="btn-secondary text-xs">Cancel</button>
-                <button type="submit" id="deleteSubmitBtn" class="btn-danger text-xs" disabled><i class="fa-regular fa-trash-can mr-1"></i> Delete</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <!-- Embedded Login Logic -->
+    <script>
+        const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waWtldHpoZ3Nja2thY2J4eHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzY5MTYsImV4cCI6MjEwMTYxMjkxNn0.QeXDPFLKiFgbBYJ1nGY4Hw17LJba53-4hD7cYfoaf10";
 
-<script>
-    // ===== INITIAL DATA =====
-    const initialData = [
-  {"emp_code":"500039","name":"MR. ANKUR SINGH","designation":"TERMINAL HEAD","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9266018878","email":"ankur.singh@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500022","name":"MR.ANANG PAL SINGH","designation":"DUPTY MANAGER OPS","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"8607189055","email":"anangpal@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500028","name":"MR. UJJAWAL SHARMA","designation":"SR. MANAGER (SALES)","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9560616222","email":"ujjawal.sharma@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500037","name":"MR AMBUJ KUMAR SISODIA","designation":"ASST. MANAGER (SALES)","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9773642737","email":"sales@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500023","name":"MR.BHANU PRATAP SINGH","designation":"SR.EXECUTIVE OPS","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"7056904769","email":"bhanupratap@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500021","name":"MR.AJAY KUMAR","designation":"SR.EXECUTIVE IT","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"8929664309","email":"it@sanjvik.com/customerservice@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500024","name":"MR.DEENDAYAL","designation":"SR.EXECUTIVE","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9871583483","email":"deendayal.jangid@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500026","name":"MR.OM NARAYAN DWIVEDI","designation":"EXECUTIVE OPS","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9599472146","email":"icdbawaloperations@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500027","name":"MR.MAQBOOL AHMAD","designation":"EXECUTIVE OPS","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9456228550","email":"","extn":"","landline":""},
-  {"emp_code":"500030","name":"MR.HARSH KUMAR JHA","designation":"BILLING","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9625444268","email":"billdesk@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500031","name":"MR.VIKAS SINGH","designation":"EXECUTIVE OPS","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9812222336","email":"icdbawaloperations@sanjvik.com","extn":"","landline":""},
-  {"emp_code":"500032","name":"MR.VIKAS","designation":"EXECUTIVE OPS","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9728020276","email":"","extn":"","landline":""},
-  {"emp_code":"500033","name":"MR.BIJENDER","designation":"EXECUTIVE OPS","company":"ICD BAWAL","branch_code":"1418","branch_name":"ICD BAWAL (SANJVIK)","address":"INLAND CONTAINER DEPOT, PLOT NO. 1, SECTOR 9, INDUSTRIAL GROWTH CENTRE, BAWAL - 123501","mobile":"9079424505","email":"","extn":"","landline":""},
-  {"emp_code":"5002","name":"JAY ENTERPRISES / MR. CHETAN KUMAR","designation":"RP","company":"PDA","branch_code":"","branch_name":"NEW MUNDKA RP","address":"RASHAN DUKAN, A-9, CHANDAN PARK, PREM NAGAR-3, KIRARI SULEMAN NAGAR, NORTH WEST DELHI, DELHI - 110086","mobile":"9891977229","email":"MUNDKA1.AKASHG@GMAIL.COM","extn":"","landline":""},
-  {"emp_code":"5003","name":"MRS. SHIVA PARMAR","designation":"RP","company":"PDA","branch_code":"","branch_name":"UDHNA  RP","address":"895-896, RAMI PARK DINDOLI UDHNA SURAT GUJARAT - 394210","mobile":"9399616561","email":"SHIVANITHAKURSHIVA1@GMAIL.COM","extn":"","landline":""},
-  {"emp_code":"5004","name":"MR. SOM NATH DEY","designation":"BC","company":"PDA","branch_code":"","branch_name":"ANANDAPUR BC","address":"185 RR PLOT. ANANDAPUR BKT EASTERN KOLKATA TOWNSHIP, KOLKATA-700107","mobile":"9748769580","email":"SOMNATHDEY1974@GMAIL.COM","extn":"","landline":""}
-];
-
-    // ===== GLOBAL STATE =====
-    let dbDirectory = [];
-    let searchTimeout = null;
-    let currentSearchResults = [];
-    let displayedCount = 30;
-    let currentSearchQuery = "";
-
-    window.addEventListener('DOMContentLoaded', () => {
-        initDatabase();
+        let supabaseClient;
         
-        // Anti-Hang Event Listener (Debounce)
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value;
-                const clearBtn = document.getElementById('clearBtn');
-                if (clearBtn) {
-                    clearBtn.classList.toggle('hidden', !query.trim());
-                }
-
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    performSearch(query);
-                }, 200);
-            });
-        }
-    });
-
-    function initDatabase() {
-        const saved = localStorage.getItem('OM_GROUP_DIRECTORY_DATA');
-        if (saved) {
-            try { dbDirectory = JSON.parse(saved); } catch(e) { dbDirectory = [...initialData]; }
-        } else {
-            dbDirectory = [...initialData];
-        }
-        saveToLocalStorage();
-        updateStats();
-        resetView();
-    }
-
-    function saveToLocalStorage() {
-        localStorage.setItem('OM_GROUP_DIRECTORY_DATA', JSON.stringify(dbDirectory));
-        updateStats();
-    }
-
-    function updateStats() {
-        const statTotal = document.getElementById('statTotal');
-        if (statTotal) statTotal.innerText = dbDirectory.length;
-    }
-
-    function resetView() {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = '';
-        const clearBtn = document.getElementById('clearBtn');
-        if (clearBtn) clearBtn.classList.add('hidden');
-        
-        currentSearchResults = [];
-        displayedCount = 30;
-        currentSearchQuery = "";
-
-        const loadMoreArea = document.getElementById('loadMoreArea');
-        if (loadMoreArea) loadMoreArea.classList.add('hidden');
-
-        const container = document.getElementById('resultArea');
-        if (container) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fa-regular fa-id-card"></i>
-                    <h2 class="text-md font-semibold text-slate-700 mt-1">Search Staff</h2>
-                    <p class="text-slate-500 text-xs">Enter Employee Code Or Employee Name</p>
-                </div>
-            `;
-        }
-    }
-
-    function clearSearch() {
-        resetView();
-    }
-
-    function copyToClipboard(text) {
-        if (!text) return;
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(`Mobile Number Copied: ${text}`);
-        }).catch(() => {
-            showToast(`Copied: ${text}`);
-        });
-    }
-
-    // Search Highlight Helper
-    function highlightText(text, query) {
-        if (!text) return '';
-        if (!query) return text;
-        const strText = String(text);
-        const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
-        return strText.replace(regex, '<mark class="search-highlight">$1</mark>');
-    }
-
-    function performSearch(query) {
-        const q = query.trim().toLowerCase();
-        currentSearchQuery = q;
-        displayedCount = 30;
-
-        if (!q) {
-            resetView();
-            return;
+        // Ensure Supabase initializes correctly
+        if (typeof supabase !== 'undefined') {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
 
-        currentSearchResults = dbDirectory.filter(item => {
-            return (item.emp_code && item.emp_code.toString().toLowerCase().includes(q)) ||
-                   (item.name && item.name.toLowerCase().includes(q)) ||
-                   (item.designation && item.designation.toLowerCase().includes(q)) ||
-                   (item.company && item.company.toLowerCase().includes(q)) ||
-                   (item.branch_name && item.branch_name.toLowerCase().includes(q)) ||
-                   (item.branch_code && item.branch_code.toString().toLowerCase().includes(q)) ||
-                   (item.mobile && item.mobile.toString().toLowerCase().includes(q));
-        });
-
-        renderCards();
-    }
-
-    function loadMoreRecords() {
-        displayedCount += 30;
-        renderCards();
-    }
-
-    function renderCards() {
-        const container = document.getElementById('resultArea');
-        const loadMoreArea = document.getElementById('loadMoreArea');
-        if (!container) return;
-
-        if (!currentSearchResults || currentSearchResults.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fa-regular fa-face-frown text-3xl text-slate-400 mb-2"></i>
-                    <h3 class="text-md font-semibold text-slate-700">No Records Found</h3>
-                    <p class="text-slate-500 text-xs">Aapke search query ke sath koi match nahi mila.</p>
-                </div>
-            `;
-            if (loadMoreArea) loadMoreArea.classList.add('hidden');
-            return;
+        // Auto-redirect if already logged in
+        if (localStorage.getItem("login") === "yes") {
+            window.location.href = "dashboard.html";
         }
 
-        const recordsToRender = currentSearchResults.slice(0, displayedCount);
+        async function handleLogin() {
+            let u = document.getElementById("username").value.trim();
+            let p = document.getElementById("password").value.trim();
+            let msgEl = document.getElementById("msg");
 
-        let html = '';
-        recordsToRender.forEach(emp => {
-            const initials = emp.name ? emp.name.replace(/MR\.|MRS\.|MS\./g, '').trim().slice(0, 2).toUpperCase() : 'OM';
-            const cleanMobile = emp.mobile ? String(emp.mobile).replace(/\D/g, '') : '';
-            
-            html += `
-                <div class="emp-card">
-                    <div class="flex items-center justify-between gap-2 mb-2">
-                        <div class="flex items-center gap-2">
-                            <div class="emp-avatar">${initials}</div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm leading-tight">${highlightText(emp.name || 'N/A', currentSearchQuery)}</h4>
-                                <span class="badge-company mt-0.5 inline-block">${highlightText(emp.company || 'PDA', currentSearchQuery)}</span>
-                            </div>
-                        </div>
-                        <span class="badge-emp">EMP ID: ${highlightText(emp.emp_code, currentSearchQuery)}</span>
-                    </div>
-                    
-                    <div class="space-y-1 my-1">
-                        ${emp.designation ? `<div class="info-line"><i class="fa-solid fa-briefcase text-blue-500"></i><span>${highlightText(emp.designation, currentSearchQuery)}</span></div>` : ''}
-                        ${emp.mobile ? `
-                            <div class="info-line flex items-center justify-between">
-                                <div class="cursor-pointer hover:opacity-80 flex items-center" onclick="copyToClipboard('${emp.mobile}')" title="Click to copy mobile number">
-                                    <i class="fa-solid fa-phone text-emerald-500 mr-1"></i>
-                                    <span class="text-slate-700 font-medium">${highlightText(emp.mobile, currentSearchQuery)} <i class="fa-regular fa-copy text-[0.65rem] text-slate-400 ml-1"></i></span>
-                                </div>
-                                ${cleanMobile ? `
-                                    <a href="https://web.whatsapp.com/send?phone=91${cleanMobile}" target="_blank" title="Open Web WhatsApp" class="text-emerald-500 hover:text-emerald-600 transition hover:scale-125 ml-2">
-                                        <i class="fa-brands fa-whatsapp text-sm font-bold"></i>
-                                    </a>` : ''
-                                }
-                            </div>` : ''
-                        }
-                        ${emp.email ? `<div class="info-line"><i class="fa-solid fa-envelope text-indigo-500"></i><a href="mailto:${emp.email}" class="hover:underline text-slate-700 truncate max-w-[200px]">${emp.email}</a></div>` : ''}
-                        ${(emp.branch_name || emp.branch_code) ? `<div class="info-line"><i class="fa-solid fa-location-dot text-rose-500"></i><span class="truncate max-w-[200px]">${highlightText(emp.branch_name || '-', currentSearchQuery)} ${emp.branch_code ? `(Code: ${highlightText(emp.branch_code, currentSearchQuery)})` : ''}</span></div>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-
-        if (loadMoreArea) {
-            if (currentSearchResults.length > displayedCount) {
-                loadMoreArea.classList.remove('hidden');
-            } else {
-                loadMoreArea.classList.add('hidden');
+            if (!supabaseClient) {
+                msgEl.style.color = "#dc2626";
+                msgEl.innerText = "Supabase SDK library not loaded. Check connection!";
+                return;
             }
-        }
-    }
 
-    // Modal Helpers
-    function openModal() {
-        document.getElementById('addModal').classList.add('active');
-    }
-    function closeModal() {
-        document.getElementById('addModal').classList.remove('active');
-    }
-    function openDeleteModal() {
-        document.getElementById('deleteModal').classList.add('active');
-    }
-    function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.remove('active');
-    }
+            msgEl.style.color = "#2563eb";
+            msgEl.innerText = "Checking credentials...";
 
-    function showToast(msg) {
-        const toast = document.getElementById('toastNotification');
-        const toastMsg = document.getElementById('toastMessage');
-        if (toast && toastMsg) {
-            toastMsg.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ${msg}`;
-            toast.classList.remove('hidden');
-            setTimeout(() => { hideToast(); }, 3000);
-        }
-    }
-    function hideToast() {
-        const toast = document.getElementById('toastNotification');
-        if (toast) toast.classList.add('hidden');
-    }
-
-    function addManualRecord(e) {
-        e.preventDefault();
-        const empCode = document.getElementById('f_empCode').value.trim();
-        const name = document.getElementById('f_name').value.trim();
-        
-        if (!empCode || !name) return;
-
-        const newEntry = {
-            emp_code: empCode,
-            name: name,
-            designation: document.getElementById('f_designation').value.trim(),
-            company: document.getElementById('f_company').value.trim() || 'PDA',
-            branch_code: document.getElementById('f_branchCode').value.trim(),
-            branch_name: document.getElementById('f_branchName').value.trim(),
-            mobile: document.getElementById('f_mobile').value.trim(),
-            email: document.getElementById('f_email').value.trim(),
-            extn: document.getElementById('f_extn').value.trim(),
-            landline: document.getElementById('f_landline').value.trim(),
-            address: document.getElementById('f_address').value.trim()
-        };
-
-        const existingIndex = dbDirectory.findIndex(item => item.emp_code === empCode);
-        if (existingIndex !== -1) {
-            dbDirectory[existingIndex] = newEntry;
-            showToast('Record Updated!');
-        } else {
-            dbDirectory.unshift(newEntry);
-            showToast('Staff Added Successfully!');
-        }
-
-        saveToLocalStorage();
-        closeModal();
-        document.getElementById('addForm').reset();
-        resetView();
-    }
-
-    function livePreview() {
-        const code = document.getElementById('d_empCode').value.trim();
-        const previewBox = document.getElementById('deletePreview');
-        const submitBtn = document.getElementById('deleteSubmitBtn');
-
-        if (!code) {
-            previewBox.className = 'preview-box flex items-center';
-            previewBox.innerHTML = '<span class="text-slate-400 text-xs">Enter EMP Code to see details...</span>';
-            submitBtn.disabled = true;
-            return;
-        }
-
-        const match = dbDirectory.find(item => item.emp_code.toLowerCase() === code.toLowerCase());
-        if (match) {
-            previewBox.className = 'preview-box found-preview flex flex-col justify-center';
-            previewBox.innerHTML = `
-                <strong class="text-emerald-800 font-bold">${match.name}</strong>
-                <span class="text-[0.65rem] text-emerald-600">${match.designation || 'No Designation'} · ${match.company || 'OM GROUP'}</span>
-            `;
-            submitBtn.disabled = false;
-        } else {
-            previewBox.className = 'preview-box not-found-preview flex items-center';
-            previewBox.innerHTML = '<span class="text-rose-600 font-medium text-xs"><i class="fa-solid fa-circle-xmark mr-1"></i> No matching staff found</span>';
-            submitBtn.disabled = true;
-        }
-    }
-
-    function deleteRecord(e) {
-        e.preventDefault();
-        const code = document.getElementById('d_empCode').value.trim();
-        const passcode = document.getElementById('d_passcode').value.trim();
-
-        if (passcode !== '9877') {
-            alert('Incorrect Passcode!');
-            return;
-        }
-
-        const index = dbDirectory.findIndex(item => item.emp_code.toLowerCase() === code.toLowerCase());
-        if (index !== -1) {
-            dbDirectory.splice(index, 1);
-            saveToLocalStorage();
-            showToast('Staff Deleted Successfully!');
-            closeDeleteModal();
-            document.getElementById('deleteForm').reset();
-            livePreview();
-            resetView();
-        }
-    }
-
-    function resetToInitialData() {
-        if (confirm('Kya aap saara data reset karke default list par aana chahte hain?')) {
-            dbDirectory = [...initialData];
-            saveToLocalStorage();
-            resetView();
-            showToast('Directory Reset to Initial State');
-        }
-    }
-
-    function handleExcelUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
             try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                let updatedCount = 0;
-                let addedCount = 0;
-
-                jsonData.forEach(row => {
-                    const empCode = String(row['EMP CODE'] || row['EMP_CODE'] || row['Emp Code'] || row['emp_code'] || '').trim();
-                    if (!empCode) return;
-
-                    const newObj = {
-                        emp_code: empCode,
-                        name: String(row['NAME'] || row['Name'] || row['name'] || '').trim(),
-                        designation: String(row['DESIGNATION'] || row['Designation'] || '').trim(),
-                        company: String(row['COMPANY'] || row['Company'] || 'PDA').trim(),
-                        branch_code: String(row['BRANCH CODE'] || row['Branch Code'] || '').trim(),
-                        branch_name: String(row['BRANCH NAME'] || row['Branch Name'] || '').trim(),
-                        address: String(row['ADDRESS'] || row['Address'] || '').trim(),
-                        mobile: String(row['MOBILE'] || row['Mobile'] || row['PHONE'] || '').trim(),
-                        email: String(row['EMAIL'] || row['Email'] || '').trim(),
-                        extn: String(row['EXTN'] || row['Extn'] || '').trim(),
-                        landline: String(row['LANDLINE'] || row['Landline'] || '').trim()
-                    };
-
-                    const existingIndex = dbDirectory.findIndex(item => String(item.emp_code).trim() === empCode);
-                    if (existingIndex !== -1) {
-                        dbDirectory[existingIndex] = { ...dbDirectory[existingIndex], ...newObj };
-                        updatedCount++;
-                    } else {
-                        dbDirectory.unshift(newObj);
-                        addedCount++;
+                // REST API direct call fallback if SDK client faces network issues
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/app_users?select=*&password=eq.${encodeURIComponent(p)}`, {
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": `Bearer ${SUPABASE_KEY}`
                     }
                 });
 
-                saveToLocalStorage();
-                resetView();
-                showToast(`Excel Merged! Added: ${addedCount}, Updated: ${updatedCount}`);
+                if (response.ok) {
+                    const users = await response.json();
+                    // Match username (case insensitive)
+                    const matchedUser = users.find(user => user.username.toLowerCase() === u.toLowerCase());
+
+                    if (matchedUser) {
+                        localStorage.setItem("login", "yes");
+                        localStorage.setItem("currentUser", matchedUser.username);
+                        localStorage.setItem("userRole", matchedUser.role || "User");
+
+                        window.location.href = "dashboard.html";
+                    } else {
+                        msgEl.style.color = "#dc2626";
+                        msgEl.innerText = "Invalid Username or Password!";
+                    }
+                } else {
+                    msgEl.style.color = "#dc2626";
+                    msgEl.innerText = "Database connection error!";
+                }
+
             } catch (err) {
-                alert('Excel file read karne mein issue aaya. Kripya valid .xlsx file try karein.');
+                console.error("Login Error:", err);
+                msgEl.style.color = "#dc2626";
+                msgEl.innerText = "Connection failed. Please refresh and try again!";
             }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-</script>
+        }
+    </script>
 </body>
 </html>

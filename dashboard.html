@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OM Directory | Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-purple: #3b3086;
+            --navbar-bg: #2d236e;
+            --bg-light: #f4f6fb;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .top-navbar {
+            background-color: var(--navbar-bg);
+            color: white;
+            padding: 12px 24px;
+        }
+
+        .brand-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .stat-box .title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+
+        .stat-box .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .staff-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .staff-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12);
+            border-color: var(--primary-purple);
+        }
+
+        .avatar-circle {
+            width: 42px;
+            height: 42px;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .emp-badge {
+            background-color: #1e1b4b;
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .branch-badge {
+            background-color: #6366f1;
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .btn-action-green {
+            background-color: #10b981;
+            color: white;
+            border: none;
+        }
+
+        .btn-action-red {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+        }
+
+        .btn-action-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+        }
+
+        /* Profile Modal Enhancements */
+        .profile-avatar-large {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #3b3086, #4f46e5);
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(59, 48, 134, 0.3);
+        }
+
+        .detail-row {
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .detail-row .label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .detail-row .val {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Edit Mode Styles */
+        .edit-mode .val input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid var(--primary-purple);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar Header -->
+    <div class="top-navbar d-flex justify-content-between align-items-center">
+        <div class="brand-logo">
+            <i class="fa-solid fa-address-book"></i>
+            <div>
+                <div>OM Directory</div>
+                <div class="fw-normal" style="font-size: 0.7rem; opacity: 0.8;">Smart Multi-Sheet Auto-Scan System</div>
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;">
+                <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
+                <span class="fw-bold text-white small" style="font-size: 0.8rem;">Connected</span>
+            </div>
+            
+            <button class="btn btn-action-green btn-sm px-3 rounded-3 admin-only" onclick="document.getElementById('excelFileInput').click()">
+                <i class="fa-solid fa-upload me-1"></i> Upload
+            </button>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleExcelUpload(event)">
+
+            <button class="btn btn-action-red btn-sm px-3 rounded-3 admin-only" data-bs-toggle="modal" data-bs-target="#deleteStaffModal">
+                <i class="fa-solid fa-trash me-1"></i> Delete
+            </button>
+
+            <button class="btn btn-action-circle" onclick="fetchStaffFromDatabase()" title="Refresh Data">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+
+            <button class="btn btn-outline-light btn-sm px-3 rounded-3 ms-1" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container-fluid px-4 py-3">
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div>
+                        <div class="title">Records Showing</div>
+                        <div class="value" id="totalRecordCount">0</div>
+                    </div>
+                    <i class="fa-solid fa-users text-primary fs-3 opacity-50"></i>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div>
+                        <div class="title">Status</div>
+                        <div class="value text-success fs-6 mt-1" id="dbStatus">Connected</div>
+                    </div>
+                    <i class="fa-solid fa-database text-warning fs-3 opacity-50"></i>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div>
+                        <div class="title">Logged in User</div>
+                        <div class="value fs-6 mt-1" id="currentUserBox">
+                            <span id="current-user-display">GUEST</span>
+                            <span class="badge bg-primary ms-1" id="current-role-badge">USER</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-id-badge text-secondary fs-3 opacity-50"></i>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-box" id="securityCard" style="cursor: pointer;" onclick="openAddUserModal()">
+                    <div>
+                        <div class="title">Security</div>
+                        <div class="value text-success fs-6 mt-1" id="securityCardText">
+                            <i class="fa-solid fa-user-plus me-1"></i> Create User
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-shield-halved text-success fs-4 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="row g-2 align-items-center mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by name, EMP ID, mobile, designation..." oninput="filterStaffData()">
+                    <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">Clear</button>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <select id="branchSelect" class="form-select" onchange="filterStaffData()">
+                    <option value="ALL">All Branches / Companies</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100 rounded-pill py-2 fw-semibold" style="background-color: var(--primary-purple); border: none;" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                    <i class="fa-solid fa-user-plus me-1"></i> Add Staff
+                </button>
+            </div>
+        </div>
+
+        <!-- Staff Cards Grid View -->
+        <div class="row g-3" id="staffCardGrid"></div>
+    </div>
+
+    <!-- Detailed Profile View / Edit Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-4 border-0 shadow-lg p-3">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="profile-avatar-large" id="modalAvatar">VK</div>
+                        <div>
+                            <h4 class="fw-bold text-dark mb-1" id="modalName">VIMAL KUMAR</h4>
+                            <div class="text-primary fw-semibold small" id="modalLocation"><i class="fa-solid fa-location-dot me-1"></i> DELHI</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetEditState()"></button>
+                </div>
+                
+                <div class="modal-body pt-3" id="editFormContainer">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-id-card me-1 text-primary"></i> EMP Code</span>
+                                <span class="val" id="modalEmpCode">39751</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-briefcase me-1 text-primary"></i> Designation</span>
+                                <span class="val" id="modalDesignation" data-field="designation">MANAGER</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-building me-1 text-primary"></i> Company</span>
+                                <span class="val" id="modalCompany" data-field="company">OLSC</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-code-branch me-1 text-primary"></i> Branch Code</span>
+                                <span class="val" id="modalBranchCode" data-field="branchCode">1306</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-location-dot me-1 text-primary"></i> Location / Branch</span>
+                                <span class="val" id="modalLocationVal" data-field="location">DELHI</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-phone me-1 text-primary"></i> Mobile</span>
+                                <span class="val" id="modalMobile" data-field="mobile">9218300604</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-envelope me-1 text-primary"></i> Email</span>
+                                <span class="val" id="modalEmail" data-field="email" style="font-size: 0.85rem;">damegactrl2@olsc.in</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-phone-volume me-1 text-primary"></i> Extension</span>
+                                <span class="val" id="modalExtension" data-field="extension">N/A</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-square-phone me-1 text-primary"></i> Landline</span>
+                                <span class="val" id="modalLandline" data-field="landline">402</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-map-pin me-1 text-primary"></i> Full Address</span>
+                                <span class="val" id="modalAddress" data-field="address" style="font-weight: 500;">Delhi, India</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-warning fw-semibold px-3 rounded-pill" id="editBtn" onclick="toggleEditMode(true)">
+                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Details
+                    </button>
+                    <button type="button" class="btn btn-success fw-semibold px-3 rounded-pill d-none" id="saveBtn" onclick="saveStaffChanges()">
+                        <i class="fa-solid fa-check me-1"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary fw-semibold px-3 rounded-pill d-none" id="cancelEditBtn" onclick="toggleEditMode(false)">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal" onclick="resetEditState()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Staff Modal -->
+    <div class="modal fade" id="deleteStaffModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Delete Staff Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetDeleteModal()"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <p class="text-muted small">Jis staff ko delete karna hai uska **EMP ID (Raw Emp Code)** niche enter karein:</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ENTER EMP ID</label>
+                        <input type="text" id="deleteEmpCodeInput" class="form-control" placeholder="e.g. 39751 ya 50000" oninput="checkAndDeletePreview(this.value)">
+                    </div>
+
+                    <!-- Live Match Details Preview Box -->
+                    <div id="deletePreviewBox" class="d-none p-3 rounded-3 border bg-light">
+                        <div class="small fw-bold text-primary mb-1"><i class="fa-solid fa-user-check me-1"></i> Match Found:</div>
+                        <div class="d-flex justify-content-between text-dark small mb-1">
+                            <span><strong>Name:</strong> <span id="delPreviewName">-</span></span>
+                            <span><strong>EMP ID:</strong> <span id="delPreviewEmp">-</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted" style="font-size: 0.8rem;">
+                            <span><strong>Designation:</strong> <span id="delPreviewDesig">-</span></span>
+                            <span><strong>Location:</strong> <span id="delPreviewLoc">-</span></span>
+                        </div>
+                    </div>
+                    <div id="deleteNotFoundBox" class="d-none text-danger small mt-2">
+                        <i class="fa-solid fa-circle-xmark me-1"></i> Koi record nahi mila is EMP ID se.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal" onclick="resetDeleteModal()">Cancel</button>
+                    <button type="button" id="confirmDeleteBtn" class="btn btn-danger rounded-pill px-4 fw-semibold" onclick="executeStaffDelete()" disabled>
+                        <i class="fa-solid fa-trash me-1"></i> Delete Record
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waWtldHpoZ3Nja2thY2J4eHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzY5MTYsImV4cCI6MjEwMTYxMjkxNn0.QeXDPFLKiFgbBYJ1nGY4Hw17LJba53-4hD7cYfoaf10";
+
+        let supabaseClient;
+        if (typeof supabase !== 'undefined') {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        let allStaffData = [];
+        let currentEditingItem = null;
+        let foundStaffForDelete = null;
+
+        window.onload = function() {
+            if (localStorage.getItem("login") !== "yes") {
+                window.location.href = "index.html";
+                return;
+            }
+            displayCurrentUserInfo();
+            fetchStaffFromDatabase();
+        };
+
+        function displayCurrentUserInfo() {
+            const username = localStorage.getItem("currentUser") || "GUEST";
+            const role = localStorage.getItem("userRole") || "User";
+
+            document.getElementById("current-user-display").innerText = username.toUpperCase();
+            document.getElementById("current-role-badge").innerText = role.toUpperCase();
+
+            if (role.toLowerCase() !== "admin") {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+
+                const secCard = document.getElementById("securityCard");
+                const secText = document.getElementById("securityCardText");
+
+                if (secCard && secText) {
+                    secCard.onclick = null;
+                    secCard.style.cursor = "default";
+                    secText.className = "value text-secondary fs-6 mt-1";
+                    secText.innerHTML = `<i class="fa-solid fa-shield-cat me-1"></i> Standard Access`;
+                }
+            }
+        }
+
+        async function fetchStaffFromDatabase() {
+            try {
+                const { data, error } = await supabaseClient.from('staff').select('*');
+                if (error) throw error;
+
+                allStaffData = data || [];
+                renderStaffGrid(allStaffData);
+                populateBranchDropdown(allStaffData);
+                document.getElementById("totalRecordCount").innerText = allStaffData.length;
+            } catch (err) {
+                console.error("Error fetching staff:", err);
+            }
+        }
+
+        function renderStaffGrid(dataList) {
+            const grid = document.getElementById("staffCardGrid");
+            grid.innerHTML = "";
+
+            if (!dataList || dataList.length === 0) {
+                grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">No staff records found.</div>`;
+                return;
+            }
+
+            dataList.forEach((item) => {
+                const name = item.name || "UNNAMED STAFF";
+                const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                
+                const empCode = item.rawEmpCode || item.empId || "N/A";
+                const location = item.location || "MAIN OFFICE";
+                const company = item.company || "";
+                const branchCode = item.branchCode || "";
+                const designation = item.designation || "STAFF";
+                const mobile = item.mobile || "N/A";
+
+                let subDetailsHtml = `
+                    <div class="mb-1"><i class="fa-solid fa-briefcase me-2 text-muted"></i>${designation.toUpperCase()}</div>
+                    ${company ? `<div class="mb-1"><i class="fa-solid fa-building me-2 text-muted"></i>${company.toUpperCase()}</div>` : ''}
+                    <div><i class="fa-solid fa-phone me-2 text-muted"></i>${mobile}</div>
+                `;
+
+                const branchCodeHtml = branchCode ? `<span class="branch-badge me-1">CODE: ${branchCode}</span>` : '';
+
+                const cardHtml = `
+                    <div class="col-md-4">
+                        <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-circle">${initials}</div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="line-height: 1.2;">${name.toUpperCase()}</div>
+                                        <div class="text-primary small fw-semibold">${location.toUpperCase()}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    ${branchCodeHtml}
+                                    <span class="emp-badge">EMP ID: ${empCode}</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 text-secondary small">
+                                ${subDetailsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        function openProfileModal(item) {
+            currentEditingItem = item;
+            resetEditState();
+
+            const name = item.name || "UNNAMED STAFF";
+            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            
+            document.getElementById("modalAvatar").innerText = initials;
+            document.getElementById("modalName").innerText = name.toUpperCase();
+            document.getElementById("modalLocation").innerHTML = `<i class="fa-solid fa-location-dot me-1"></i> ${(item.location || "MAIN OFFICE").toUpperCase()}`;
+            document.getElementById("modalEmpCode").innerText = item.rawEmpCode || item.empId || "N/A";
+            
+            document.getElementById("modalDesignation").innerText = item.designation || "N/A";
+            document.getElementById("modalCompany").innerText = item.company || "N/A";
+            document.getElementById("modalBranchCode").innerText = item.branchCode || "N/A";
+            document.getElementById("modalLocationVal").innerText = item.location || "N/A";
+            document.getElementById("modalMobile").innerText = item.mobile || "N/A";
+            document.getElementById("modalEmail").innerText = item.email || "N/A";
+            document.getElementById("modalExtension").innerText = item.extension || "N/A";
+            document.getElementById("modalLandline").innerText = item.landline || "N/A";
+            document.getElementById("modalAddress").innerText = item.address || "N/A";
+
+            const modal = new bootstrap.Modal(document.getElementById('profileModal'));
+            modal.show();
+        }
+
+        function toggleEditMode(enable) {
+            const container = document.getElementById('editFormContainer');
+            const editBtn = document.getElementById('editBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelEditBtn');
+
+            if (enable) {
+                container.classList.add('edit-mode');
+                container.querySelectorAll('.val[data-field]').forEach(el => {
+                    const currentText = el.innerText === "N/A" ? "" : el.innerText;
+                    const fieldName = el.dataset.field;
+                    el.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentText}" data-field="${fieldName}">`;
+                });
+
+                editBtn.classList.add('d-none');
+                saveBtn.classList.remove('d-none');
+                cancelBtn.classList.remove('d-none');
+            } else {
+                resetEditState();
+                if (currentEditingItem) {
+                    openProfileModal(currentEditingItem);
+                }
+            }
+        }
+
+        function resetEditState() {
+            const container = document.getElementById('editFormContainer');
+            container.classList.remove('edit-mode');
+
+            document.getElementById('editBtn').classList.remove('d-none');
+            document.getElementById('saveBtn').classList.add('d-none');
+            document.getElementById('cancelEditBtn').classList.add('d-none');
+        }
+
+        async function saveStaffChanges() {
+            if (!currentEditingItem) return;
+
+            const container = document.getElementById('editFormContainer');
+            const updates = {};
+            
+            container.querySelectorAll('input[data-field]').forEach(input => {
+                const field = input.dataset.field;
+                updates[field] = input.value.trim();
+            });
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Saving...`;
+
+            try {
+                const primaryKeyField = currentEditingItem.rawEmpCode ? 'rawEmpCode' : 'id';
+                const primaryKeyValue = currentEditingItem.rawEmpCode || currentEditingItem.id;
+
+                const { error } = await supabaseClient
+                    .from('staff')
+                    .update(updates)
+                    .eq(primaryKeyField, primaryKeyValue);
+
+                if (error) throw error;
+
+                alert("Staff details updated successfully!");
+                Object.assign(currentEditingItem, updates);
+                
+                resetEditState();
+                const modalEl = document.getElementById('profileModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+                
+                fetchStaffFromDatabase();
+
+            } catch (err) {
+                console.error("Update Error:", err);
+                alert("Error updating record: " + (err.message || "Unknown error"));
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<i class="fa-solid fa-check me-1"></i> Save Changes`;
+            }
+        }
+
+        function checkAndDeletePreview(empCode) {
+            empCode = empCode.trim();
+            const previewBox = document.getElementById("deletePreviewBox");
+            const notFoundBox = document.getElementById("deleteNotFoundBox");
+            const deleteBtn = document.getElementById("confirmDeleteBtn");
+
+            if (!empCode) {
+                previewBox.classList.add("d-none");
+                notFoundBox.classList.add("d-none");
+                deleteBtn.disabled = true;
+                foundStaffForDelete = null;
+                return;
+            }
+
+            const matched = allStaffData.find(item => String(item.rawEmpCode || item.empId) === empCode);
+
+            if (matched) {
+                foundStaffForDelete = matched;
+                document.getElementById("delPreviewName").innerText = (matched.name || "UNNAMED").toUpperCase();
+                document.getElementById("delPreviewEmp").innerText = matched.rawEmpCode || matched.empId;
+                document.getElementById("delPreviewDesig").innerText = (matched.designation || "STAFF").toUpperCase();
+                document.getElementById("delPreviewLoc").innerText = (matched.location || "MAIN OFFICE").toUpperCase();
+
+                previewBox.classList.remove("d-none");
+                notFoundBox.classList.add("d-none");
+                deleteBtn.disabled = false;
+            } else {
+                foundStaffForDelete = null;
+                previewBox.classList.add("d-none");
+                notFoundBox.classList.remove("d-none");
+                deleteBtn.disabled = true;
+            }
+        }
+
+        async function executeStaffDelete() {
+            if (!foundStaffForDelete) return;
+
+            const empCode = foundStaffForDelete.rawEmpCode || foundStaffForDelete.empId;
+
+            if (!confirm(`Kya aap sach mein ${foundStaffForDelete.name} (EMP ID: ${empCode}) ko delete karna chahte hain?`)) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('staff')
+                    .delete()
+                    .eq('rawEmpCode', empCode);
+
+                if (error) throw error;
+
+                alert(`Success! Record successfully delete kar diya gaya hai.`);
+                
+                const modalEl = document.getElementById('deleteStaffModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+
+                resetDeleteModal();
+                fetchStaffFromDatabase();
+
+            } catch (err) {
+                console.error("Delete Error:", err);
+                alert("Delete karne mein error aayi: " + err.message);
+            }
+        }
+
+        function resetDeleteModal() {
+            document.getElementById("deleteEmpCodeInput").value = "";
+            document.getElementById("deletePreviewBox").classList.add("d-none");
+            document.getElementById("deleteNotFoundBox").classList.add("d-none");
+            document.getElementById("confirmDeleteBtn").disabled = true;
+            foundStaffForDelete = null;
+        }
+
+        function populateBranchDropdown(dataList) {
+            const select = document.getElementById("branchSelect");
+            const companies = [...new Set(dataList.map(item => item.company || item.location).filter(Boolean))];
+            
+            select.innerHTML = `<option value="ALL">All Branches / Companies</option>`;
+            companies.forEach(comp => {
+                select.innerHTML += `<option value="${comp}">${comp}</option>`;
+            });
+        }
+
+        function filterStaffData() {
+            const query = document.getElementById("searchInput").value.toLowerCase().trim();
+            const selectedBranch = document.getElementById("branchSelect").value;
+
+            const filtered = allStaffData.filter(item => {
+                const nameMatch = (item.name || "").toLowerCase().includes(query);
+                const rawEmpMatch = (String(item.rawEmpCode || "")).toLowerCase().includes(query);
+                const mobileMatch = (String(item.mobile || "")).toLowerCase().includes(query);
+                const desigMatch = (item.designation || "").toLowerCase().includes(query);
+                const companyMatch = (item.company || "").toLowerCase().includes(query);
+
+                const itemCompOrLoc = item.company || item.location || "";
+                const branchMatch = (selectedBranch === "ALL" || itemCompOrLoc === selectedBranch);
+
+                return (nameMatch || rawEmpMatch || mobileMatch || desigMatch || companyMatch) && branchMatch;
+            });
+
+            renderStaffGrid(filtered);
+            document.getElementById("totalRecordCount").innerText = filtered.length;
+        }
+
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("branchSelect").value = "ALL";
+            filterStaffData();
+        }
+
+        async function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    let allExtractedStaff = [];
+
+                    workbook.SheetNames.forEach((sheetName, sIdx) => {
+                        const ws = workbook.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+
+                        rows.forEach((row, rIdx) => {
+                            let staff = { 
+                                company: sheetName,
+                                location: sheetName 
+                            };
+                            let foundData = false;
+
+                            row.forEach(cell => {
+                                let val = String(cell).trim();
+                                if (!val) return;
+
+                                const upperVal = val.toUpperCase();
+                                
+                                if (upperVal.includes("MR") || upperVal.includes("MR.")) {
+                                    staff.name = val;
+                                    foundData = true;
+                                } 
+                                else if (/^1\d{3}$/.test(val)) {
+                                    staff.branchCode = val; 
+                                    foundData = true;
+                                }
+                                else if (/^\d{4,8}$/.test(val)) {
+                                    staff.rawEmpCode = val;
+                                    foundData = true;
+                                } 
+                                else if (/^[6-9]\d{9}$/.test(val)) {
+                                    staff.mobile = val;
+                                    foundData = true;
+                                }
+                            });
+
+                            if (foundData) {
+                                staff.name = staff.name || "UNNAMED STAFF";
+                                staff.rawEmpCode = staff.rawEmpCode || `TEMP-${sIdx}-${rIdx}`;
+                                staff.empId = staff.rawEmpCode;
+                                staff.designation = staff.designation || "STAFF";
+                                staff.branchCode = staff.branchCode || "0000";
+                                
+                                allExtractedStaff.push(staff);
+                            }
+                        });
+                    });
+
+                    if (allExtractedStaff.length === 0) {
+                        alert("Data scan nahi ho paya!");
+                        return;
+                    }
+
+                    const { error } = await supabaseClient
+                        .from('staff')
+                        .upsert(allExtractedStaff, { onConflict: 'rawEmpCode' });
+
+                    if (error) throw error;
+
+                    alert(`Success! ${allExtractedStaff.length} records update ho gaye hain.`);
+                    fetchStaffFromDatabase();
+
+                } catch (err) {
+                    console.error("Upload Error:", err);
+                    alert("Error: " + err.message);
+                } finally {
+                    event.target.value = "";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function logout() {
+            localStorage.removeItem("login");
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("userRole");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
