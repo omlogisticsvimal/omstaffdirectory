@@ -19,6 +19,15 @@
         html { scroll-behavior: smooth; }
         ::selection { background: #93bbfc; color: #1e3a8a; }
 
+        /* Highlight Text Style */
+        mark.search-highlight {
+            background-color: #fef08a;
+            color: #854d0e;
+            padding: 0 2px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+
         /* Glass morphism */
         .glass-card { 
             background: rgba(255,255,255,0.92); 
@@ -171,19 +180,6 @@
         }
         .search-wrap:focus-within i { color: #2563eb; }
 
-        .branch-only { 
-            font-weight: 600; 
-            color: #0f172a; 
-            font-size: 0.7rem; 
-            transition: all 0.2s ease;
-        }
-        .branch-only i { 
-            color: #ef4444; 
-            margin-right: 0.25rem;
-            transition: all 0.2s ease;
-        }
-        .branch-only:hover i { transform: scale(1.2); }
-
         /* Buttons with animations */
         .btn-upload {
             background: #059669;
@@ -248,6 +244,23 @@
         }
         .btn-add:active { transform: scale(0.96); }
 
+        .btn-loadmore {
+            background: #1e3a8a;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .btn-loadmore:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+
         .btn-reset {
             background: rgba(51,65,85,0.5);
             color: #e2e8f0;
@@ -262,26 +275,7 @@
             transform: rotate(45deg);
         }
 
-        /* Delete card button */
-        .delete-btn-card {
-            background: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-            padding: 0.15rem 0.6rem;
-            border-radius: 30px;
-            font-size: 0.55rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .delete-btn-card:hover {
-            background: #fee2e2;
-            border-color: #f87171;
-            transform: scale(1.1);
-            box-shadow: 0 2px 8px rgba(220,38,38,0.2);
-        }
-
-        /* Modal animations */
+        /* Modal overlay & responsive fixes */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -307,10 +301,29 @@
             border-radius: 1.5rem;
             max-width: 520px;
             width: 100%;
+            max-height: 90vh; /* Prevents overflow from viewport */
+            overflow-y: auto; /* Adds scrollbar inside modal if content exceeds screen height */
             padding: 1.5rem 1.8rem;
             box-shadow: 0 25px 60px rgba(0,0,0,0.35);
             animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
+        /* Custom Modal Scrollbar */
+        .modal-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-box::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .modal-box::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .modal-box::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
         @keyframes slideUp {
             from { opacity: 0; transform: scale(0.92) translateY(30px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
@@ -318,10 +331,10 @@
 
         .modal-box input, .modal-box select {
             width: 100%;
-            padding: 0.5rem 0.8rem;
+            padding: 0.45rem 0.75rem;
             border: 2px solid #e2e8f0;
             border-radius: 0.75rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             background: #f8fafc;
             transition: all 0.2s ease;
         }
@@ -383,7 +396,7 @@
             transform: scale(1.04);
         }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
         .form-grid .full { grid-column: 1 / -1; }
 
         /* Preview box with animation */
@@ -420,6 +433,10 @@
             border: 1px solid #b3e0c6;
             color: #0b5e3b;
             animation: slideDown 0.3s ease;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 9999;
         }
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
@@ -477,7 +494,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-extrabold tracking-wide">OM Directory</h1>
-                <p class="text-blue-200 text-[0.6rem] leading-tight opacity-90">Smart Auto‑Merge · 0% Duplicate Design By Vimal</p>
+                <p class="text-blue-200 text-[0.6rem] leading-tight opacity-90">Smart Auto‑Merge · 0% Duplicate</p>
             </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
@@ -514,9 +531,9 @@
         </div>
     </div>
 
-    <!-- Toast -->
-    <div id="toastNotification" class="hidden toast-compact flex items-center justify-between mb-2">
-        <span id="toastMessage"><i class="fa-solid fa-circle-check mr-1"></i> Updated</span>
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="hidden toast-compact flex items-center gap-2">
+        <span id="toastMessage"><i class="fa-solid fa-circle-check"></i> Updated</span>
         <button onclick="hideToast()" class="text-emerald-800 font-bold text-sm leading-none hover:scale-125 transition">&times;</button>
     </div>
 
@@ -543,13 +560,21 @@
         </p>
     </div>
 
-    <!-- Results Grid -->
-    <div id="resultArea" class="result-grid">
-        <div class="empty-state">
-            <i class="fa-regular fa-id-card"></i>
-            <h2 class="text-md font-semibold text-slate-700 mt-1">Search Staff</h2>
-            <h3 class="text-md font-semibold text-slate-700 mt-1">Please Upload Your Directory Data Before Search</h3>
-            <p class="text-slate-500 text-xs">Please Enter Employee Code or Name of Employee</p>
+    <!-- Results Grid Container -->
+    <div>
+        <div id="resultArea" class="result-grid">
+            <div class="empty-state">
+                <i class="fa-regular fa-id-card"></i>
+                <h3 class="text-md font-semibold text-slate-700 mt-1">Search Staff</h3>
+                <p class="text-slate-500 text-xs">Employee Code ya Naam likhein</p>
+            </div>
+        </div>
+
+        <!-- Load More Section -->
+        <div id="loadMoreArea" class="text-center my-4 hidden">
+            <button onclick="loadMoreRecords()" class="btn-loadmore shadow-md">
+                <i class="fa-solid fa-angles-down mr-1"></i> Load More Staff
+            </button>
         </div>
     </div>
 
@@ -558,8 +583,8 @@
 <!-- ===== MODAL: Add Staff ===== -->
 <div id="addModal" class="modal-overlay">
     <div class="modal-box">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-extrabold text-slate-800"><i class="fa-solid fa-user-plus text-blue-600 mr-2"></i>Add New Staff</h2>
+        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+            <h2 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-user-plus text-blue-600 mr-2"></i>Add New Staff</h2>
             <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-2xl transition hover:rotate-90">&times;</button>
         </div>
         <form id="addForm" class="space-y-3" onsubmit="addManualRecord(event)">
@@ -609,19 +634,19 @@
                     <input type="text" id="f_address" placeholder="Full office address">
                 </div>
             </div>
-            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="closeModal()" class="btn-secondary text-sm">Cancel</button>
-                <button type="submit" class="btn-primary text-sm"><i class="fa-regular fa-floppy-disk mr-1"></i> Save</button>
+            <div class="flex justify-end gap-2 pt-3 mt-2 border-t border-slate-100 sticky bottom-0 bg-white">
+                <button type="button" onclick="closeModal()" class="btn-secondary text-xs">Cancel</button>
+                <button type="submit" class="btn-primary text-xs"><i class="fa-regular fa-floppy-disk mr-1"></i> Save</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- ===== MODAL: Delete Staff (with live preview) ===== -->
+<!-- ===== MODAL: Delete Staff ===== -->
 <div id="deleteModal" class="modal-overlay">
     <div class="modal-box">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-extrabold text-slate-800"><i class="fa-solid fa-trash-can text-red-600 mr-2"></i>Delete Staff</h2>
+        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+            <h2 class="text-lg font-extrabold text-slate-800"><i class="fa-solid fa-trash-can text-red-600 mr-2"></i>Delete Staff</h2>
             <button onclick="closeDeleteModal()" class="text-slate-400 hover:text-slate-700 text-2xl transition hover:rotate-90">&times;</button>
         </div>
         <form id="deleteForm" class="space-y-3" onsubmit="deleteRecord(event)">
@@ -630,7 +655,6 @@
                 <input type="text" id="d_empCode" placeholder="e.g. 50039" required oninput="livePreview()">
             </div>
             
-            <!-- Live Preview Box -->
             <div class="full">
                 <label class="text-[0.6rem] font-bold text-slate-500 uppercase tracking-wider">Employee Details</label>
                 <div id="deletePreview" class="preview-box flex items-center">
@@ -643,9 +667,9 @@
                 <input type="password" id="d_passcode" placeholder="Enter 4-digit passcode" class="passcode-input" maxlength="4" required>
                 <p class="text-[0.5rem] text-slate-400 mt-1">Default passcode: <strong class="text-slate-600">9877</strong></p>
             </div>
-            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="closeDeleteModal()" class="btn-secondary text-sm">Cancel</button>
-                <button type="submit" id="deleteSubmitBtn" class="btn-danger text-sm" disabled><i class="fa-regular fa-trash-can mr-1"></i> Delete</button>
+            <div class="flex justify-end gap-2 pt-3 mt-2 border-t border-slate-100">
+                <button type="button" onclick="closeDeleteModal()" class="btn-secondary text-xs">Cancel</button>
+                <button type="submit" id="deleteSubmitBtn" class="btn-danger text-xs" disabled><i class="fa-regular fa-trash-can mr-1"></i> Delete</button>
             </div>
         </form>
     </div>
@@ -674,6 +698,31 @@
 
     // ===== GLOBAL STATE =====
     let dbDirectory = [];
+    let searchTimeout = null;
+    let currentSearchResults = [];
+    let displayedCount = 30;
+    let currentSearchQuery = "";
+
+    window.addEventListener('DOMContentLoaded', () => {
+        initDatabase();
+        
+        // Anti-Hang Event Listener (Debounce)
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value;
+                const clearBtn = document.getElementById('clearBtn');
+                if (clearBtn) {
+                    clearBtn.classList.toggle('hidden', !query.trim());
+                }
+
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch(query);
+                }, 200);
+            });
+        }
+    });
 
     function initDatabase() {
         const saved = localStorage.getItem('OM_GROUP_DIRECTORY_DATA');
@@ -693,372 +742,329 @@
     }
 
     function updateStats() {
-        document.getElementById('statTotal').textContent = dbDirectory.length;
-        // animate stat
-        const el = document.getElementById('statTotal');
-        el.style.transition = 'transform 0.2s ease';
-        el.style.transform = 'scale(1.2)';
-        setTimeout(() => el.style.transform = 'scale(1)', 200);
-    }
-
-    function resetToInitialData() {
-        if (confirm("Reset to original Directory 2026 data?")) {
-            dbDirectory = [...initialData];
-            saveToLocalStorage();
-            showToast("Data reset to default state", "info");
-            resetView();
-            document.getElementById('searchInput').value = '';
-            document.getElementById('clearBtn').classList.add('hidden');
-        }
-    }
-
-    function showToast(msg, type="success") {
-        const toast = document.getElementById('toastNotification');
-        const msgEl = document.getElementById('toastMessage');
-        toast.classList.remove('hidden');
-        if (type === "success") {
-            toast.className = "toast-compact flex items-center justify-between mb-2 bg-emerald-50 border-emerald-200 text-emerald-800";
-            msgEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> ${msg}`;
-        } else {
-            toast.className = "toast-compact flex items-center justify-between mb-2 bg-blue-50 border-blue-200 text-blue-800";
-            msgEl.innerHTML = `<i class="fa-solid fa-circle-info text-blue-600 mr-1"></i> ${msg}`;
-        }
-        setTimeout(() => hideToast(), 4000);
-    }
-    function hideToast() { document.getElementById('toastNotification').classList.add('hidden'); }
-
-    // ===== EXCEL UPLOAD =====
-    function handleExcelUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            let newlyExtracted = [];
-            workbook.SheetNames.forEach(sheetName => {
-                const sheet = workbook.Sheets[sheetName];
-                const rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:""});
-                if (rows.length < 2) return;
-                let headerIdx = -1;
-                for (let i=0; i<Math.min(10, rows.length); i++) {
-                    const rowStr = rows[i].map(x=>String(x).toUpperCase()).join(" ");
-                    if (rowStr.includes("EMP") || rowStr.includes("OFFICIAL") || rowStr.includes("EMPLOYEE") || rowStr.includes("PDA CODE")) {
-                        headerIdx = i; break;
-                    }
-                }
-                if (headerIdx === -1) headerIdx = 0;
-                const headers = rows[headerIdx].map(h=>String(h).trim().replace(/\n/g,' '));
-                let currState="", currBCode="", currAddress="";
-                for (let r=headerIdx+1; r<rows.length; r++) {
-                    const row = rows[r];
-                    let rowObj = {};
-                    headers.forEach((h,idx) => { rowObj[h] = row[idx] !== undefined ? String(row[idx]).trim() : ""; });
-                    let keys = Object.keys(rowObj);
-                    let cState = keys.find(k=>k.toUpperCase().includes('STATE')||k.toUpperCase().includes('BRANCH NAME')||k.toUpperCase().includes('DEPARTMENT'));
-                    let cBcode = keys.find(k=>k.toUpperCase().includes('CODE')&&!k.toUpperCase().includes('EMP')&&!k.toUpperCase().includes('PDA'));
-                    let cAddr = keys.find(k=>k.toUpperCase().includes('ADDRESS')||k.toUpperCase().includes('OFFICE'));
-                    let cEmp = keys.find(k=>k.toUpperCase().includes('EMP')||k.toUpperCase().includes('PDA CODE'));
-                    let cName = keys.find(k=>k.toUpperCase().includes('NAME')||k.toUpperCase().includes('OFFICIAL')||k.toUpperCase().includes('EMPLOYEE'));
-                    let cDesig = keys.find(k=>k.toUpperCase().includes('DESIGNATION')||k.toUpperCase().includes('DEPT')||k.toUpperCase().includes('CATEGORY'));
-                    let cMob = keys.find(k=>k.toUpperCase().includes('MOBILE')||k.toUpperCase().includes('CONTACT')||k.toUpperCase().includes('PHONE'));
-                    let cEmail = keys.find(k=>k.toUpperCase().includes('MAIL'));
-                    let cExt = keys.find(k=>k.toUpperCase().includes('EXTN'));
-                    let cLand = keys.find(k=>k.toUpperCase().includes('LANDLINE'));
-
-                    let vSt = cState ? rowObj[cState] : "";
-                    let vBc = cBcode ? rowObj[cBcode] : "";
-                    let vAd = cAddr ? rowObj[cAddr] : "";
-                    if (vSt && !["STATE/ BRANCH","STATE / BRANCH","BRANCH NAME","DEPARTMENT","NAN","S.NO"].includes(vSt.toUpperCase())) currState = vSt;
-                    if (vBc && !["BRANCH CODE","CODE","NAN"].includes(vBc.toUpperCase())) currBCode = vBc.replace('.0','');
-                    if (vAd && !["ADDRESS","PDA OFFICE","NAN"].includes(vAd.toUpperCase())) currAddress = vAd;
-
-                    let vEmp = cEmp ? rowObj[cEmp] : "";
-                    let vName = cName ? rowObj[cName] : "";
-                    if (vEmp && !["EMP. CODE","EMP.CODE","EMP CODE","PDA CODE","NAN","S.NO"].includes(vEmp.toUpperCase())) {
-                        let empCodeClean = vEmp.replace('.0','').trim();
-                        if (vName && !["NAME","OFFICIAL","EMPLOYEES NAME","PDA NAME","NAN"].includes(vName.toUpperCase())) {
-                            newlyExtracted.push({
-                                emp_code: empCodeClean,
-                                name: vName,
-                                designation: cDesig ? rowObj[cDesig] : "",
-                                company: sheetName,
-                                branch_code: currBCode,
-                                branch_name: currState,
-                                address: currAddress,
-                                mobile: cMob ? rowObj[cMob] : "",
-                                email: cEmail ? rowObj[cEmail] : "",
-                                extn: cExt ? rowObj[cExt] : "",
-                                landline: cLand ? rowObj[cLand] : ""
-                            });
-                        }
-                    }
-                }
-            });
-            let map = new Map();
-            dbDirectory.forEach(item => map.set(item.emp_code, item));
-            let added=0, updated=0;
-            newlyExtracted.forEach(newItem => {
-                if (map.has(newItem.emp_code)) {
-                    map.set(newItem.emp_code, {...map.get(newItem.emp_code), ...newItem});
-                    updated++;
-                } else {
-                    map.set(newItem.emp_code, newItem);
-                    added++;
-                }
-            });
-            dbDirectory = Array.from(map.values());
-            saveToLocalStorage();
-            showToast(`Upload done! ${added} new, ${updated} updated (0 dupes).`);
-            event.target.value = "";
-            const q = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (q) performSearch(q); else resetView();
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // ===== SEARCH =====
-    const searchInput = document.getElementById('searchInput');
-    const resultArea = document.getElementById('resultArea');
-    const clearBtn = document.getElementById('clearBtn');
-
-    searchInput.addEventListener('input', (e) => {
-        const q = e.target.value.trim().toLowerCase();
-        if (q.length > 0) {
-            clearBtn.classList.remove('hidden');
-            performSearch(q);
-        } else {
-            clearBtn.classList.add('hidden');
-            resetView();
-        }
-    });
-
-    function clearSearch() {
-        searchInput.value = '';
-        clearBtn.classList.add('hidden');
-        resetView();
-        searchInput.focus();
+        const statTotal = document.getElementById('statTotal');
+        if (statTotal) statTotal.innerText = dbDirectory.length;
     }
 
     function resetView() {
-        resultArea.innerHTML = `
-            <div class="empty-state">
-                <i class="fa-regular fa-id-card"></i>
-                <h3 class="text-md font-semibold text-slate-700 mt-1">Search Staff</h3>
-                <p class="text-slate-500 text-xs">Enter Employee Code Or Employee Name</p>
-            </div>`;
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = '';
+        const clearBtn = document.getElementById('clearBtn');
+        if (clearBtn) clearBtn.classList.add('hidden');
+        
+        currentSearchResults = [];
+        displayedCount = 30;
+        currentSearchQuery = "";
+
+        const loadMoreArea = document.getElementById('loadMoreArea');
+        if (loadMoreArea) loadMoreArea.classList.add('hidden');
+
+        const container = document.getElementById('resultArea');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-regular fa-id-card"></i>
+                    <h3 class="text-md font-semibold text-slate-700 mt-1">Search Staff</h3>
+                    <p class="text-slate-500 text-xs">Employee Code ya Naam likhein</p>
+                </div>
+            `;
+        }
+    }
+
+    function clearSearch() {
+        resetView();
+    }
+
+    function copyToClipboard(text) {
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast(`Mobile Number Copied: ${text}`);
+        }).catch(() => {
+            showToast(`Copied: ${text}`);
+        });
+    }
+
+    // Search Highlight Helper
+    function highlightText(text, query) {
+        if (!text) return '';
+        if (!query) return text;
+        const strText = String(text);
+        const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+        return strText.replace(regex, '<mark class="search-highlight">$1</mark>');
     }
 
     function performSearch(query) {
-        const matches = dbDirectory.filter(emp =>
-            emp.emp_code.toLowerCase().includes(query) ||
-            emp.name.toLowerCase().includes(query) ||
-            emp.branch_code.toLowerCase().includes(query) ||
-            emp.branch_name.toLowerCase().includes(query)
-        );
-        if (matches.length === 0) {
-            resultArea.innerHTML = `
-                <div class="col-span-full bg-white rounded-2xl p-6 text-center shadow-sm border border-slate-200">
-                    <i class="fa-solid fa-user-slash text-3xl text-amber-500 mb-1 animate-pulse"></i>
-                    <h3 class="text-md font-semibold text-slate-800">No record found</h3>
-                    <p class="text-slate-500 text-xs">"${query}" se koi match nahi</p>
-                </div>`;
+        const q = query.trim().toLowerCase();
+        currentSearchQuery = q;
+        displayedCount = 30;
+
+        if (!q) {
+            resetView();
             return;
         }
-        let html = `<div class="col-span-full text-xs font-semibold text-slate-500 mb-0.5 animate-fade-in">${matches.length} matching staff</div>`;
-        matches.forEach((item, index) => {
-            const delay = index * 40;
-            html += `
-            <div class="emp-card" style="animation: slideUp 0.3s ease ${delay}ms both;">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-1.5">
-                    <div class="flex items-center gap-1.5 flex-wrap">
-                        <span class="badge-emp">${item.emp_code || 'N/A'}</span>
-                        <span class="badge-company">${item.company || 'PDA'}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="branch-tag">${item.branch_code || ''}</span>
-                        <button onclick="quickDelete('${item.emp_code}')" class="delete-btn-card" title="Delete this employee (passcode required)"><i class="fa-regular fa-trash-can"></i></button>
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-start gap-2">
-                        <div class="emp-avatar">${item.name ? item.name.charAt(0) : 'U'}</div>
-                        <div class="min-w-0">
-                            <h4 class="text-sm font-bold text-slate-900 leading-tight">${item.name || 'N/A'}</h4>
-                            <p class="text-[0.65rem] font-medium text-blue-600">${item.designation || 'Staff'}</p>
-                        </div>
-                    </div>
-                    <div class="mt-1.5 space-y-0.5 text-[0.7rem] text-slate-600">
-                        ${item.mobile ? `<div class="info-line"><i class="fa-solid fa-phone text-emerald-500"></i>${item.mobile}</div>` : ''}
-                        ${item.email ? `<div class="info-line"><i class="fa-solid fa-envelope text-blue-500"></i><a href="mailto:${item.email}" class="text-blue-600 hover:underline truncate">${item.email}</a></div>` : ''}
-                        ${item.extn ? `<div class="info-line"><i class="fa-solid fa-phone-volume text-purple-500"></i>${item.extn}</div>` : ''}
-                        ${item.landline ? `<div class="info-line"><i class="fa-solid fa-tty text-indigo-500"></i>${item.landline}</div>` : ''}
-                    </div>
-                    <div class="mt-1.5 pt-1 border-t border-slate-100">
-                        <span class="branch-only"><i class="fa-solid fa-location-dot"></i>${item.branch_name || 'N/A'}</span>
-                    </div>
-                </div>
-            </div>`;
+
+        currentSearchResults = dbDirectory.filter(item => {
+            return (item.emp_code && item.emp_code.toString().toLowerCase().includes(q)) ||
+                   (item.name && item.name.toLowerCase().includes(q)) ||
+                   (item.designation && item.designation.toLowerCase().includes(q)) ||
+                   (item.company && item.company.toLowerCase().includes(q)) ||
+                   (item.branch_name && item.branch_name.toLowerCase().includes(q)) ||
+                   (item.branch_code && item.branch_code.toString().toLowerCase().includes(q)) ||
+                   (item.mobile && item.mobile.toString().toLowerCase().includes(q));
         });
-        resultArea.innerHTML = html;
+
+        renderCards();
     }
 
-    // ===== MODAL: Add Staff =====
+    function loadMoreRecords() {
+        displayedCount += 30;
+        renderCards();
+    }
+
+    function renderCards() {
+        const container = document.getElementById('resultArea');
+        const loadMoreArea = document.getElementById('loadMoreArea');
+        if (!container) return;
+
+        if (!currentSearchResults || currentSearchResults.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-regular fa-face-frown text-3xl text-slate-400 mb-2"></i>
+                    <h3 class="text-md font-semibold text-slate-700">No Records Found</h3>
+                    <p class="text-slate-500 text-xs">Aapke search query ke sath koi match nahi mila.</p>
+                </div>
+            `;
+            if (loadMoreArea) loadMoreArea.classList.add('hidden');
+            return;
+        }
+
+        const recordsToRender = currentSearchResults.slice(0, displayedCount);
+
+        let html = '';
+        recordsToRender.forEach(emp => {
+            const initials = emp.name ? emp.name.replace(/MR\.|MRS\.|MS\./g, '').trim().slice(0, 2).toUpperCase() : 'OM';
+            const cleanMobile = emp.mobile ? String(emp.mobile).replace(/\D/g, '') : '';
+            
+            html += `
+                <div class="emp-card">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <div class="flex items-center gap-2">
+                            <div class="emp-avatar">${initials}</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm leading-tight">${highlightText(emp.name || 'N/A', currentSearchQuery)}</h4>
+                                <span class="badge-company mt-0.5 inline-block">${highlightText(emp.company || 'PDA', currentSearchQuery)}</span>
+                            </div>
+                        </div>
+                        <span class="badge-emp">EMP ID: ${highlightText(emp.emp_code, currentSearchQuery)}</span>
+                    </div>
+                    
+                    <div class="space-y-1 my-1">
+                        ${emp.designation ? `<div class="info-line"><i class="fa-solid fa-briefcase text-blue-500"></i><span>${highlightText(emp.designation, currentSearchQuery)}</span></div>` : ''}
+                        ${emp.mobile ? `
+                            <div class="info-line flex items-center justify-between">
+                                <div class="cursor-pointer hover:opacity-80 flex items-center" onclick="copyToClipboard('${emp.mobile}')" title="Click to copy mobile number">
+                                    <i class="fa-solid fa-phone text-emerald-500 mr-1"></i>
+                                    <span class="text-slate-700 font-medium">${highlightText(emp.mobile, currentSearchQuery)} <i class="fa-regular fa-copy text-[0.65rem] text-slate-400 ml-1"></i></span>
+                                </div>
+                                ${cleanMobile ? `
+                                    <a href="https://web.whatsapp.com/send?phone=91${cleanMobile}" target="_blank" title="Open Web WhatsApp" class="text-emerald-500 hover:text-emerald-600 transition hover:scale-125 ml-2">
+                                        <i class="fa-brands fa-whatsapp text-sm font-bold"></i>
+                                    </a>` : ''
+                                }
+                            </div>` : ''
+                        }
+                        ${emp.email ? `<div class="info-line"><i class="fa-solid fa-envelope text-indigo-500"></i><a href="mailto:${emp.email}" class="hover:underline text-slate-700 truncate max-w-[200px]">${emp.email}</a></div>` : ''}
+                        ${(emp.branch_name || emp.branch_code) ? `<div class="info-line"><i class="fa-solid fa-location-dot text-rose-500"></i><span class="truncate max-w-[200px]">${highlightText(emp.branch_name || '-', currentSearchQuery)} ${emp.branch_code ? `(Code: ${highlightText(emp.branch_code, currentSearchQuery)})` : ''}</span></div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        if (loadMoreArea) {
+            if (currentSearchResults.length > displayedCount) {
+                loadMoreArea.classList.remove('hidden');
+            } else {
+                loadMoreArea.classList.add('hidden');
+            }
+        }
+    }
+
+    // Modal Helpers
     function openModal() {
         document.getElementById('addModal').classList.add('active');
-        document.getElementById('addForm').reset();
-        const maxCode = dbDirectory.reduce((max, e) => {
-            const num = parseInt(e.emp_code);
-            return num > max ? num : max;
-        }, 0);
-        const nextCode = maxCode + 1;
-        document.getElementById('f_empCode').value = String(nextCode);
-        document.getElementById('f_empCode').focus();
     }
     function closeModal() {
         document.getElementById('addModal').classList.remove('active');
     }
-    document.getElementById('addModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
+    function openDeleteModal() {
+        document.getElementById('deleteModal').classList.add('active');
+    }
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toastNotification');
+        const toastMsg = document.getElementById('toastMessage');
+        if (toast && toastMsg) {
+            toastMsg.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ${msg}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => { hideToast(); }, 3000);
+        }
+    }
+    function hideToast() {
+        const toast = document.getElementById('toastNotification');
+        if (toast) toast.classList.add('hidden');
+    }
 
     function addManualRecord(e) {
         e.preventDefault();
         const empCode = document.getElementById('f_empCode').value.trim();
         const name = document.getElementById('f_name').value.trim();
-        if (!empCode || !name) {
-            showToast("Employee Code and Name are required!", "info");
-            return;
-        }
-        if (dbDirectory.some(item => item.emp_code === empCode)) {
-            showToast(`Employee Code ${empCode} already exists!`, "info");
-            return;
-        }
-        const newRecord = {
+        
+        if (!empCode || !name) return;
+
+        const newEntry = {
             emp_code: empCode,
             name: name,
-            designation: document.getElementById('f_designation').value.trim() || '',
+            designation: document.getElementById('f_designation').value.trim(),
             company: document.getElementById('f_company').value.trim() || 'PDA',
-            branch_code: document.getElementById('f_branchCode').value.trim() || '',
-            branch_name: document.getElementById('f_branchName').value.trim() || '',
-            address: document.getElementById('f_address').value.trim() || '',
-            mobile: document.getElementById('f_mobile').value.trim() || '',
-            email: document.getElementById('f_email').value.trim() || '',
-            extn: document.getElementById('f_extn').value.trim() || '',
-            landline: document.getElementById('f_landline').value.trim() || ''
+            branch_code: document.getElementById('f_branchCode').value.trim(),
+            branch_name: document.getElementById('f_branchName').value.trim(),
+            mobile: document.getElementById('f_mobile').value.trim(),
+            email: document.getElementById('f_email').value.trim(),
+            extn: document.getElementById('f_extn').value.trim(),
+            landline: document.getElementById('f_landline').value.trim(),
+            address: document.getElementById('f_address').value.trim()
         };
-        dbDirectory.push(newRecord);
+
+        const existingIndex = dbDirectory.findIndex(item => item.emp_code === empCode);
+        if (existingIndex !== -1) {
+            dbDirectory[existingIndex] = newEntry;
+            showToast('Record Updated!');
+        } else {
+            dbDirectory.unshift(newEntry);
+            showToast('Staff Added Successfully!');
+        }
+
         saveToLocalStorage();
         closeModal();
-        showToast(`✅ ${name} (${empCode}) added successfully!`);
-        const q = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (q) performSearch(q); else resetView();
+        document.getElementById('addForm').reset();
+        resetView();
     }
 
-    // ===== MODAL: Delete Staff (with live preview) =====
-    function openDeleteModal() {
-        document.getElementById('deleteModal').classList.add('active');
-        document.getElementById('deleteForm').reset();
-        document.getElementById('deletePreview').innerHTML = `<span class="text-slate-400 text-xs">Enter EMP Code to see details...</span>`;
-        document.getElementById('deletePreview').className = 'preview-box flex items-center';
-        document.getElementById('deleteSubmitBtn').disabled = true;
-        document.getElementById('d_empCode').focus();
-    }
-    function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.remove('active');
-    }
-    document.getElementById('deleteModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDeleteModal();
-    });
-
-    // Live preview function
     function livePreview() {
-        const empCode = document.getElementById('d_empCode').value.trim();
+        const code = document.getElementById('d_empCode').value.trim();
         const previewBox = document.getElementById('deletePreview');
         const submitBtn = document.getElementById('deleteSubmitBtn');
 
-        if (!empCode) {
-            previewBox.innerHTML = `<span class="text-slate-400 text-xs">Enter EMP Code to see details...</span>`;
+        if (!code) {
             previewBox.className = 'preview-box flex items-center';
+            previewBox.innerHTML = '<span class="text-slate-400 text-xs">Enter EMP Code to see details...</span>';
             submitBtn.disabled = true;
             return;
         }
 
-        const found = dbDirectory.find(item => item.emp_code === empCode);
-        if (found) {
-            previewBox.className = 'preview-box flex items-center found-preview';
+        const match = dbDirectory.find(item => item.emp_code.toLowerCase() === code.toLowerCase());
+        if (match) {
+            previewBox.className = 'preview-box found-preview flex flex-col justify-center';
             previewBox.innerHTML = `
-                <div class="found w-full">
-                    <div class="flex items-center gap-2">
-                        <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Found</span>
-                        <span class="emp-preview-name text-sm font-bold text-blue-800">${found.name}</span>
-                    </div>
-                    <div class="emp-preview-detail mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-600">
-                        <span><i class="fa-regular fa-briefcase mr-1"></i>${found.designation || 'N/A'}</span>
-                        <span><i class="fa-regular fa-building mr-1"></i>${found.company || 'PDA'}</span>
-                        <span><i class="fa-regular fa-location-dot mr-1"></i>${found.branch_name || 'N/A'}</span>
-                        ${found.mobile ? `<span><i class="fa-regular fa-phone mr-1"></i>${found.mobile}</span>` : ''}
-                        ${found.email ? `<span><i class="fa-regular fa-envelope mr-1"></i>${found.email}</span>` : ''}
-                    </div>
-                </div>
+                <strong class="text-emerald-800 font-bold">${match.name}</strong>
+                <span class="text-[0.65rem] text-emerald-600">${match.designation || 'No Designation'} · ${match.company || 'OM GROUP'}</span>
             `;
             submitBtn.disabled = false;
         } else {
-            previewBox.className = 'preview-box flex items-center not-found-preview';
-            previewBox.innerHTML = `
-                <div class="not-found w-full">
-                    <span class="text-red-600 font-medium">✗ No employee found with code: ${empCode}</span>
-                </div>
-            `;
+            previewBox.className = 'preview-box not-found-preview flex items-center';
+            previewBox.innerHTML = '<span class="text-rose-600 font-medium text-xs"><i class="fa-solid fa-circle-xmark mr-1"></i> No matching staff found</span>';
             submitBtn.disabled = true;
         }
-    }
-
-    // Quick delete from card
-    function quickDelete(empCode) {
-        openDeleteModal();
-        document.getElementById('d_empCode').value = empCode;
-        livePreview();
-        document.getElementById('d_passcode').focus();
     }
 
     function deleteRecord(e) {
         e.preventDefault();
-        const empCode = document.getElementById('d_empCode').value.trim();
+        const code = document.getElementById('d_empCode').value.trim();
         const passcode = document.getElementById('d_passcode').value.trim();
 
-        if (!empCode) {
-            showToast("Please enter Employee Code!", "info");
-            return;
-        }
-        if (passcode !== "9877") {
-            showToast("❌ Incorrect passcode! Please try again.", "info");
-            document.getElementById('d_passcode').value = '';
-            document.getElementById('d_passcode').focus();
+        if (passcode !== '9877') {
+            alert('Incorrect Passcode!');
             return;
         }
 
-        const index = dbDirectory.findIndex(item => item.emp_code === empCode);
-        if (index === -1) {
-            showToast(`❌ Employee Code ${empCode} not found!`, "info");
-            document.getElementById('d_empCode').value = '';
+        const index = dbDirectory.findIndex(item => item.emp_code.toLowerCase() === code.toLowerCase());
+        if (index !== -1) {
+            dbDirectory.splice(index, 1);
+            saveToLocalStorage();
+            showToast('Staff Deleted Successfully!');
+            closeDeleteModal();
+            document.getElementById('deleteForm').reset();
             livePreview();
-            document.getElementById('d_empCode').focus();
-            return;
+            resetView();
         }
-
-        const deletedName = dbDirectory[index].name;
-        dbDirectory.splice(index, 1);
-        saveToLocalStorage();
-        closeDeleteModal();
-        showToast(`🗑️ ${deletedName} (${empCode}) deleted successfully!`);
-        
-        const q = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (q) performSearch(q); else resetView();
     }
 
-    // ===== INIT =====
-    window.onload = initDatabase;
+    function resetToInitialData() {
+        if (confirm('Kya aap saara data reset karke default list par aana chahte hain?')) {
+            dbDirectory = [...initialData];
+            saveToLocalStorage();
+            resetView();
+            showToast('Directory Reset to Initial State');
+        }
+    }
+
+    function handleExcelUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                let updatedCount = 0;
+                let addedCount = 0;
+
+                jsonData.forEach(row => {
+                    const empCode = String(row['EMP CODE'] || row['EMP_CODE'] || row['Emp Code'] || row['emp_code'] || '').trim();
+                    if (!empCode) return;
+
+                    const newObj = {
+                        emp_code: empCode,
+                        name: String(row['NAME'] || row['Name'] || row['name'] || '').trim(),
+                        designation: String(row['DESIGNATION'] || row['Designation'] || '').trim(),
+                        company: String(row['COMPANY'] || row['Company'] || 'PDA').trim(),
+                        branch_code: String(row['BRANCH CODE'] || row['Branch Code'] || '').trim(),
+                        branch_name: String(row['BRANCH NAME'] || row['Branch Name'] || '').trim(),
+                        address: String(row['ADDRESS'] || row['Address'] || '').trim(),
+                        mobile: String(row['MOBILE'] || row['Mobile'] || row['PHONE'] || '').trim(),
+                        email: String(row['EMAIL'] || row['Email'] || '').trim(),
+                        extn: String(row['EXTN'] || row['Extn'] || '').trim(),
+                        landline: String(row['LANDLINE'] || row['Landline'] || '').trim()
+                    };
+
+                    const existingIndex = dbDirectory.findIndex(item => String(item.emp_code).trim() === empCode);
+                    if (existingIndex !== -1) {
+                        dbDirectory[existingIndex] = { ...dbDirectory[existingIndex], ...newObj };
+                        updatedCount++;
+                    } else {
+                        dbDirectory.unshift(newObj);
+                        addedCount++;
+                    }
+                });
+
+                saveToLocalStorage();
+                resetView();
+                showToast(`Excel Merged! Added: ${addedCount}, Updated: ${updatedCount}`);
+            } catch (err) {
+                alert('Excel file read karne mein issue aaya. Kripya valid .xlsx file try karein.');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
 </script>
 </body>
 </html>
