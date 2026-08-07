@@ -18,172 +18,37 @@
             --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        body {
-            background-color: var(--bg-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .top-navbar {
-            background-color: var(--navbar-bg);
-            color: white;
-            padding: 12px 24px;
-        }
-
-        .brand-logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .stat-box {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 16px 20px;
-            box-shadow: var(--card-shadow);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 100%;
-        }
-
-        .stat-box .title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #6c757d;
-            text-transform: uppercase;
-        }
-
-        .stat-box .value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-        .staff-card {
-            background: #ffffff;
-            border-radius: 14px;
-            padding: 18px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid #e2e8f0;
-            position: relative;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            cursor: pointer;
-        }
-
-        .staff-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12);
-            border-color: var(--primary-purple);
-        }
-
-        .avatar-circle {
-            width: 42px;
-            height: 42px;
-            background-color: #e0e7ff;
-            color: #3730a3;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .emp-badge {
-            background-color: #1e1b4b;
-            color: white;
-            font-size: 0.7rem;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .branch-badge {
-            background-color: #6366f1;
-            color: white;
-            font-size: 0.7rem;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .btn-action-green {
-            background-color: #10b981;
-            color: white;
-            border: none;
-        }
-
-        .btn-action-red {
-            background-color: #ef4444;
-            color: white;
-            border: none;
-        }
-
-        .btn-action-circle {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            border: none;
-        }
-
-        /* Profile Modal Enhancements */
-        .profile-avatar-large {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #3b3086, #4f46e5);
-            color: white;
-            font-size: 1.6rem;
-            font-weight: 700;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(59, 48, 134, 0.3);
-        }
-
-        .detail-row {
-            padding: 10px 14px;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .detail-row .label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-        }
-
-        .detail-row .val {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        /* Edit Mode Styles */
-        .edit-mode .val input {
-            width: 100%;
-            padding: 4px 8px;
-            border: 1px solid var(--primary-purple);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            background-color: #ffffff;
-        }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .top-navbar { background-color: var(--navbar-bg); color: white; padding: 12px 24px; }
+        .brand-logo { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .stat-box { background: #ffffff; border-radius: 12px; padding: 16px 20px; box-shadow: var(--card-shadow); display: flex; align-items: center; justify-content: space-between; height: 100%; }
+        .stat-box .title { font-size: 0.75rem; font-weight: 700; color: #6c757d; text-transform: uppercase; }
+        .stat-box .value { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+        .staff-card { background: #ffffff; border-radius: 14px; padding: 18px; box-shadow: var(--card-shadow); border: 1px solid #e2e8f0; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; }
+        .staff-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12); border-color: var(--primary-purple); }
+        .avatar-circle { width: 42px; height: 42px; background-color: #e0e7ff; color: #3730a3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+        .emp-badge { background-color: #3b82f6; color: white; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+        .btn-action-green { background-color: #10b981; color: white; border: none; }
+        .btn-action-red { background-color: #ef4444; color: white; border: none; }
+        .btn-action-circle { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.15); color: white; border: none; }
+        .profile-avatar-large { width: 70px; height: 70px; background: linear-gradient(135deg, #3b3086, #4f46e5); color: white; font-size: 1.6rem; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(59, 48, 134, 0.3); }
+        .detail-row { padding: 10px 14px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+        .detail-row .label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .detail-row .val { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
+        .edit-mode .val input { width: 100%; padding: 4px 8px; border: 1px solid var(--primary-purple); border-radius: 6px; font-size: 0.85rem; background-color: #ffffff; }
+        .spinner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .spinner-overlay.show { display: flex; }
+        .spinner-box { background: white; padding: 30px; border-radius: 16px; text-align: center; }
     </style>
 </head>
 <body>
+
+    <div class="spinner-overlay" id="loadingOverlay">
+        <div class="spinner-box">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            <div class="mt-3 fw-bold">Processing...</div>
+        </div>
+    </div>
 
     <!-- Top Navbar Header -->
     <div class="top-navbar d-flex justify-content-between align-items-center">
@@ -196,15 +61,19 @@
         </div>
         
         <div class="d-flex align-items-center gap-2">
+            
+            <button class="btn btn-warning btn-sm px-3 rounded-3 fw-bold admin-only" onclick="window.location.href='upload.html'">
+                <i class="fa-solid fa-database me-1"></i> Admin Upload
+            </button>
+
+            <button class="btn btn-dark btn-sm px-3 rounded-3 fw-bold admin-only" onclick="deleteAllStaffData()">
+                <i class="fa-solid fa-trash-can me-1"></i> Delete All
+            </button>
+
             <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;">
                 <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
                 <span class="fw-bold text-white small" style="font-size: 0.8rem;">Connected</span>
             </div>
-            
-            <button class="btn btn-action-green btn-sm px-3 rounded-3 admin-only" onclick="document.getElementById('excelFileInput').click()">
-                <i class="fa-solid fa-upload me-1"></i> Upload
-            </button>
-            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleExcelUpload(event)">
 
             <button class="btn btn-action-red btn-sm px-3 rounded-3 admin-only" data-bs-toggle="modal" data-bs-target="#deleteStaffModal">
                 <i class="fa-solid fa-trash me-1"></i> Delete
@@ -217,7 +86,15 @@
             <button class="btn btn-outline-light btn-sm px-3 rounded-3 ms-1" onclick="logout()">
                 <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
             </button>
+            
+            <button class="btn btn-info btn-sm px-3 rounded-3 fw-bold text-white admin-only" onclick="window.location.href='convert.html'">
+                <i class="fa-solid fa-file-export me-1"></i> Format Raw File
+            </button>
+            <button class="btn btn-warning btn-sm px-3 rounded-3 fw-bold admin-only" onclick="checkDuplicateEmpIds()">
+                <i class="fa-solid fa-magnifying-glass me-1"></i> Check Duplicates
+            </button>
         </div>
+    
     </div>
 
     <!-- Main Container -->
@@ -226,10 +103,10 @@
             <div class="col-md-3">
                 <div class="stat-box">
                     <div>
-                        <div class="title">Records Showing</div>
+                        <div class="title">Total Records in DB</div>
                         <div class="value" id="totalRecordCount">0</div>
                     </div>
-                    <i class="fa-solid fa-users text-primary fs-3 opacity-50"></i>
+                    <i class="fa-solid fa-database text-primary fs-3 opacity-50"></i>
                 </div>
             </div>
 
@@ -271,7 +148,7 @@
 
         <!-- Filter & Search Bar -->
         <div class="row g-2 align-items-center mb-4">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
                     <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by name, EMP ID, mobile, designation..." oninput="filterStaffData()">
@@ -286,6 +163,14 @@
             </div>
 
             <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-qrcode text-muted"></i></span>
+                    <input type="text" id="branchCodeInput" class="form-control border-start-0" placeholder="Search by Branch Code..." oninput="filterStaffData()">
+                    <button class="btn btn-outline-secondary" type="button" onclick="clearBranchCodeSearch()">Clear</button>
+                </div>
+            </div>
+
+            <div class="col-md-2">
                 <button class="btn btn-primary w-100 rounded-pill py-2 fw-semibold" style="background-color: var(--primary-purple); border: none;" data-bs-toggle="modal" data-bs-target="#addStaffModal">
                     <i class="fa-solid fa-user-plus me-1"></i> Add Staff
                 </button>
@@ -296,7 +181,63 @@
         <div class="row g-3" id="staffCardGrid"></div>
     </div>
 
-    <!-- Detailed Profile View / Edit Modal -->
+    <!-- Add Staff Modal -->
+    <div class="modal fade" id="addStaffModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-primary"><i class="fa-solid fa-user-plus me-2"></i>Add New Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">EMP CODE</label>
+                        <input type="text" id="newStaffEmpCode" class="form-control" placeholder="e.g. 15743">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">NAME</label>
+                        <input type="text" id="newStaffName" class="form-control" placeholder="Enter full name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">DESIGNATION</label>
+                        <input type="text" id="newStaffDesignation" class="form-control" placeholder="e.g. AREA MANAGER">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">COMPANY</label>
+                        <input type="text" id="newStaffCompany" class="form-control" placeholder="e.g. OLSC BRANCHES">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">LOCATION / BRANCH</label>
+                        <input type="text" id="newStaffLocation" class="form-control" placeholder="e.g. HYDERABAD">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">BRANCH CODE</label>
+                        <input type="text" id="newStaffBranchCode" class="form-control" placeholder="e.g. 1601">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">MOBILE</label>
+                        <input type="text" id="newStaffMobile" class="form-control" placeholder="e.g. 8886332174">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">E-MAIL</label>
+                        <input type="text" id="newStaffEmail" class="form-control" placeholder="e.g. navneet@omlogistics.co.in">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ADDRESS</label>
+                        <input type="text" id="newStaffAddress" class="form-control" placeholder="Enter address...">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success rounded-pill px-4 fw-semibold" onclick="executeAddStaff()">
+                        <i class="fa-solid fa-check me-1"></i> Save Staff
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 border-0 shadow-lg p-3">
@@ -331,13 +272,7 @@
                                 <span class="val" id="modalCompany" data-field="company">OLSC</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="detail-row">
-                                <span class="label"><i class="fa-solid fa-code-branch me-1 text-primary"></i> Branch Code</span>
-                                <span class="val" id="modalBranchCode" data-field="branchCode">1306</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
+                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-location-dot me-1 text-primary"></i> Location / Branch</span>
                                 <span class="val" id="modalLocationVal" data-field="location">DELHI</span>
@@ -353,18 +288,6 @@
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-envelope me-1 text-primary"></i> Email</span>
                                 <span class="val" id="modalEmail" data-field="email" style="font-size: 0.85rem;">damegactrl2@olsc.in</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="detail-row">
-                                <span class="label"><i class="fa-solid fa-phone-volume me-1 text-primary"></i> Extension</span>
-                                <span class="val" id="modalExtension" data-field="extension">N/A</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="detail-row">
-                                <span class="label"><i class="fa-solid fa-square-phone me-1 text-primary"></i> Landline</span>
-                                <span class="val" id="modalLandline" data-field="landline">402</span>
                             </div>
                         </div>
                         <div class="col-12">
@@ -401,13 +324,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetDeleteModal()"></button>
                 </div>
                 <div class="modal-body pt-3">
-                    <p class="text-muted small">Jis staff ko delete karna hai uska **EMP ID (Raw Emp Code)** niche enter karein:</p>
+                    <p class="text-muted small">Jis staff ko delete karna hai uska <strong>EMP ID (Emp Code)</strong> niche enter karein:</p>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-secondary">ENTER EMP ID</label>
-                        <input type="text" id="deleteEmpCodeInput" class="form-control" placeholder="e.g. 39751 ya 50000" oninput="checkAndDeletePreview(this.value)">
+                        <input type="text" id="deleteEmpCodeInput" class="form-control" placeholder="e.g. 15743" oninput="checkAndDeletePreview(this.value)">
                     </div>
 
-                    <!-- Live Match Details Preview Box -->
                     <div id="deletePreviewBox" class="d-none p-3 rounded-3 border bg-light">
                         <div class="small fw-bold text-primary mb-1"><i class="fa-solid fa-user-check me-1"></i> Match Found:</div>
                         <div class="d-flex justify-content-between text-dark small mb-1">
@@ -432,45 +354,45 @@
             </div>
         </div>
     </div>
+
     <!-- Create User Modal -->
-<div class="modal fade" id="createUserModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0 shadow-lg p-3">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="fw-bold text-success"><i class="fa-solid fa-user-plus me-2"></i>Create New User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body pt-3">
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">USERNAME</label>
-                    <input type="text" id="newUsername" class="form-control" placeholder="Enter username">
+    <div class="modal fade" id="createUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-success"><i class="fa-solid fa-user-plus me-2"></i>Create New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">PASSWORD</label>
-                    <input type="password" id="newPassword" class="form-control" placeholder="Enter password">
+                <div class="modal-body pt-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">USERNAME</label>
+                        <input type="text" id="newUsername" class="form-control" placeholder="Enter username">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">PASSWORD</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="Enter password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ROLE</label>
+                        <select id="newUserRole" class="form-select">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">ROLE</label>
-                    <select id="newUserRole" class="form-select">
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                    </select>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success rounded-pill px-4 fw-semibold" onclick="executeCreateUser()">
+                        <i class="fa-solid fa-check me-1"></i> Create User
+                    </button>
                 </div>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success rounded-pill px-4 fw-semibold" onclick="executeCreateUser()">
-                    <i class="fa-solid fa-check me-1"></i> Create User
-                </button>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
         const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
@@ -484,6 +406,7 @@
         let allStaffData = [];
         let currentEditingItem = null;
         let foundStaffForDelete = null;
+        let searchTimeout;
 
         window.onload = function() {
             if (localStorage.getItem("login") !== "yes") {
@@ -518,15 +441,40 @@
 
         async function fetchStaffFromDatabase() {
             try {
+                document.getElementById("totalRecordCount").innerText = "Loading...";
+                document.getElementById("staffCardGrid").innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="text-muted mt-2">Loading records...</div>
+                    </div>
+                `;
+
+                // Exact total count fetch karo
+                const { count, error: countError } = await supabaseClient
+                    .from('staff')
+                    .select('*', { count: 'exact', head: true });
+
+                if (countError) throw countError;
+
+                // Data fetch karo
                 const { data, error } = await supabaseClient.from('staff').select('*');
                 if (error) throw error;
 
                 allStaffData = data || [];
-                renderStaffGrid(allStaffData);
+                
                 populateBranchDropdown(allStaffData);
-                document.getElementById("totalRecordCount").innerText = allStaffData.length;
+                document.getElementById("searchInput").disabled = false;
+                document.getElementById("branchSelect").disabled = false;
+
+                setTimeout(() => {
+                    renderStaffGrid(allStaffData);
+                    // Exact database count dikhao
+                    document.getElementById("totalRecordCount").innerText = count || 0; 
+                }, 50);
+
             } catch (err) {
                 console.error("Error fetching staff:", err);
+                document.getElementById("staffCardGrid").innerHTML = `<div class="col-12 text-center text-danger py-5">Error loading data</div>`;
             }
         }
 
@@ -539,26 +487,45 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
+
             dataList.forEach((item) => {
                 const name = item.name || "UNNAMED STAFF";
                 const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 
-                const empCode = item.rawEmpCode || item.empId || "N/A";
+                const empId = item.empid || "N/A";
                 const location = item.location || "MAIN OFFICE";
+                const branchCode = item.branchcode || "N/A";
                 const company = item.company || "";
-                const branchCode = item.branchCode || "";
                 const designation = item.designation || "STAFF";
                 const mobile = item.mobile || "N/A";
 
-                let subDetailsHtml = `
-                    <div class="mb-1"><i class="fa-solid fa-briefcase me-2 text-muted"></i>${designation.toUpperCase()}</div>
-                    ${company ? `<div class="mb-1"><i class="fa-solid fa-building me-2 text-muted"></i>${company.toUpperCase()}</div>` : ''}
-                    <div><i class="fa-solid fa-phone me-2 text-muted"></i>${mobile}</div>
+                const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
+
+                // 🟢 WHATSAPP & COPY ICONS
+                let mobileHtml = `
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-phone me-2 text-muted"></i>
+                        <span>${mobile}</span>
                 `;
+                
+                if (mobile !== "N/A") {
+                    const cleanNumber = mobile.replace(/[^0-9]/g, '');
+                    const whatsappLink = `https://web.whatsapp.com/send?phone=${cleanNumber}`;
+                    
+                    mobileHtml += `
+                        <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                        <button onclick="copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-1 text-secondary" title="Copy Number" style="font-size: 0.9rem; border: none; background: none;">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    `;
+                }
+                mobileHtml += `</div>`;
 
-                const branchCodeHtml = branchCode ? `<span class="branch-badge me-1">CODE: ${branchCode}</span>` : '';
-
-                const cardHtml = `
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = `
                     <div class="col-md-4">
                         <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -566,23 +533,26 @@
                                     <div class="avatar-circle">${initials}</div>
                                     <div>
                                         <div class="fw-bold text-dark" style="line-height: 1.2;">${name.toUpperCase()}</div>
-                                        <div class="text-primary small fw-semibold">${location.toUpperCase()}</div>
+                                        <div class="text-primary small fw-semibold">${locationDisplay}</div>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    ${branchCodeHtml}
-                                    <span class="emp-badge">EMP ID: ${empCode}</span>
+                                    <span class="emp-badge">${empId}</span>
                                 </div>
                             </div>
 
                             <div class="mt-3 text-secondary small">
-                                ${subDetailsHtml}
+                                <div class="mb-1"><i class="fa-solid fa-briefcase me-2 text-muted"></i>${designation.toUpperCase()}</div>
+                                ${company ? `<div class="mb-1"><i class="fa-solid fa-building me-2 text-muted"></i>${company.toUpperCase()}</div>` : ''}
+                                ${mobileHtml}
                             </div>
                         </div>
                     </div>
                 `;
-                grid.innerHTML += cardHtml;
+                fragment.appendChild(tempDiv.firstElementChild);
             });
+
+            grid.appendChild(fragment);
         }
 
         function openProfileModal(item) {
@@ -595,16 +565,13 @@
             document.getElementById("modalAvatar").innerText = initials;
             document.getElementById("modalName").innerText = name.toUpperCase();
             document.getElementById("modalLocation").innerHTML = `<i class="fa-solid fa-location-dot me-1"></i> ${(item.location || "MAIN OFFICE").toUpperCase()}`;
-            document.getElementById("modalEmpCode").innerText = item.rawEmpCode || item.empId || "N/A";
+            document.getElementById("modalEmpCode").innerText = item.empid || "N/A";
             
             document.getElementById("modalDesignation").innerText = item.designation || "N/A";
             document.getElementById("modalCompany").innerText = item.company || "N/A";
-            document.getElementById("modalBranchCode").innerText = item.branchCode || "N/A";
             document.getElementById("modalLocationVal").innerText = item.location || "N/A";
             document.getElementById("modalMobile").innerText = item.mobile || "N/A";
             document.getElementById("modalEmail").innerText = item.email || "N/A";
-            document.getElementById("modalExtension").innerText = item.extension || "N/A";
-            document.getElementById("modalLandline").innerText = item.landline || "N/A";
             document.getElementById("modalAddress").innerText = item.address || "N/A";
 
             const modal = new bootstrap.Modal(document.getElementById('profileModal'));
@@ -624,6 +591,10 @@
                     const fieldName = el.dataset.field;
                     el.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentText}" data-field="${fieldName}">`;
                 });
+
+                const addressVal = document.getElementById('modalAddress');
+                const currentAddressText = addressVal.innerText === "N/A" ? "" : addressVal.innerText;
+                addressVal.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentAddressText}" data-field="address">`;
 
                 editBtn.classList.add('d-none');
                 saveBtn.classList.remove('d-none');
@@ -653,7 +624,9 @@
             
             container.querySelectorAll('input[data-field]').forEach(input => {
                 const field = input.dataset.field;
-                updates[field] = input.value.trim();
+                if (['designation', 'company', 'location', 'mobile', 'email', 'address'].includes(field)) {
+                    updates[field] = input.value.trim();
+                }
             });
 
             const saveBtn = document.getElementById('saveBtn');
@@ -661,13 +634,12 @@
             saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Saving...`;
 
             try {
-                const primaryKeyField = currentEditingItem.rawEmpCode ? 'rawEmpCode' : 'id';
-                const primaryKeyValue = currentEditingItem.rawEmpCode || currentEditingItem.id;
+                const primaryKeyValue = currentEditingItem.empid;
 
                 const { error } = await supabaseClient
                     .from('staff')
                     .update(updates)
-                    .eq(primaryKeyField, primaryKeyValue);
+                    .eq('empid', primaryKeyValue);
 
                 if (error) throw error;
 
@@ -704,12 +676,12 @@
                 return;
             }
 
-            const matched = allStaffData.find(item => String(item.rawEmpCode || item.empId) === empCode);
+            const matched = allStaffData.find(item => String(item.empid) === empCode);
 
             if (matched) {
                 foundStaffForDelete = matched;
                 document.getElementById("delPreviewName").innerText = (matched.name || "UNNAMED").toUpperCase();
-                document.getElementById("delPreviewEmp").innerText = matched.rawEmpCode || matched.empId;
+                document.getElementById("delPreviewEmp").innerText = matched.empid;
                 document.getElementById("delPreviewDesig").innerText = (matched.designation || "STAFF").toUpperCase();
                 document.getElementById("delPreviewLoc").innerText = (matched.location || "MAIN OFFICE").toUpperCase();
 
@@ -727,7 +699,7 @@
         async function executeStaffDelete() {
             if (!foundStaffForDelete) return;
 
-            const empCode = foundStaffForDelete.rawEmpCode || foundStaffForDelete.empId;
+            const empCode = foundStaffForDelete.empid;
 
             if (!confirm(`Kya aap sach mein ${foundStaffForDelete.name} (EMP ID: ${empCode}) ko delete karna chahte hain?`)) {
                 return;
@@ -737,7 +709,7 @@
                 const { error } = await supabaseClient
                     .from('staff')
                     .delete()
-                    .eq('rawEmpCode', empCode);
+                    .eq('empid', empCode);
 
                 if (error) throw error;
 
@@ -766,121 +738,62 @@
 
         function populateBranchDropdown(dataList) {
             const select = document.getElementById("branchSelect");
-            const companies = [...new Set(dataList.map(item => item.company || item.location).filter(Boolean))];
+            const locations = [...new Set(dataList.map(item => item.location).filter(Boolean))];
             
             select.innerHTML = `<option value="ALL">All Branches / Companies</option>`;
-            companies.forEach(comp => {
-                select.innerHTML += `<option value="${comp}">${comp}</option>`;
+            locations.forEach(loc => {
+                select.innerHTML += `<option value="${loc}">${loc}</option>`;
             });
         }
 
         function filterStaffData() {
-            const query = document.getElementById("searchInput").value.toLowerCase().trim();
-            const selectedBranch = document.getElementById("branchSelect").value;
+            clearTimeout(searchTimeout);
+            
+            const grid = document.getElementById("staffCardGrid");
+            if(allStaffData.length > 1000) {
+                grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">Searching...</div>`;
+            }
 
-            const filtered = allStaffData.filter(item => {
-                const nameMatch = (item.name || "").toLowerCase().includes(query);
-                const rawEmpMatch = (String(item.rawEmpCode || "")).toLowerCase().includes(query);
-                const mobileMatch = (String(item.mobile || "")).toLowerCase().includes(query);
-                const desigMatch = (item.designation || "").toLowerCase().includes(query);
-                const companyMatch = (item.company || "").toLowerCase().includes(query);
+            searchTimeout = setTimeout(() => {
+                const query = document.getElementById("searchInput").value.toLowerCase().trim();
+                const selectedBranch = document.getElementById("branchSelect").value;
+                const branchCodeQuery = document.getElementById("branchCodeInput").value.trim();
 
-                const itemCompOrLoc = item.company || item.location || "";
-                const branchMatch = (selectedBranch === "ALL" || itemCompOrLoc === selectedBranch);
+                if(branchCodeQuery) {
+                    const matchedOption = Array.from(document.getElementById("branchSelect").options).find(opt => opt.value.toUpperCase() === branchCodeQuery.toUpperCase());
+                    if(matchedOption) {
+                        document.getElementById("branchSelect").value = matchedOption.value;
+                    }
+                }
 
-                return (nameMatch || rawEmpMatch || mobileMatch || desigMatch || companyMatch) && branchMatch;
-            });
+                const filtered = allStaffData.filter(item => {
+                    const nameMatch = (item.name || "").toLowerCase().includes(query);
+                    const branchMatchSearch = (String(item.branchcode || "")).toLowerCase().includes(query);
+                    const empMatch = (String(item.empid || "")).toLowerCase().includes(query);
+                    const mobileMatch = (String(item.mobile || "")).toLowerCase().includes(query);
+                    const desigMatch = (item.designation || "").toLowerCase().includes(query);
+                    const companyMatch = (item.company || "").toLowerCase().includes(query);
 
-            renderStaffGrid(filtered);
-            document.getElementById("totalRecordCount").innerText = filtered.length;
+                    const branchFilterMatch = (selectedBranch === "ALL" || item.location === selectedBranch);
+                    const branchCodeMatch = !branchCodeQuery || String(item.branchcode || "") === branchCodeQuery;
+
+                    return (nameMatch || branchMatchSearch || empMatch || mobileMatch || desigMatch || companyMatch) && branchFilterMatch && branchCodeMatch;
+                });
+
+                renderStaffGrid(filtered);
+            }, 300);
         }
 
         function clearSearch() {
             document.getElementById("searchInput").value = "";
             document.getElementById("branchSelect").value = "ALL";
+            document.getElementById("branchCodeInput").value = "";
             filterStaffData();
         }
 
-        async function handleExcelUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    let allExtractedStaff = [];
-
-                    workbook.SheetNames.forEach((sheetName, sIdx) => {
-                        const ws = workbook.Sheets[sheetName];
-                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-
-                        rows.forEach((row, rIdx) => {
-                            let staff = { 
-                                company: sheetName,
-                                location: sheetName 
-                            };
-                            let foundData = false;
-
-                            row.forEach(cell => {
-                                let val = String(cell).trim();
-                                if (!val) return;
-
-                                const upperVal = val.toUpperCase();
-                                
-                                if (upperVal.includes("MR") || upperVal.includes("MR.")) {
-                                    staff.name = val;
-                                    foundData = true;
-                                } 
-                                else if (/^1\d{3}$/.test(val)) {
-                                    staff.branchCode = val; 
-                                    foundData = true;
-                                }
-                                else if (/^\d{4,8}$/.test(val)) {
-                                    staff.rawEmpCode = val;
-                                    foundData = true;
-                                } 
-                                else if (/^[6-9]\d{9}$/.test(val)) {
-                                    staff.mobile = val;
-                                    foundData = true;
-                                }
-                            });
-
-                            if (foundData) {
-                                staff.name = staff.name || "UNNAMED STAFF";
-                                staff.rawEmpCode = staff.rawEmpCode || `TEMP-${sIdx}-${rIdx}`;
-                                staff.empId = staff.rawEmpCode;
-                                staff.designation = staff.designation || "STAFF";
-                                staff.branchCode = staff.branchCode || "0000";
-                                
-                                allExtractedStaff.push(staff);
-                            }
-                        });
-                    });
-
-                    if (allExtractedStaff.length === 0) {
-                        alert("Data scan nahi ho paya!");
-                        return;
-                    }
-
-                    const { error } = await supabaseClient
-                        .from('staff')
-                        .upsert(allExtractedStaff, { onConflict: 'rawEmpCode' });
-
-                    if (error) throw error;
-
-                    alert(`Success! ${allExtractedStaff.length} records update ho gaye hain.`);
-                    fetchStaffFromDatabase();
-
-                } catch (err) {
-                    console.error("Upload Error:", err);
-                    alert("Error: " + err.message);
-                } finally {
-                    event.target.value = "";
-                }
-            };
-            reader.readAsArrayBuffer(file);
+        function clearBranchCodeSearch() {
+            document.getElementById("branchCodeInput").value = "";
+            filterStaffData();
         }
 
         function logout() {
@@ -889,51 +802,201 @@
             localStorage.removeItem("userRole");
             window.location.href = "index.html";
         }
+
         function openAddUserModal() {
-    const role = localStorage.getItem("userRole") || "User";
-    if (role.toLowerCase() !== "admin") {
-        alert("Aapke paas user create karne ki permission nahi hai!");
-        return;
-    }
-    const modal = new bootstrap.Modal(document.getElementById('createUserModal'));
-    modal.show();
-}
+            const role = localStorage.getItem("userRole") || "User";
+            if (role.toLowerCase() !== "admin") {
+                alert("Aapke paas user create karne ki permission nahi hai!");
+                return;
+            }
+            const modal = new bootstrap.Modal(document.getElementById('createUserModal'));
+            modal.show();
+        }
 
-async function executeCreateUser() {
-    const usernameInput = document.getElementById("newUsername");
-    const passwordInput = document.getElementById("newPassword");
-    const roleInput = document.getElementById("newUserRole");
+        async function executeCreateUser() {
+            const usernameInput = document.getElementById("newUsername");
+            const passwordInput = document.getElementById("newPassword");
+            const roleInput = document.getElementById("newUserRole");
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
-    const role = roleInput.value;
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const role = roleInput.value;
 
-    if (!username || !password) {
-        alert("Kripya username aur password dono bharein!");
-        return;
-    }
+            if (!username || !password) {
+                alert("Kripya username aur password dono bharein!");
+                return;
+            }
 
-    try {
-        const { error } = await supabaseClient
-            .from('app_users') // Aapke supabase ki users table ka naam
-            .insert([{ username: username, password: password, role: role }]);
+            try {
+                const { error } = await supabaseClient
+                    .from('app_users')
+                    .insert([{ username: username, password: password, role: role }]);
 
-        if (error) throw error;
+                if (error) throw error;
 
-        alert(`Success! User '${username}' successfully create ho gaya hai.`);
-        
-        usernameInput.value = "";
-        passwordInput.value = "";
-        
-        const modalEl = document.getElementById('createUserModal');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) modalInstance.hide();
+                alert(`✅ Success! User '${username}' successfully create ho gaya hai.`);
+                
+                usernameInput.value = "";
+                passwordInput.value = "";
+                
+                const modalEl = document.getElementById('createUserModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
 
-    } catch (err) {
-        console.error("Create User Error:", err);
-        alert("User create karne mein error aayi: " + err.message);
-    }
-}
+            } catch (err) {
+                console.error("Create User Error:", err);
+                alert("❌ User create karne mein error aayi: " + err.message);
+            }
+        }
+
+        // 🟢 ADD STAFF WITH DIRECT DB DUPLICATE CHECK
+        async function executeAddStaff() {
+            const empCode = document.getElementById("newStaffEmpCode").value.trim();
+            const name = document.getElementById("newStaffName").value.trim();
+            const designation = document.getElementById("newStaffDesignation").value.trim();
+            const company = document.getElementById("newStaffCompany").value.trim();
+            const location = document.getElementById("newStaffLocation").value.trim();
+            const branchCode = document.getElementById("newStaffBranchCode").value.trim();
+            const mobile = document.getElementById("newStaffMobile").value.trim();
+            const email = document.getElementById("newStaffEmail").value.trim();
+            const address = document.getElementById("newStaffAddress").value.trim();
+
+            if (!empCode || !name) {
+                alert("Kripya EMP CODE aur NAME dono bharein!");
+                return;
+            }
+
+            // 🟢 Direct database check for duplicate EMPID
+            const { data: existing, error: checkError } = await supabaseClient
+                .from('staff')
+                .select('empid, name')
+                .eq('empid', empCode)
+                .maybeSingle();
+
+            if (checkError) {
+                console.error("Check Error:", checkError);
+                alert("Error checking existing record!");
+                return;
+            }
+
+            if (existing) {
+                alert(`❌ EMP CODE "${empCode}" already exists for ${existing.name || 'a staff member'}. Please use a unique code.`);
+                return;
+            }
+
+            const newStaff = {
+                empid: empCode,
+                name: name.toUpperCase(),
+                designation: designation || "STAFF",
+                company: company || "N/A",
+                location: location || "N/A",
+                branchcode: branchCode || "N/A",
+                mobile: mobile || "N/A",
+                email: email || "N/A",
+                address: address || "N/A"
+            };
+
+            try {
+                const { error } = await supabaseClient.from('staff').insert([newStaff]);
+                if (error) throw error;
+
+                alert(`✅ Success! Staff ${name} added successfully.`);
+                
+                // Clear inputs
+                document.getElementById("newStaffEmpCode").value = "";
+                document.getElementById("newStaffName").value = "";
+                document.getElementById("newStaffDesignation").value = "";
+                document.getElementById("newStaffCompany").value = "";
+                document.getElementById("newStaffLocation").value = "";
+                document.getElementById("newStaffBranchCode").value = "";
+                document.getElementById("newStaffMobile").value = "";
+                document.getElementById("newStaffEmail").value = "";
+                document.getElementById("newStaffAddress").value = "";
+
+                const modalEl = document.getElementById('addStaffModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+
+                fetchStaffFromDatabase();
+
+            } catch (err) {
+                console.error("Add Staff Error:", err);
+                alert("❌ Error adding staff: " + err.message);
+            }
+        }
+
+        function copyMobileNumber(number) {
+            if (!number || number === "N/A") return;
+            
+            navigator.clipboard.writeText(number).then(() => {
+                alert(`📋 Mobile number ${number} copied to clipboard!`);
+            }).catch(err => {
+                console.error("Failed to copy: ", err);
+                alert("Failed to copy number. Please copy manually.");
+            });
+        }
+
+        // FAST DELETE ALL 20K DATA 
+        async function deleteAllStaffData() {
+            if (!confirm("⚠️ WARNING: Kya aap sach mein saare " + allStaffData.length + " records permanently delete karna chahte hain? Ye action undo nahi kiya ja sakta!")) {
+                return;
+            }
+            if (!confirm("Are you absolutely sure? Type 'YES' to confirm.")) {
+                return;
+            }
+
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            try {
+                const { error } = await supabaseClient.rpc('delete_all_staff_data');
+                if (error) throw error;
+
+                allStaffData = [];
+                renderStaffGrid(allStaffData);
+                document.getElementById("totalRecordCount").innerText = "0";
+                
+                alert("✅ Success! Saare records successfully delete ho gaye hain.");
+                
+            } catch (err) {
+                console.error("Delete All Error:", err);
+                alert("❌ Error deleting all records: " + err.message);
+            } finally {
+                document.getElementById('loadingOverlay').classList.remove('show');
+            }
+        }
+                // 🟢 FUNCTION TO CHECK DUPLICATE EMP IDs (Admin Only)
+                // 🟢 UPDATED FUNCTION TO CHECK DUPLICATES (Now mostly obsolete, but kept for safety)
+        function checkDuplicateEmpIds() {
+            if (allStaffData.length === 0) {
+                alert("Database empty. No records to check.");
+                return;
+            }
+
+            const empMap = {};
+            allStaffData.forEach(item => {
+                const id = item.empid;
+                if (!empMap[id]) {
+                    empMap[id] = [];
+                }
+                empMap[id].push(item);
+            });
+
+            const duplicates = Object.keys(empMap).filter(id => empMap[id].length > 1);
+
+            if (duplicates.length === 0) {
+                alert("✅ No duplicate EMP IDs found in the database! The UNIQUE constraint is working perfectly.");
+                return;
+            }
+
+            let msg = `⚠️ Found ${duplicates.length} duplicate EMP IDs (Unique Constraint might be missing):\n\n`;
+            duplicates.forEach(id => {
+                const count = empMap[id].length;
+                const names = empMap[id].map(i => i.name).join(', ');
+                msg += `👉 EMP ID: ${id} (Appears ${count} times) - ${names}\n`;
+            });
+
+            alert(msg);
+        }
     </script>
 </body>
 </html>
