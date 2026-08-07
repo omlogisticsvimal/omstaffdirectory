@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Upload | OM Directory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        body { background-color: #f4f6fb; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .upload-card { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: center; }
+        .drop-zone { border: 2px dashed #3b3086; border-radius: 12px; padding: 30px; cursor: pointer; transition: 0.3s; background: #f8f9fa; }
+        .drop-zone:hover { background: #e2e8f0; border-color: #2d236e; }
+        #uploadStatus { margin-top: 15px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="upload-card">
+        <h3 class="mb-3 text-primary"><i class="fa-solid fa-cloud-upload-alt me-2"></i>Bulk Excel Upload</h3>
+        <p class="text-muted small">Upload your formatted Excel file. Records with existing EMP IDs will be safely skipped.</p>
+        
+        <label for="excelFileInput" class="drop-zone w-100 d-block mt-3">
+            <i class="fa-solid fa-file-excel fa-3x text-success mb-2"></i>
+            <div class="fw-bold">Click to Select Excel File</div>
+            <div class="text-muted small">(.xlsx, .xls)</div>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleExcelUpload(event)">
+        </label>
+
+        <div id="uploadStatus" class="text-muted">Waiting for file...</div>
+        
+        <button class="btn btn-outline-secondary mt-3 w-100" onclick="window.location.href='dashboard.html'">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waWtldHpoZ3Nja2thY2J4eHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzY5MTYsImV4cCI6MjEwMTYxMjkxNn0.QeXDPFLKiFgbBYJ1nGY4Hw17LJba53-4hD7cYfoaf10";
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Processing file... Please wait.</span>`;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    let allExtractedStaff = [];
+
+                    // 1. Parse Excel
+                    for(let s = 0; s < workbook.SheetNames.length; s++) {
+                        const sheetName = workbook.SheetNames[s];
+                        const ws = workbook.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+                        if (!rows || rows.length === 0) continue;
+
+                        let headerRowIndex = -1;
+                        for (let i = 0; i < Math.min(rows.length, 10); i++) {
+                            const rowStr = rows[i].map(cell => String(cell).trim()).join(" ");
+                            if (rowStr.includes("EMP. CODE") && rowStr.includes("OFFICIAL")) {
+                                headerRowIndex = i;
+                                break;
+                            }
+                        }
+                        if (headerRowIndex === -1) continue; 
+
+                        const headers = rows[headerRowIndex].map(h => String(h).trim());
+                        
+                        const idxCompany = headers.findIndex(h => h.trim().toUpperCase() === "COMPANY");
+                        const idxLocation = headers.findIndex(h => h.trim().toUpperCase() === "STATE/ BRANCH");
+                        const idxAddress = headers.findIndex(h => h.trim().toUpperCase() === "ADDRESS");
+                        const idxBranchCode = headers.findIndex(h => h.trim().toUpperCase() === "BRANCH CODE");
+                        const idxEmpCode = headers.findIndex(h => h.trim().toUpperCase() === "EMP. CODE");
+                        const idxName = headers.findIndex(h => h.trim().toUpperCase() === "OFFICIAL");
+                        const idxDesig = headers.findIndex(h => h.trim().toUpperCase() === "DESIGNATION/ DEPARMENT");
+                        const idxMobile = headers.findIndex(h => h.trim().toUpperCase() === "CONTACT NO.");
+                        const idxEmail = headers.findIndex(h => h.trim().toUpperCase() === "E-MAIL");
+
+                        let currentCompany = "", currentLocation = "", currentAddress = "", currentBranchCode = "";
+
+                        for (let r = headerRowIndex + 1; r < rows.length; r++) {
+                            const row = rows[r];
+                            if (!row || row.length === 0) continue;
+
+                            let empId = idxEmpCode !== -1 ? String(row[idxEmpCode] || "").trim() : "";
+                            let name = idxName !== -1 ? String(row[idxName] || "").trim() : "";
+
+                            if (!empId && name) {
+                                if (idxCompany !== -1) currentCompany = String(row[idxCompany] || "").trim();
+                                if (idxLocation !== -1) currentLocation = String(row[idxLocation] || "").trim();
+                                if (idxAddress !== -1) currentAddress = String(row[idxAddress] || "").trim();
+                                if (idxBranchCode !== -1) currentBranchCode = String(row[idxBranchCode] || "").trim();
+                                continue; 
+                            }
+
+                            if (!name || !empId) continue;
+
+                            let company = idxCompany !== -1 ? String(row[idxCompany] || "").trim() : currentCompany;
+                            let location = idxLocation !== -1 ? String(row[idxLocation] || "").trim() : currentLocation;
+                            let address = idxAddress !== -1 ? String(row[idxAddress] || "").trim() : currentAddress;
+                            let branchCode = idxBranchCode !== -1 ? String(row[idxBranchCode] || "").trim() : currentBranchCode;
+                            let designation = idxDesig !== -1 ? String(row[idxDesig] || "").trim() : "STAFF";
+                            let mobile = idxMobile !== -1 ? String(row[idxMobile] || "").trim() : "";
+                            let email = idxEmail !== -1 ? String(row[idxEmail] || "").trim() : "";
+
+                            const staffRecord = {
+                                name: name.toUpperCase(),
+                                company: company || "N/A",
+                                location: location || "N/A",
+                                address: address || "N/A",
+                                branchcode: branchCode || "N/A",
+                                empid: empId,
+                                designation: designation,
+                                mobile: mobile || "N/A",
+                                email: email || "N/A"
+                            };
+                            allExtractedStaff.push(staffRecord);
+                        }
+                    }
+
+                    if (allExtractedStaff.length === 0) {
+                        statusDiv.innerHTML = `<span class="text-danger">❌ No data found.</span>`;
+                        return;
+                    }
+
+                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Checking for duplicates in database...</span>`;
+
+                    // 2. Fetch Existing Records to avoid duplicates
+                    const { data: existingData, error: fetchError } = await supabaseClient
+                        .from('staff')
+                        .select('empid');
+
+                    if (fetchError) throw fetchError;
+
+                    const existingEmpIds = new Set(existingData.map(item => item.empid));
+
+                    // Remove duplicates present INSIDE the same uploaded file
+                    const uniqueFileEmpIds = new Set();
+                    const uniqueNewRecords = [];
+
+                    for (const record of allExtractedStaff) {
+                        if (!uniqueFileEmpIds.has(record.empid)) {
+                            uniqueFileEmpIds.add(record.empid);
+                            uniqueNewRecords.push(record);
+                        }
+                    }
+
+                    const fileDuplicateSkipped = allExtractedStaff.length - uniqueNewRecords.length;
+                    if (fileDuplicateSkipped > 0) {
+                        statusDiv.innerHTML = `<span class="text-warning">⚠️ Found ${fileDuplicateSkipped} duplicate rows inside the file. Keeping only unique ones.</span>`;
+                    }
+
+                    // Filter against the Database
+                    const finalRecords = uniqueNewRecords.filter(record => !existingEmpIds.has(record.empid));
+
+                    const dbDuplicateSkipped = uniqueNewRecords.length - finalRecords.length;
+                    const totalSkipped = fileDuplicateSkipped + dbDuplicateSkipped;
+
+                    if (finalRecords.length === 0) {
+                        statusDiv.innerHTML = `<span class="text-warning fw-bold">⚠️ No new records to insert. All ${totalSkipped} records are duplicates.</span>`;
+                        return;
+                    }
+
+                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Uploading ${finalRecords.length} new records...</span>`;
+
+                    const chunkSize = 500; 
+                    let successCount = 0;
+                    let finalSkippedCount = 0;
+                    
+                    for (let i = 0; i < finalRecords.length; i += chunkSize) {
+                        const chunk = finalRecords.slice(i, i + chunkSize);
+                        
+                        // 🟢 ROBUST INSERT: Try-Catch use kar rahe hain.
+                        try {
+                            const { error } = await supabaseClient
+                                .from('staff')
+                                .insert(chunk);
+
+                            if (error) {
+                                // Agar error "unique constraint" ka hai, toh us chunk ko skip karo
+                                if (error.message && error.message.includes("unique constraint")) {
+                                    finalSkippedCount += chunk.length;
+                                    console.warn("Skipped a chunk due to duplicate constraint violation.");
+                                } else {
+                                    throw error; // Agar koi aur error hai toh throw karo
+                                }
+                            } else {
+                                successCount += chunk.length;
+                            }
+                        } catch (err) {
+                            // Agar insert fail ho jaye toh bhi UI crash nahi hoga, bus skip ho jayega
+                            console.error("Chunk insert failed, skipping:", err.message);
+                            finalSkippedCount += chunk.length;
+                        }
+                        
+                        statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Uploaded ${successCount} / ${finalRecords.length} (${finalSkippedCount} skipped during insert)</span>`;
+                    }
+
+                    statusDiv.innerHTML = `<span class="text-success fw-bold">✅ Success! ${successCount} new records inserted. ${totalSkipped + finalSkippedCount} duplicates skipped.</span>`;
+
+                } catch (err) {
+                    console.error(err);
+                    statusDiv.innerHTML = `<span class="text-danger fw-bold">❌ Error: ${err.message || 'Unknown error'}</span>`;
+                } finally {
+                    event.target.value = "";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+</html>
