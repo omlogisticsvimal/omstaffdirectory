@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Converter | OM Directory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { background-color: #f4f6fb; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .card-custom { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 700px; }
+        .drop-zone { border: 2px dashed #3b3086; border-radius: 12px; padding: 30px; cursor: pointer; transition: 0.3s; background: #f8f9fa; text-align: center; }
+        .drop-zone:hover { background: #e2e8f0; border-color: #2d236e; }
+        .log-box { background: #212529; color: #0f0; padding: 15px; border-radius: 8px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; margin-top: 15px; display: none; }
+        .log-line { margin: 2px 0; }
+    </style>
+</head>
+<body>
+    <div class="card-custom">
+        <h3 class="text-center text-primary"><i class="fa-solid fa-arrows-rotate me-2"></i>Raw File Converter</h3>
+        <p class="text-center text-muted small">Upload your raw OM Directory Excel file. This tool will format it perfectly for the main system.</p>
+
+        <label for="fileInput" class="drop-zone w-100 d-block mt-3">
+            <i class="fa-solid fa-file-import fa-3x text-primary mb-2"></i>
+            <div class="fw-bold">Click to Select Raw Excel File</div>
+            <div class="text-muted small">(.xlsx, .xls)</div>
+            <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;" onchange="processFile(event)">
+        </label>
+
+        <div id="statusBox" class="text-center mt-3 fw-bold text-muted">Waiting for file...</div>
+        
+        <div class="log-box" id="logBox"></div>
+
+        <button class="btn btn-success w-100 mt-3 fw-bold" id="downloadBtn" onclick="downloadFormattedFile()" disabled>
+            <i class="fa-solid fa-download me-1"></i> Download Formatted File
+        </button>
+
+        <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-outline-secondary w-100" onclick="window.location.href='dashboard.html'">
+                <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+            </button>
+            <button class="btn btn-outline-secondary w-100" onclick="window.location.href='upload.html'">
+                <i class="fa-solid fa-upload me-1"></i> Go to Upload
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        let formattedWorkbook = null;
+        let totalSheets = 0;
+        let totalRows = 0;
+
+        function addLog(msg, isError = false) {
+            const logBox = document.getElementById('logBox');
+            logBox.style.display = 'block';
+            const div = document.createElement('div');
+            div.className = 'log-line';
+            div.style.color = isError ? '#ff6b6b' : '#0f0';
+            div.innerText = msg;
+            logBox.appendChild(div);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function findHeaderRow(rows) {
+            for (let i = 0; i < Math.min(rows.length, 20); i++) {
+                const rowStr = rows[i].map(cell => String(cell).toUpperCase().trim()).join(" ");
+                // Skip title rows
+                if (rowStr.includes("NETWORK DIRECTORY") || rowStr.includes("OM GROUP") || rowStr.includes("DIRECTOR")) {
+                    continue;
+                }
+                if ((rowStr.includes("EMP") && (rowStr.includes("CODE") || rowStr.includes("ID"))) && 
+                    (rowStr.includes("NAME") || rowStr.includes("OFFICIAL") || rowStr.includes("EMPLOYEE"))) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function getColIndex(headers, keywords) {
+            return headers.findIndex(h => {
+                const headerUpper = String(h).toUpperCase().trim();
+                return keywords.some(k => headerUpper.includes(k));
+            });
+        }
+
+        function processFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            document.getElementById('statusBox').innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Processing file... Please wait.</span>`;
+            document.getElementById('logBox').innerHTML = '';
+            document.getElementById('logBox').style.display = 'none';
+            document.getElementById('downloadBtn').disabled = true;
+            formattedWorkbook = null;
+            totalSheets = 0;
+            totalRows = 0;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const rawWB = XLSX.read(data, { type: 'array' });
+                    const newWB = XLSX.utils.book_new();
+                    
+                    addLog(`✅ Raw file loaded. Total sheets found: ${rawWB.SheetNames.length}`);
+
+                    let grandTotalRecords = 0;
+
+                    rawWB.SheetNames.forEach((sheetName) => {
+                        const ws = rawWB.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+                        
+                        if (!rows || rows.length < 3) {
+                            addLog(`⚠️ Sheet "${sheetName}" is empty or too small. Skipping.`);
+                            return;
+                        }
+
+                        totalSheets++;
+                        addLog(`--- Processing Sheet: "${sheetName}" ---`);
+
+                        let headerRowIndex = findHeaderRow(rows);
+                        if (headerRowIndex === -1) {
+                            addLog(`⚠️ Could not find header row in sheet "${sheetName}". Skipping.`, true);
+                            return;
+                        }
+
+                        const headers = rows[headerRowIndex].map(h => String(h).trim());
+                        
+                        // 🟢 FIX: Searching for exact headers to avoid picking "DEPARTMENT" as "DESIGNATION"
+                        const idxLocation = getColIndex(headers, ["STATE/ BRANCH", "STATE", "BRANCH", "LOCATION", "BRANCH NAME"]);
+                        const idxAddress = getColIndex(headers, ["ADDRESS", "LOCATION"]);
+                        const idxBranchCode = getColIndex(headers, ["BRANCH CODE", "BRANCHCODE", "CODE"]);
+                        const idxEmpCode = getColIndex(headers, ["EMP. CODE", "EMP CODE", "EMPID", "EMP"]);
+                        const idxName = getColIndex(headers, ["OFFICIAL", "NAME", "EMPLOYEE", "EMPLOYEES NAME"]);
+                        // 🟢 CRITICAL FIX: ONLY pick "DESIGNATION", strictly ignore "DEPARTMENT"
+                        const idxDesig = getColIndex(headers, ["DESIGNATION"]);
+                        const idxMobile = getColIndex(headers, ["CONTACT NO.", "MOBILE", "PHONE", "CONTACT"]);
+                        const idxEmail = getColIndex(headers, ["E-MAIL", "EMAIL", "MAIL"]);
+
+                        let currentLocation = "", currentAddress = "", currentBranchCode = "";
+                        let sheetRecords = [];
+
+                        // 🟢 FIX: For sheets like CORP.OFFICE, find the main Address from the top rows
+                        if (sheetName === "CORP.OFFICE") {
+                            // Hardcoded address for Corporate Office
+                            currentAddress = "130, 112, 115, 141, 144, 159 TRANSPORT CENTRE, RING ROAD, PUNJABI BAGH, NEW DELHI-110035";
+                            currentLocation = "DELHI";
+                            currentBranchCode = "1306"; // Default Branch Code for HO
+                        }
+
+                        for (let r = headerRowIndex + 1; r < rows.length; r++) {
+                            const row = rows[r];
+                            if (!row || row.length === 0) continue;
+
+                            let empId = idxEmpCode !== -1 ? String(row[idxEmpCode] || "").trim() : "";
+                            let name = idxName !== -1 ? String(row[idxName] || "").trim() : "";
+
+                            // Logic to skip title rows (like "TELANGANA", "ANDHRA PRADESH")
+                            if (!empId && name) {
+                                if (idxLocation !== -1 && String(row[idxLocation] || "").trim()) {
+                                    currentLocation = String(row[idxLocation] || "").trim();
+                                } else {
+                                    currentLocation = name;
+                                }
+                                if (idxAddress !== -1 && String(row[idxAddress] || "").trim()) {
+                                    currentAddress = String(row[idxAddress] || "").trim();
+                                }
+                                if (idxBranchCode !== -1 && String(row[idxBranchCode] || "").trim()) {
+                                    currentBranchCode = String(row[idxBranchCode] || "").trim();
+                                }
+                                continue;
+                            }
+
+                            // Valid Employee row
+                            if (!empId || !name) continue;
+
+                            // 🟢 FIX: Strictly pick only DESIGNATION column
+                            let designation = idxDesig !== -1 ? String(row[idxDesig] || "").trim() : "STAFF";
+                            let mobile = idxMobile !== -1 ? String(row[idxMobile] || "").trim() : "";
+                            let email = idxEmail !== -1 ? String(row[idxEmail] || "").trim() : "";
+                            let address = idxAddress !== -1 ? String(row[idxAddress] || "").trim() : currentAddress;
+                            let location = idxLocation !== -1 ? String(row[idxLocation] || "").trim() : currentLocation;
+                            let branchCode = idxBranchCode !== -1 ? String(row[idxBranchCode] || "").trim() : currentBranchCode;
+
+                            if (!location && !branchCode) continue;
+
+                            sheetRecords.push({
+                                "COMPANY": sheetName,  
+                                "STATE/ BRANCH": location || "N/A",
+                                "BRANCH CODE": branchCode || "N/A",
+                                "ADDRESS": address || "N/A",
+                                "EMP. CODE": empId,
+                                "OFFICIAL": name.toUpperCase(),
+                                "DESIGNATION/ DEPARMENT": designation, // 🟢 NOW ONLY DESIGNATION
+                                "CONTACT NO.": mobile || "N/A",
+                                "E-MAIL": email || "N/A"
+                            });
+                        }
+
+                        if (sheetRecords.length > 0) {
+                            const newWs = XLSX.utils.json_to_sheet(sheetRecords);
+                            newWs['!cols'] = [{wch: 20}, {wch: 20}, {wch: 15}, {wch: 40}, {wch: 15}, {wch: 25}, {wch: 25}, {wch: 20}, {wch: 30}];
+                            XLSX.utils.book_append_sheet(newWB, newWs, sheetName);
+                            totalRows += sheetRecords.length;
+                            grandTotalRecords += sheetRecords.length;
+                            addLog(`✅ Extracted ${sheetRecords.length} records from sheet "${sheetName}".`);
+                        } else {
+                            addLog(`⚠️ No valid employee records found in sheet "${sheetName}".`);
+                        }
+                    });
+
+                    if (grandTotalRecords === 0) {
+                        document.getElementById('statusBox').innerHTML = `<span class="text-danger fw-bold">❌ No data extracted. Please check your raw file format.</span>`;
+                        return;
+                    }
+
+                    formattedWorkbook = newWB;
+                    document.getElementById('statusBox').innerHTML = `<span class="text-success fw-bold">✅ Conversion Complete! ${grandTotalRecords} records formatted across ${totalSheets} sheets.</span>`;
+                    document.getElementById('downloadBtn').disabled = false;
+                    addLog(`🎉 Total formatted records ready for download: ${grandTotalRecords}`);
+
+                } catch (err) {
+                    console.error(err);
+                    document.getElementById('statusBox').innerHTML = `<span class="text-danger fw-bold">❌ Error: ${err.message}</span>`;
+                    addLog(`❌ Error: ${err.message}`, true);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadFormattedFile() {
+            if (!formattedWorkbook) return;
+            const wbout = XLSX.write(formattedWorkbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], {type: 'application/octet-stream'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Formatted_OM_Directory.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            document.getElementById('statusBox').innerHTML = `<span class="text-success fw-bold">✅ File downloaded successfully! Upload this file in the "Admin Upload" page.</span>`;
+        }
+    </script>
+</body>
+</html>
