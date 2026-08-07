@@ -66,8 +66,7 @@
         function findHeaderRow(rows) {
             for (let i = 0; i < Math.min(rows.length, 20); i++) {
                 const rowStr = rows[i].map(cell => String(cell).toUpperCase().trim()).join(" ");
-                // Skip title rows
-                if (rowStr.includes("NETWORK DIRECTORY") || rowStr.includes("OM GROUP") || rowStr.includes("DIRECTOR")) {
+                if (rowStr.includes("NETWORK DIRECTORY") || rowStr.includes("OM GROUP")) {
                     continue;
                 }
                 if ((rowStr.includes("EMP") && (rowStr.includes("CODE") || rowStr.includes("ID"))) && 
@@ -81,7 +80,7 @@
         function getColIndex(headers, keywords) {
             return headers.findIndex(h => {
                 const headerUpper = String(h).toUpperCase().trim();
-                return keywords.some(k => headerUpper.includes(k));
+                return keywords.some(k => headerUpper === k || headerUpper.includes(k));
             });
         }
 
@@ -127,26 +126,24 @@
 
                         const headers = rows[headerRowIndex].map(h => String(h).trim());
                         
-                        // 🟢 FIX: Searching for exact headers to avoid picking "DEPARTMENT" as "DESIGNATION"
                         const idxLocation = getColIndex(headers, ["STATE/ BRANCH", "STATE", "BRANCH", "LOCATION", "BRANCH NAME"]);
                         const idxAddress = getColIndex(headers, ["ADDRESS", "LOCATION"]);
                         const idxBranchCode = getColIndex(headers, ["BRANCH CODE", "BRANCHCODE", "CODE"]);
                         const idxEmpCode = getColIndex(headers, ["EMP. CODE", "EMP CODE", "EMPID", "EMP"]);
                         const idxName = getColIndex(headers, ["OFFICIAL", "NAME", "EMPLOYEE", "EMPLOYEES NAME"]);
-                        // 🟢 CRITICAL FIX: ONLY pick "DESIGNATION", strictly ignore "DEPARTMENT"
-                        const idxDesig = getColIndex(headers, ["DESIGNATION"]);
+                        // Explicitly pick DESIGNATION, avoiding separate DEPARTMENT column
+                        const idxDesig = headers.findIndex(h => String(h).toUpperCase().trim() === "DESIGNATION");
                         const idxMobile = getColIndex(headers, ["CONTACT NO.", "MOBILE", "PHONE", "CONTACT"]);
                         const idxEmail = getColIndex(headers, ["E-MAIL", "EMAIL", "MAIL"]);
 
                         let currentLocation = "", currentAddress = "", currentBranchCode = "";
                         let sheetRecords = [];
 
-                        // 🟢 FIX: For sheets like CORP.OFFICE, find the main Address from the top rows
-                        if (sheetName === "CORP.OFFICE") {
-                            // Hardcoded address for Corporate Office
+                        // Hardcode specific values for CORP.OFFICE sheet
+                        if (sheetName.toUpperCase().includes("CORP.OFFICE")) {
                             currentAddress = "130, 112, 115, 141, 144, 159 TRANSPORT CENTRE, RING ROAD, PUNJABI BAGH, NEW DELHI-110035";
-                            currentLocation = "DELHI";
-                            currentBranchCode = "1306"; // Default Branch Code for HO
+                            currentLocation = "CORP.OFFICE-DELHI";
+                            currentBranchCode = "1306";
                         }
 
                         for (let r = headerRowIndex + 1; r < rows.length; r++) {
@@ -156,43 +153,45 @@
                             let empId = idxEmpCode !== -1 ? String(row[idxEmpCode] || "").trim() : "";
                             let name = idxName !== -1 ? String(row[idxName] || "").trim() : "";
 
-                            // Logic to skip title rows (like "TELANGANA", "ANDHRA PRADESH")
-                            if (!empId && name) {
-                                if (idxLocation !== -1 && String(row[idxLocation] || "").trim()) {
-                                    currentLocation = String(row[idxLocation] || "").trim();
-                                } else {
-                                    currentLocation = name;
+                            // Skip pure blank rows or header spacing rows
+                            if (!empId && !name) continue;
+
+                            // If for CORP.OFFICE, ensure we skip completely blank entries
+                            if (sheetName.toUpperCase().includes("CORP.OFFICE")) {
+                                if (!empId || !name) continue;
+                            } else {
+                                if (!empId && name) {
+                                    if (!currentLocation) currentLocation = name;
+                                    continue; 
                                 }
-                                if (idxAddress !== -1 && String(row[idxAddress] || "").trim()) {
-                                    currentAddress = String(row[idxAddress] || "").trim();
-                                }
-                                if (idxBranchCode !== -1 && String(row[idxBranchCode] || "").trim()) {
-                                    currentBranchCode = String(row[idxBranchCode] || "").trim();
-                                }
-                                continue;
+                                if (!empId || !name) continue;
                             }
 
-                            // Valid Employee row
-                            if (!empId || !name) continue;
+                            // Update carry-forward variables if available in the row (for non-corp sheets)
+                            if (!sheetName.toUpperCase().includes("CORP.OFFICE")) {
+                                if (idxLocation !== -1 && String(row[idxLocation] || "").trim() !== "") {
+                                    currentLocation = String(row[idxLocation] || "").trim();
+                                }
+                                if (idxAddress !== -1 && String(row[idxAddress] || "").trim() !== "") {
+                                    currentAddress = String(row[idxAddress] || "").trim();
+                                }
+                                if (idxBranchCode !== -1 && String(row[idxBranchCode] || "").trim() !== "") {
+                                    currentBranchCode = String(row[idxBranchCode] || "").trim();
+                                }
+                            }
 
-                            // 🟢 FIX: Strictly pick only DESIGNATION column
                             let designation = idxDesig !== -1 ? String(row[idxDesig] || "").trim() : "STAFF";
                             let mobile = idxMobile !== -1 ? String(row[idxMobile] || "").trim() : "";
                             let email = idxEmail !== -1 ? String(row[idxEmail] || "").trim() : "";
-                            let address = idxAddress !== -1 ? String(row[idxAddress] || "").trim() : currentAddress;
-                            let location = idxLocation !== -1 ? String(row[idxLocation] || "").trim() : currentLocation;
-                            let branchCode = idxBranchCode !== -1 ? String(row[idxBranchCode] || "").trim() : currentBranchCode;
-
-                            if (!location && !branchCode) continue;
 
                             sheetRecords.push({
-                                "COMPANY": sheetName,  
-                                "STATE/ BRANCH": location || "N/A",
-                                "BRANCH CODE": branchCode || "N/A",
-                                "ADDRESS": address || "N/A",
+                                "COMPANY": sheetName.toUpperCase().includes("CORP.OFFICE") ? "OLSC BRANCHES" : sheetName,  
+                                "STATE/ BRANCH": currentLocation || "N/A",
+                                "BRANCH CODE": currentBranchCode || "N/A",
+                                "ADDRESS": currentAddress || "N/A",
                                 "EMP. CODE": empId,
                                 "OFFICIAL": name.toUpperCase(),
-                                "DESIGNATION/ DEPARMENT": designation, // 🟢 NOW ONLY DESIGNATION
+                                "DESIGNATION/ DEPARMENT": designation || "STAFF",
                                 "CONTACT NO.": mobile || "N/A",
                                 "E-MAIL": email || "N/A"
                             });
@@ -200,7 +199,7 @@
 
                         if (sheetRecords.length > 0) {
                             const newWs = XLSX.utils.json_to_sheet(sheetRecords);
-                            newWs['!cols'] = [{wch: 20}, {wch: 20}, {wch: 15}, {wch: 40}, {wch: 15}, {wch: 25}, {wch: 25}, {wch: 20}, {wch: 30}];
+                            newWs['!cols'] = [{wch: 20}, {wch: 25}, {wch: 15}, {wch: 40}, {wch: 15}, {wch: 25}, {wch: 25}, {wch: 20}, {wch: 30}];
                             XLSX.utils.book_append_sheet(newWB, newWs, sheetName);
                             totalRows += sheetRecords.length;
                             grandTotalRecords += sheetRecords.length;
