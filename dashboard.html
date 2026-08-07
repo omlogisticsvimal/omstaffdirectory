@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OM Directory | Dashboard</title>
+    <title>OM Smart Directory | Dashboard</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,8 @@
         body { background-color: var(--bg-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .top-navbar { background-color: var(--navbar-bg); color: white; padding: 12px 24px; }
         .brand-logo { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .stat-box { background: #ffffff; border-radius: 12px; padding: 16px 20px; box-shadow: var(--card-shadow); display: flex; align-items: center; justify-content: space-between; height: 100%; }
+        .stat-box { background: #ffffff; border-radius: 12px; padding: 16px 20px; box-shadow: var(--card-shadow); display: flex; align-items: center; justify-content: space-between; height: 100%; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12); }
         .stat-box .title { font-size: 0.75rem; font-weight: 700; color: #6c757d; text-transform: uppercase; }
         .stat-box .value { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
         .staff-card { background: #ffffff; border-radius: 14px; padding: 18px; box-shadow: var(--card-shadow); border: 1px solid #e2e8f0; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; }
@@ -55,53 +56,41 @@
         <div class="brand-logo">
             <i class="fa-solid fa-address-book"></i>
             <div>
-                <div>OM Directory</div>
+                <div>OM Smart Directory</div>
                 <div class="fw-normal" style="font-size: 0.7rem; opacity: 0.8;">Smart Phone Directory | Design By Vimal</div>
             </div>
         </div>
         
         <div class="d-flex align-items-center gap-2">
-            
-            <button class="btn btn-warning btn-sm px-3 rounded-3 fw-bold admin-only" onclick="window.location.href='upload.html'">
-                <i class="fa-solid fa-database me-1"></i> Admin Upload
-            </button>
-
-            <button class="btn btn-dark btn-sm px-3 rounded-3 fw-bold admin-only" onclick="deleteAllStaffData()">
-                <i class="fa-solid fa-trash-can me-1"></i> Delete All
-            </button>
-
             <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;">
                 <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
                 <span class="fw-bold text-white small" style="font-size: 0.8rem;">Connected</span>
             </div>
-
+            <button class="btn btn-warning btn-sm px-3 rounded-3 fw-bold admin-only" onclick="window.location.href='upload.html'">
+                <i class="fa-solid fa-database me-1"></i> Admin Upload
+            </button>
+            <button class="btn btn-dark btn-sm px-3 rounded-3 fw-bold admin-only" onclick="deleteAllStaffData()">
+                <i class="fa-solid fa-trash-can me-1"></i> Delete All DB Records
+            </button>
+            
             <button class="btn btn-action-red btn-sm px-3 rounded-3 admin-only" data-bs-toggle="modal" data-bs-target="#deleteStaffModal">
                 <i class="fa-solid fa-trash me-1"></i> Delete
             </button>
-
-            <button class="btn btn-action-circle" onclick="fetchStaffFromDatabase()" title="Refresh Data">
-                <i class="fa-solid fa-rotate-right"></i>
+                        
+            <button class="btn btn-info btn-sm px-3 rounded-3 fw-bold text-white admin-only" onclick="window.location.href='convert.html'">
+                <i class="fa-solid fa-file-export me-1"></i> Convert Directory Raw File
             </button>
-
             <button class="btn btn-outline-light btn-sm px-3 rounded-3 ms-1" onclick="logout()">
                 <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
             </button>
-            
-            <button class="btn btn-info btn-sm px-3 rounded-3 fw-bold text-white admin-only" onclick="window.location.href='convert.html'">
-                <i class="fa-solid fa-file-export me-1"></i> Format Raw File
-            </button>
-            <button class="btn btn-warning btn-sm px-3 rounded-3 fw-bold admin-only" onclick="checkDuplicateEmpIds()">
-                <i class="fa-solid fa-magnifying-glass me-1"></i> Check Duplicates
-            </button>
         </div>
-    
     </div>
 
     <!-- Main Container -->
     <div class="container-fluid px-4 py-3">
         <div class="row g-3 mb-3">
             <div class="col-md-3">
-                <div class="stat-box">
+                <div class="stat-box" onclick="exportAllDataToExcel()" title="Click to export all data to Excel">
                     <div>
                         <div class="title">Total Records in DB</div>
                         <div class="value" id="totalRecordCount">0</div>
@@ -109,7 +98,6 @@
                     <i class="fa-solid fa-database text-primary fs-3 opacity-50"></i>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="stat-box">
                     <div>
@@ -119,7 +107,6 @@
                     <i class="fa-solid fa-database text-warning fs-3 opacity-50"></i>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="stat-box">
                     <div>
@@ -132,7 +119,6 @@
                     <i class="fa-solid fa-id-badge text-secondary fs-3 opacity-50"></i>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="stat-box" id="securityCard" style="cursor: pointer;" onclick="openAddUserModal()">
                     <div>
@@ -155,13 +141,11 @@
                     <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">Clear</button>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <select id="branchSelect" class="form-select" onchange="filterStaffData()">
                     <option value="ALL">All Branches / Companies</option>
                 </select>
             </div>
-
             <div class="col-md-3">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-qrcode text-muted"></i></span>
@@ -169,7 +153,6 @@
                     <button class="btn btn-outline-secondary" type="button" onclick="clearBranchCodeSearch()">Clear</button>
                 </div>
             </div>
-
             <div class="col-md-2">
                 <button class="btn btn-primary w-100 rounded-pill py-2 fw-semibold" style="background-color: var(--primary-purple); border: none;" data-bs-toggle="modal" data-bs-target="#addStaffModal">
                     <i class="fa-solid fa-user-plus me-1"></i> Add Staff
@@ -179,6 +162,15 @@
 
         <!-- Staff Cards Grid View -->
         <div class="row g-3" id="staffCardGrid"></div>
+
+        <!-- 🟢 LOAD MORE BUTTON (Added for Pagination) -->
+        <div class="row mt-3" id="loadMoreContainer" style="display: none;">
+            <div class="col-12 text-center">
+                <button class="btn btn-outline-primary rounded-pill px-4" id="loadMoreBtn" onclick="loadMore()">
+                    <i class="fa-solid fa-arrow-down me-1"></i> Load More
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Add Staff Modal -->
@@ -324,7 +316,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetDeleteModal()"></button>
                 </div>
                 <div class="modal-body pt-3">
-                    <p class="text-muted small">Jis staff ko delete karna hai uska <strong>EMP ID (Emp Code)</strong> niche enter karein:</p>
+                    <p class="text-muted small">Please Enter<strong> EMPLOYEE ID </strong>Below:</p>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-secondary">ENTER EMP ID</label>
                         <input type="text" id="deleteEmpCodeInput" class="form-control" placeholder="e.g. 15743" oninput="checkAndDeletePreview(this.value)">
@@ -334,7 +326,7 @@
                         <div class="small fw-bold text-primary mb-1"><i class="fa-solid fa-user-check me-1"></i> Match Found:</div>
                         <div class="d-flex justify-content-between text-dark small mb-1">
                             <span><strong>Name:</strong> <span id="delPreviewName">-</span></span>
-                            <span><strong>EMP ID:</strong> <span id="delPreviewEmp">-</span></span>
+                            <span><strong>EMP ID : </strong> <span id="delPreviewEmp">-</span></span>
                         </div>
                         <div class="d-flex justify-content-between text-muted" style="font-size: 0.8rem;">
                             <span><strong>Designation:</strong> <span id="delPreviewDesig">-</span></span>
@@ -393,6 +385,8 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
 
     <script>
         const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
@@ -407,6 +401,11 @@
         let currentEditingItem = null;
         let foundStaffForDelete = null;
         let searchTimeout;
+
+        // 🟢 NEW: Pagination Variables
+        let currentLimit = 100;
+        const PAGE_SIZE = 100;
+        let currentFilteredData = [];
 
         window.onload = function() {
             if (localStorage.getItem("login") !== "yes") {
@@ -439,6 +438,7 @@
             }
         }
 
+        // 🟢 Fetch ALL records using Pagination
         async function fetchStaffFromDatabase() {
             try {
                 document.getElementById("totalRecordCount").innerText = "Loading...";
@@ -449,28 +449,45 @@
                     </div>
                 `;
 
-                // Exact total count fetch karo
                 const { count, error: countError } = await supabaseClient
                     .from('staff')
                     .select('*', { count: 'exact', head: true });
 
                 if (countError) throw countError;
 
-                // Data fetch karo
-                const { data, error } = await supabaseClient.from('staff').select('*');
-                if (error) throw error;
+                let allRecords = [];
+                let start = 0;
+                const limit = 1000;
+                let fetchMore = true;
 
-                allStaffData = data || [];
+                while (fetchMore) {
+                    const { data, error } = await supabaseClient
+                        .from('staff')
+                        .select('*')
+                        .range(start, start + limit - 1);
+
+                    if (error) throw error;
+
+                    if (data.length === 0) {
+                        fetchMore = false;
+                    } else {
+                        allRecords = allRecords.concat(data);
+                        start += limit;
+                    }
+                }
+
+                allStaffData = allRecords || [];
                 
                 populateBranchDropdown(allStaffData);
                 document.getElementById("searchInput").disabled = false;
                 document.getElementById("branchSelect").disabled = false;
 
-                setTimeout(() => {
-                    renderStaffGrid(allStaffData);
-                    // Exact database count dikhao
-                    document.getElementById("totalRecordCount").innerText = count || 0; 
-                }, 50);
+                // 🟢 Reset limit and render first chunk
+                currentLimit = PAGE_SIZE;
+                currentFilteredData = allStaffData;
+                renderStaffGrid(currentFilteredData.slice(0, currentLimit));
+                
+                document.getElementById("totalRecordCount").innerText = count || 0; 
 
             } catch (err) {
                 console.error("Error fetching staff:", err);
@@ -478,12 +495,14 @@
             }
         }
 
+        // 🟢 OPTIMIZED: Renders only the current limit
         function renderStaffGrid(dataList) {
             const grid = document.getElementById("staffCardGrid");
             grid.innerHTML = "";
 
             if (!dataList || dataList.length === 0) {
                 grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">No staff records found.</div>`;
+                document.getElementById("loadMoreContainer").style.display = 'none';
                 return;
             }
 
@@ -502,7 +521,6 @@
 
                 const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
 
-                // 🟢 WHATSAPP & COPY ICONS
                 let mobileHtml = `
                     <div class="d-flex align-items-center">
                         <i class="fa-solid fa-phone me-2 text-muted"></i>
@@ -537,7 +555,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <span class="emp-badge">${empId}</span>
+                                    <span class="emp-badge">Emp ID : ${empId}</span>
                                 </div>
                             </div>
 
@@ -553,6 +571,97 @@
             });
 
             grid.appendChild(fragment);
+
+            // 🟢 Manage Load More Button
+            const loadMoreContainer = document.getElementById("loadMoreContainer");
+            if (currentFilteredData.length > currentLimit) {
+                loadMoreContainer.style.display = 'block';
+                document.getElementById("loadMoreBtn").innerText = `Load More (${currentLimit} / ${currentFilteredData.length} shown)`;
+            } else {
+                loadMoreContainer.style.display = 'none';
+            }
+        }
+
+        // 🟢 LOAD MORE FUNCTION
+        function loadMore() {
+            currentLimit += PAGE_SIZE;
+            const nextChunk = currentFilteredData.slice(currentLimit - PAGE_SIZE, currentLimit);
+            
+            if (nextChunk.length > 0) {
+                const grid = document.getElementById("staffCardGrid");
+                const fragment = document.createDocumentFragment();
+
+                nextChunk.forEach((item) => {
+                    const name = item.name || "UNNAMED STAFF";
+                    const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    
+                    const empId = item.empid || "N/A";
+                    const location = item.location || "MAIN OFFICE";
+                    const branchCode = item.branchcode || "N/A";
+                    const company = item.company || "";
+                    const designation = item.designation || "STAFF";
+                    const mobile = item.mobile || "N/A";
+
+                    const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
+
+                    let mobileHtml = `
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-phone me-2 text-muted"></i>
+                            <span>${mobile}</span>
+                    `;
+                    
+                    if (mobile !== "N/A") {
+                        const cleanNumber = mobile.replace(/[^0-9]/g, '');
+                        const whatsappLink = `https://web.whatsapp.com/send?phone=${cleanNumber}`;
+                        
+                        mobileHtml += `
+                            <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </a>
+                            <button onclick="copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-1 text-secondary" title="Copy Number" style="font-size: 0.9rem; border: none; background: none;">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        `;
+                    }
+                    mobileHtml += `</div>`;
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = `
+                        <div class="col-md-4">
+                            <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-circle">${initials}</div>
+                                        <div>
+                                            <div class="fw-bold text-dark" style="line-height: 1.2;">${name.toUpperCase()}</div>
+                                            <div class="text-primary small fw-semibold">${locationDisplay}</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class="emp-badge">Emp ID : ${empId}</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3 text-secondary small">
+                                    <div class="mb-1"><i class="fa-solid fa-briefcase me-2 text-muted"></i>${designation.toUpperCase()}</div>
+                                    ${company ? `<div class="mb-1"><i class="fa-solid fa-building me-2 text-muted"></i>${company.toUpperCase()}</div>` : ''}
+                                    ${mobileHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    fragment.appendChild(tempDiv.firstElementChild);
+                });
+
+                grid.appendChild(fragment);
+
+                // Update Load More Button
+                if (currentFilteredData.length > currentLimit) {
+                    document.getElementById("loadMoreBtn").innerText = `Load More (${currentLimit} / ${currentFilteredData.length} shown)`;
+                } else {
+                    document.getElementById("loadMoreContainer").style.display = 'none';
+                }
+            }
         }
 
         function openProfileModal(item) {
@@ -738,7 +847,7 @@
 
         function populateBranchDropdown(dataList) {
             const select = document.getElementById("branchSelect");
-            const locations = [...new Set(dataList.map(item => item.location).filter(Boolean))];
+            const locations = [...new Set(dataList.map(item => item.location ? item.location.trim() : "").filter(Boolean))];
             
             select.innerHTML = `<option value="ALL">All Branches / Companies</option>`;
             locations.forEach(loc => {
@@ -746,13 +855,12 @@
             });
         }
 
+        // 🟢 OPTIMIZED SEARCH (Debounce 500ms)
         function filterStaffData() {
             clearTimeout(searchTimeout);
             
             const grid = document.getElementById("staffCardGrid");
-            if(allStaffData.length > 1000) {
-                grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">Searching...</div>`;
-            }
+            grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">Searching...</div>`;
 
             searchTimeout = setTimeout(() => {
                 const query = document.getElementById("searchInput").value.toLowerCase().trim();
@@ -774,14 +882,18 @@
                     const desigMatch = (item.designation || "").toLowerCase().includes(query);
                     const companyMatch = (item.company || "").toLowerCase().includes(query);
 
-                    const branchFilterMatch = (selectedBranch === "ALL" || item.location === selectedBranch);
+                    const branchFilterMatch = (selectedBranch === "ALL" || (item.location || "").trim() === selectedBranch);
                     const branchCodeMatch = !branchCodeQuery || String(item.branchcode || "") === branchCodeQuery;
 
                     return (nameMatch || branchMatchSearch || empMatch || mobileMatch || desigMatch || companyMatch) && branchFilterMatch && branchCodeMatch;
                 });
 
-                renderStaffGrid(filtered);
-            }, 300);
+                currentFilteredData = filtered;
+                currentLimit = PAGE_SIZE;
+
+                // 🟢 Only render first chunk to prevent lag
+                renderStaffGrid(currentFilteredData.slice(0, currentLimit));
+            }, 500); // 🟢 Increased to 500ms for smooth typing
         }
 
         function clearSearch() {
@@ -849,7 +961,6 @@
             }
         }
 
-        // 🟢 ADD STAFF WITH DIRECT DB DUPLICATE CHECK
         async function executeAddStaff() {
             const empCode = document.getElementById("newStaffEmpCode").value.trim();
             const name = document.getElementById("newStaffName").value.trim();
@@ -866,7 +977,6 @@
                 return;
             }
 
-            // 🟢 Direct database check for duplicate EMPID
             const { data: existing, error: checkError } = await supabaseClient
                 .from('staff')
                 .select('empid, name')
@@ -902,7 +1012,6 @@
 
                 alert(`✅ Success! Staff ${name} added successfully.`);
                 
-                // Clear inputs
                 document.getElementById("newStaffEmpCode").value = "";
                 document.getElementById("newStaffName").value = "";
                 document.getElementById("newStaffDesignation").value = "";
@@ -936,9 +1045,72 @@
             });
         }
 
-        // FAST DELETE ALL 20K DATA 
+        async function exportAllDataToExcel() {
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            try {
+                let allRecords = [];
+                let start = 0;
+                const limit = 1000;
+                let fetchMore = true;
+
+                while (fetchMore) {
+                    const { data, error } = await supabaseClient
+                        .from('staff')
+                        .select('*')
+                        .range(start, start + limit - 1);
+
+                    if (error) throw error;
+
+                    if (data.length === 0) {
+                        fetchMore = false;
+                    } else {
+                        allRecords = allRecords.concat(data);
+                        start += limit;
+                    }
+                }
+
+                if (allRecords.length === 0) {
+                    alert("No data available to export.");
+                    return;
+                }
+
+                const formattedData = allRecords.map(item => ({
+                    "COMPANY": item.company || "N/A",
+                    "STATE/ BRANCH": item.location || "N/A",
+                    "BRANCH CODE": item.branchcode || "N/A",
+                    "ADDRESS": item.address || "N/A",
+                    "EMP. CODE": item.empid || "N/A",
+                    "OFFICIAL": item.name || "N/A",
+                    "DESIGNATION/ DEPARMENT": item.designation || "N/A",
+                    "CONTACT NO.": item.mobile || "N/A",
+                    "E-MAIL": item.email || "N/A"
+                }));
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(formattedData);
+
+                ws['!cols'] = [
+                    { wch: 20 }, { wch: 20 }, { wch: 15 }, { wch: 50 }, { wch: 15 }, { wch: 30 }, { wch: 30 }, { wch: 20 }, { wch: 35 }
+                ];
+
+                XLSX.utils.book_append_sheet(wb, ws, "Staff Data");
+                
+                const today = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `OM_Directory_Export_${today}.xlsx`);
+
+                alert(`✅ Success! All ${allRecords.length} records exported to Excel.`);
+
+            } catch (err) {
+                console.error("Export Error:", err);
+                alert("❌ Error exporting data: " + err.message);
+            } finally {
+                document.getElementById('loadingOverlay').classList.remove('show');
+            }
+        }
+
         async function deleteAllStaffData() {
-            if (!confirm("⚠️ WARNING: Kya aap sach mein saare " + allStaffData.length + " records permanently delete karna chahte hain? Ye action undo nahi kiya ja sakta!")) {
+            if (!confirm("⚠️ WARNING: Ar you sure? " + allStaffData.length + " Wants to delete record parmanently?")) {
                 return;
             }
             if (!confirm("Are you absolutely sure? Type 'YES' to confirm.")) {
@@ -952,50 +1124,17 @@
                 if (error) throw error;
 
                 allStaffData = [];
-                renderStaffGrid(allStaffData);
+                renderStaffGrid([]);
                 document.getElementById("totalRecordCount").innerText = "0";
                 
-                alert("✅ Success! Saare records successfully delete ho gaye hain.");
+                alert("✅ Success! All records successfully deleted.");
                 
             } catch (err) {
                 console.error("Delete All Error:", err);
-                alert("❌ Error deleting all records: " + err.message);
+                alert("❌ Error in deleting all records: " + err.message);
             } finally {
                 document.getElementById('loadingOverlay').classList.remove('show');
             }
-        }
-                // 🟢 FUNCTION TO CHECK DUPLICATE EMP IDs (Admin Only)
-                // 🟢 UPDATED FUNCTION TO CHECK DUPLICATES (Now mostly obsolete, but kept for safety)
-        function checkDuplicateEmpIds() {
-            if (allStaffData.length === 0) {
-                alert("Database empty. No records to check.");
-                return;
-            }
-
-            const empMap = {};
-            allStaffData.forEach(item => {
-                const id = item.empid;
-                if (!empMap[id]) {
-                    empMap[id] = [];
-                }
-                empMap[id].push(item);
-            });
-
-            const duplicates = Object.keys(empMap).filter(id => empMap[id].length > 1);
-
-            if (duplicates.length === 0) {
-                alert("✅ No duplicate EMP IDs found in the database! The UNIQUE constraint is working perfectly.");
-                return;
-            }
-
-            let msg = `⚠️ Found ${duplicates.length} duplicate EMP IDs (Unique Constraint might be missing):\n\n`;
-            duplicates.forEach(id => {
-                const count = empMap[id].length;
-                const names = empMap[id].map(i => i.name).join(', ');
-                msg += `👉 EMP ID: ${id} (Appears ${count} times) - ${names}\n`;
-            });
-
-            alert(msg);
         }
     </script>
 </body>
