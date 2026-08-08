@@ -409,6 +409,47 @@
         const PAGE_SIZE = 100;
         let currentFilteredData = [];
 
+        // ✅ YEH CODE DASHBOARD.JS KE SHURU MEIN DAALEIN (Before window.onload)
+function checkLoginExpiry() {
+    const loginTime = localStorage.getItem("loginTime");
+    const loginStatus = localStorage.getItem("login");
+
+    // Agar login nahi hai, toh seedha logout
+    if (loginStatus !== "yes") {
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (loginTime) {
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - parseInt(loginTime);
+        const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+        // Agar 24 ghante se zyada ho gaye
+        if (elapsedTime >= twentyFourHours) {
+            alert("Your session has expired. Please login again."); // Optional: User ko batao
+            localStorage.clear(); // Saara data clear kar do
+            window.location.href = "index.html"; // Login page par bhej do
+        }
+    } else {
+        // Agar loginTime missing hai (Edge case), toh force logout
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+}
+
+// Apne existing window.onload function ke andar, sabse pehle ise call karein:
+window.onload = function() {
+    checkLoginExpiry(); // ✅ YEH LINE SABSE PEHLE CALL KAREIN
+    
+    if (localStorage.getItem("login") !== "yes") {
+        window.location.href = "index.html";
+        return;
+    }
+    displayCurrentUserInfo();
+    fetchStaffFromDatabase();
+};
+
         window.onload = function() {
             if (localStorage.getItem("login") !== "yes") {
                 window.location.href = "index.html";
