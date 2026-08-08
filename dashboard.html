@@ -523,7 +523,7 @@
 
                 const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
 
-                let mobileHtml = `
+                                let mobileHtml = `
                     <div class="d-flex align-items-center">
                         <i class="fa-solid fa-phone me-2 text-muted"></i>
                         <span>${mobile}</span>
@@ -534,16 +534,16 @@
                     const whatsappLink = `https://web.whatsapp.com/send?phone=${cleanNumber}`;
                     
                     mobileHtml += `
-                        <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web">
-                            <i class="fa-brands fa-whatsapp"></i>
+                        <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web" onclick="event.stopPropagation();">
+                            <i class="fa-brands fa-whatsapp fa-lg"></i>
                         </a>
-                        <button onclick="copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-1 text-secondary" title="Copy Number" style="font-size: 0.9rem; border: none; background: none;">
-                            <i class="fa-regular fa-copy"></i>
+                        <button onclick="event.stopPropagation(); copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-2 text-secondary" title="Copy Number" style="font-size: 1.1rem; border: none; background: none;">
+                            <i class="fa-regular fa-copy fa-lg"></i>
                         </button>
                     `;
                 }
                 mobileHtml += `</div>`;
-
+                
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = `
                     <div class="col-md-4">
@@ -606,7 +606,7 @@
 
                     const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
 
-                    let mobileHtml = `
+                                        let mobileHtml = `
                         <div class="d-flex align-items-center">
                             <i class="fa-solid fa-phone me-2 text-muted"></i>
                             <span>${mobile}</span>
@@ -617,16 +617,16 @@
                         const whatsappLink = `https://web.whatsapp.com/send?phone=${cleanNumber}`;
                         
                         mobileHtml += `
-                            <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web">
-                                <i class="fa-brands fa-whatsapp"></i>
+                            <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web" onclick="event.stopPropagation();">
+                                <i class="fa-brands fa-whatsapp fa-lg"></i>
                             </a>
-                            <button onclick="copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-1 text-secondary" title="Copy Number" style="font-size: 0.9rem; border: none; background: none;">
-                                <i class="fa-regular fa-copy"></i>
+                            <button onclick="event.stopPropagation(); copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-2 text-secondary" title="Copy Number" style="font-size: 1.1rem; border: none; background: none;">
+                                <i class="fa-regular fa-copy fa-lg"></i>
                             </button>
                         `;
                     }
                     mobileHtml += `</div>`;
-
+                    
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = `
                         <div class="col-md-4">
