@@ -167,7 +167,7 @@
             } catch (err) { console.error("Logging failed:", err); }
         }
 
-        async function handleLogin() {
+                async function handleLogin() {
             let u = document.getElementById("username").value.trim();
             let p = document.getElementById("password").value.trim();
             let msgEl = document.getElementById("msg");
@@ -182,35 +182,54 @@
             msgEl.innerText = "Checking credentials...";
 
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/app_users?select=*&password=eq.${encodeURIComponent(p)}`, {
-                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-                });
-
-                if (response.ok) {
-                    const users = await response.json();
-                    const matchedUser = users.find(user => user.username.toLowerCase() === u.toLowerCase());
-
-                    // ... (User match hone ke baad wala code)
-                if (matchedUser) {
-                    localStorage.setItem("login", "yes");
-                    localStorage.setItem("currentUser", matchedUser.username);
-                    localStorage.setItem("userRole", matchedUser.role || "User");
-
-                    // ✅ YEH EK LINE ADD KAREIN (Login ka time save karne ke liye)
-                    localStorage.setItem("loginTime", Date.now()); 
-
-                    await logUserLogin(matchedUser.username, matchedUser.role);
-                    window.location.href = "dashboard.html";
+                // ✅ CHANGE: 'fetch' का इस्तेमाल हटाकर 'supabaseClient' SDK का इस्तेमाल किया
+                if (!supabaseClient) {
+                    throw new Error("Supabase client not initialized!");
                 }
-                    // ...
+
+                // Database mein password match karne ka safe tarika
+                const { data, error } = await supabaseClient
+                    .from('app_users')
+                    .select('*')
+                    .eq('password', p);
+
+                // Agar database error aata hai (jaise column name galat hai)
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                // Agar data milta hai
+                if (data && data.length > 0) {
+                    // Username ko case-insensitive (chote-bade aksar) match karein
+                    const matchedUser = data.find(user => user.username.toLowerCase() === u.toLowerCase());
+
+                    if (matchedUser) {
+                        localStorage.setItem("login", "yes");
+                        localStorage.setItem("currentUser", matchedUser.username);
+                        localStorage.setItem("userRole", matchedUser.role || "User");
+                        localStorage.setItem("loginTime", Date.now());
+
+                        await logUserLogin(matchedUser.username, matchedUser.role);
+                        window.location.href = "dashboard.html";
+                    } else {
+                        msgEl.style.color = "#dc2626";
+                        msgEl.innerText = "Invalid Username or Password!";
+                    }
                 } else {
                     msgEl.style.color = "#dc2626";
-                    msgEl.innerText = "Database connection error!";
+                    msgEl.innerText = "Invalid Username or Password!";
                 }
+
             } catch (err) {
                 console.error("Login Error:", err);
                 msgEl.style.color = "#dc2626";
-                msgEl.innerText = "Connection failed. Please refresh and try again!";
+                
+                // Error ko user ko sahi se dikhayen
+                if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+                    msgEl.innerText = "Network error. Please check your internet connection!";
+                } else {
+                    msgEl.innerText = "Error: " + err.message;
+                }
             }
         }
     </script>
