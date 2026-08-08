@@ -864,15 +864,14 @@
 
             searchTimeout = setTimeout(() => {
                 const query = document.getElementById("searchInput").value.toLowerCase().trim();
-                const selectedBranch = document.getElementById("branchSelect").value;
                 const branchCodeQuery = document.getElementById("branchCodeInput").value.trim();
 
-                if(branchCodeQuery) {
-                    const matchedOption = Array.from(document.getElementById("branchSelect").options).find(opt => opt.value.toUpperCase() === branchCodeQuery.toUpperCase());
-                    if(matchedOption) {
-                        document.getElementById("branchSelect").value = matchedOption.value;
-                    }
+                // 🟢 FIX: Agar Branch Code input mein kuch likha hai to dropdown ko ALL pe reset kar do
+                if (branchCodeQuery) {
+                    document.getElementById("branchSelect").value = "ALL";
                 }
+
+                const selectedBranch = document.getElementById("branchSelect").value;
 
                 const filtered = allStaffData.filter(item => {
                     const nameMatch = (item.name || "").toLowerCase().includes(query);
@@ -890,12 +889,9 @@
 
                 currentFilteredData = filtered;
                 currentLimit = PAGE_SIZE;
-
-                // 🟢 Only render first chunk to prevent lag
                 renderStaffGrid(currentFilteredData.slice(0, currentLimit));
-            }, 500); // 🟢 Increased to 500ms for smooth typing
+            }, 500);
         }
-
         function clearSearch() {
             document.getElementById("searchInput").value = "";
             document.getElementById("branchSelect").value = "ALL";
