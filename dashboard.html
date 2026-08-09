@@ -423,7 +423,7 @@ function checkLoginExpiry() {
     if (loginTime) {
         const currentTime = Date.now();
         const elapsedTime = currentTime - parseInt(loginTime);
-        const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        const twentyFourHours = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
 
         // Agar 24 ghante se zyada ho gaye
         if (elapsedTime >= twentyFourHours) {
