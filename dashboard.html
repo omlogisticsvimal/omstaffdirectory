@@ -73,10 +73,9 @@
                 <i class="fa-solid fa-trash-can me-1"></i> Delete All DB Records
             </button>
             
-            <button class="btn btn-action-red btn-sm px-3 rounded-3 admin-only" data-bs-toggle="modal" data-bs-target="#deleteStaffModal">
+            <button class="btn btn-action-red btn-sm px-3 rounded-3" data-bs-toggle="modal" data-bs-target="#deleteStaffModal">
                 <i class="fa-solid fa-trash me-1"></i> Delete
-            </button>
-                        
+            </button>  
             <button class="btn btn-info btn-sm px-3 rounded-3 fw-bold text-white admin-only" onclick="window.location.href='convert.html'">
                 <i class="fa-solid fa-file-export me-1"></i> Convert Directory Raw File
             </button>
@@ -450,15 +449,7 @@ window.onload = function() {
     fetchStaffFromDatabase();
 };
 
-        window.onload = function() {
-            if (localStorage.getItem("login") !== "yes") {
-                window.location.href = "index.html";
-                return;
-            }
-            displayCurrentUserInfo();
-            fetchStaffFromDatabase();
-        };
-
+        
         function displayCurrentUserInfo() {
             const username = localStorage.getItem("currentUser") || "GUEST";
             const role = localStorage.getItem("userRole") || "User";
@@ -585,7 +576,7 @@ window.onload = function() {
                 }
                 mobileHtml += `</div>`;
                 
-                const tempDiv = document.createElement('div');
+                                const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = `
                     <div class="col-md-4">
                         <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
@@ -599,6 +590,10 @@ window.onload = function() {
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="emp-badge">Emp ID : ${empId}</span>
+                                    <!-- 🟢 यहां Delete Icon Add किया गया है -->
+                                    <button onclick="event.stopPropagation(); openDeleteModalFromCard('${empId}')" class="btn btn-link p-0 ms-2 text-danger" title="Delete Staff" style="font-size: 1.1rem; border: none; background: none;">
+                                        <i class="fa-solid fa-trash-can fa-lg"></i>
+                                    </button>
                                 </div>
                             </div>
 
@@ -668,7 +663,7 @@ window.onload = function() {
                     }
                     mobileHtml += `</div>`;
                     
-                    const tempDiv = document.createElement('div');
+                                        const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = `
                         <div class="col-md-4">
                             <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
@@ -682,6 +677,10 @@ window.onload = function() {
                                     </div>
                                     <div class="d-flex align-items-center">
                                         <span class="emp-badge">Emp ID : ${empId}</span>
+                                        <!-- 🟢 यहां भी Delete Icon Add किया गया है -->
+                                        <button onclick="event.stopPropagation(); openDeleteModalFromCard('${empId}')" class="btn btn-link p-0 ms-2 text-danger" title="Delete Staff" style="font-size: 1.1rem; border: none; background: none;">
+                                            <i class="fa-solid fa-trash-can fa-lg"></i>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -853,7 +852,7 @@ window.onload = function() {
 
             const empCode = foundStaffForDelete.empid;
 
-            if (!confirm(`Kya aap sach mein ${foundStaffForDelete.name} (EMP ID: ${empCode}) ko delete karna chahte hain?`)) {
+            if (!confirm(`Are Your Sure You Want To  Delete "${foundStaffForDelete.name} (EMP ID: ${empCode})" From Directory ?`)) {
                 return;
             }
 
@@ -865,7 +864,7 @@ window.onload = function() {
 
                 if (error) throw error;
 
-                alert(`Success! Record successfully delete kar diya gaya hai.`);
+                alert(`Done!! Record Successfully Deleted From Directory.`);
                 
                 const modalEl = document.getElementById('deleteStaffModal');
                 const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -886,6 +885,16 @@ window.onload = function() {
             document.getElementById("deleteNotFoundBox").classList.add("d-none");
             document.getElementById("confirmDeleteBtn").disabled = true;
             foundStaffForDelete = null;
+        }
+                // 🟢 Card par click karne par Delete Modal open karne ka naya function
+        function openDeleteModalFromCard(empId) {
+            // Input field mein Emp ID auto-fill kar do
+            document.getElementById("deleteEmpCodeInput").value = empId;
+            // Preview check trigger kar do
+            checkAndDeletePreview(empId);
+            // Modal ko open kar do
+            const modal = new bootstrap.Modal(document.getElementById('deleteStaffModal'));
+            modal.show();
         }
 
         function populateBranchDropdown(dataList) {
@@ -974,7 +983,7 @@ window.onload = function() {
             const role = roleInput.value;
 
             if (!username || !password) {
-                alert("Kripya username aur password dono bharein!");
+                alert("Please enter username and password!");
                 return;
             }
 
@@ -985,7 +994,7 @@ window.onload = function() {
 
                 if (error) throw error;
 
-                alert(`✅ Success! User '${username}' successfully create ho gaya hai.`);
+                alert(`✅ Success! User '${username}' successfully created.`);
                 
                 usernameInput.value = "";
                 passwordInput.value = "";
@@ -1012,7 +1021,7 @@ window.onload = function() {
             const address = document.getElementById("newStaffAddress").value.trim();
 
             if (!empCode || !name) {
-                alert("Kripya EMP CODE aur NAME dono bharein!");
+                alert("Please Enter EMP CODE and EMP NAME!");
                 return;
             }
 
