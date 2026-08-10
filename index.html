@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
-        <style>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -18,23 +18,23 @@
         html, body {
             height: 100%;
             width: 100%;
-            overflow: hidden; /* पूरा स्क्रॉल हटा दिया */
+            overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             
-            /* 🟢 बैकग्राउंड इमेज को नीचे से कटने से रोकने के लिए */
+            /* 🟢 बैकग्राउंड इमेज अब स्क्रीन साइज के अनुसार पूरी फिट होगी, कटेगी नहीं */
             background: url('bg-login.png') no-repeat center center;
-            background-size: cover; /* यह इमेज को बिना कटे पूरी स्क्रीन पर फैलाएगा */
+            background-size: 100% 100%; 
             display: flex;
             flex-direction: column;
-            background-color: #060b1d; /* इमेज लोड होने तक बैकग्राउंड कलर */
+            background-color: #060b1d;
         }
 
-        /* Image पर डार्क ओवरले (अनिवार्य) */
+        /* Image पर डार्क ओवरले */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(6, 11, 29, 0.4); /* Dark Overlay for better text visibility */
+            background: rgba(6, 11, 29, 0.4);
             z-index: 0;
         }
 
@@ -58,31 +58,42 @@
         .login-wrapper {
             position: relative;
             z-index: 1;
-            flex: 1; /* बाकी बची हुई सारी जगह ले लेगा */
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
 
-        /* 🟢 Login Card को ठीक किया गया */
+        /* 🟢 Login Card सेट किया गया */
         .login-card {
             background: #ffffff;
             border-radius: 24px;
-            padding: 40px 35px;
+            padding: 45px 35px 35px 35px; /* ऊपर स्पेस बढ़ाया ताकि अंदर का कंटेंट सही दिखे */
             width: 100%;
             max-width: 420px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             position: relative;
+            margin-top: 30px; /* आइकॉन के लिए ऊपर जगह बनाई */
         }
 
-        /* 🟢 ऊपर का पर्पल आइकॉन अब कार्ड से बाहर नहीं जाएगा */
+        /* 🟢 पर्पल आइकॉन की कटने की समस्या को Absolute Positioning से ठीक किया गया */
         .card-top-icon {
-            width: 56px; height: 56px; background: #3b3086; border-radius: 16px;
-            /* यहाँ -45px किया ताकि कार्ड की सीमा से बाहर न जाए */
-            margin: -70px auto 20px; 
-            display: flex; align-items: center; justify-content: center; color: white; font-size: 1.6rem;
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 56px; 
+            height: 56px; 
+            background: #3b3086; 
+            border-radius: 16px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-size: 1.6rem;
             box-shadow: 0 8px 15px rgba(59, 48, 134, 0.3);
+            z-index: 10;
         }
         
         .login-card h3 { font-weight: 800; color: #000; margin-bottom: 0; }
@@ -121,7 +132,7 @@
         .stat-text span { display: block; font-weight: 300; font-size: 0.75rem; opacity: 0.8; }
         .copyright-text { text-align: center; color: #8da6f0; font-size: 0.7rem; margin-top: 10px; opacity: 0.7; }
 
-        /* 🟢 Mobile Fixes */
+        /* Mobile Fixes */
         @media (max-width: 768px) {
             .top-header { padding: 15px 15px; }
             .header-logo { font-size: 1.3rem; }
@@ -129,8 +140,7 @@
             .bottom-stats { gap: 15px; padding: 10px 10px; }
             .stat-item { flex: 1 0 40%; justify-content: center; }
             .stat-item i { font-size: 1.4rem; }
-            .login-card { padding: 35px 20px; margin-top: 10px; }
-            .card-top-icon { margin-top: -65px; } /* मोबाइल पर आइकॉन बैलेंस */
+            .login-card { padding: 35px 20px 20px 20px; margin-top: 20px; }
         }
     </style>
 </head>
@@ -223,7 +233,7 @@
             } catch (err) { console.error("Logging failed:", err); }
         }
 
-                async function handleLogin() {
+        async function handleLogin() {
             let u = document.getElementById("username").value.trim();
             let p = document.getElementById("password").value.trim();
             let msgEl = document.getElementById("msg");
@@ -238,25 +248,20 @@
             msgEl.innerText = "Checking credentials...";
 
             try {
-                // ✅ CHANGE: 'fetch' का इस्तेमाल हटाकर 'supabaseClient' SDK का इस्तेमाल किया
                 if (!supabaseClient) {
                     throw new Error("Supabase client not initialized!");
                 }
 
-                // Database mein password match karne ka safe tarika
                 const { data, error } = await supabaseClient
                     .from('app_users')
                     .select('*')
                     .eq('password', p);
 
-                // Agar database error aata hai (jaise column name galat hai)
                 if (error) {
                     throw new Error(error.message);
                 }
 
-                // Agar data milta hai
                 if (data && data.length > 0) {
-                    // Username ko case-insensitive (chote-bade aksar) match karein
                     const matchedUser = data.find(user => user.username.toLowerCase() === u.toLowerCase());
 
                     if (matchedUser) {
@@ -280,7 +285,6 @@
                 console.error("Login Error:", err);
                 msgEl.style.color = "#dc2626";
                 
-                // Error ko user ko sahi se dikhayen
                 if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
                     msgEl.innerText = "Network error. Please check your internet connection!";
                 } else {
