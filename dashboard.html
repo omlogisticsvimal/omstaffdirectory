@@ -25,10 +25,31 @@
         .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12); }
         .stat-box .title { font-size: 0.75rem; font-weight: 700; color: #6c757d; text-transform: uppercase; }
         .stat-box .value { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
-        .staff-card { background: #ffffff; border-radius: 14px; padding: 18px; box-shadow: var(--card-shadow); border: 1px solid #e2e8f0; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; }
+                .staff-card { 
+            background: #ffffff; 
+            border-radius: 14px; 
+            padding: 18px; 
+            box-shadow: var(--card-shadow); 
+            border: 1px solid #e2e8f0; 
+            position: relative; 
+            transition: transform 0.2s ease, box-shadow 0.2s ease; 
+            cursor: pointer; 
+            text-wrap: balance; /* 🟢 यह टेक्स्ट को लेफ्ट-राइट बैलेंस करके तोड़ेगा */
+        }
         .staff-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12); border-color: var(--primary-purple); }
         .avatar-circle { width: 42px; height: 42px; background-color: #e0e7ff; color: #3730a3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
-        .emp-badge { background-color: #3b82f6; color: white; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+                .emp-badge { 
+            background-color: #3b82f6; 
+            color: white; 
+            font-size: 0.7rem; /* 🟢 थोड़ा छोटा किया ताकि ज्यादा जगह न ले */
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            white-space: nowrap; /* 🟢 यह बैज को एक ही लाइन में रखेगा */
+            max-width: 110px; /* 🟢 बैज की अधिकतम चौड़ाई तय की */
+            overflow: hidden;
+            text-overflow: ellipsis; /* अगर फिर भी बड़ा है तो ... लगा देगा */
+        }
         .btn-action-green { background-color: #10b981; color: white; border: none; }
         .btn-action-red { background-color: #ef4444; color: white; border: none; }
         .btn-action-circle { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.15); color: white; border: none; }
