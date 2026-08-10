@@ -10,27 +10,20 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            min-height: 100vh;
+    body {
+            height: 100vh; /* पूरी स्क्रीन हाइट ले लो */
+            overflow: hidden; /* स्क्रॉल बार को पूरी तरह से हटा दो */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             
-            /* 🟢 APNI IMAGE KA PATH YAHAN DAALEIN (agar image alag folder mein hai toh path sahi karein) */
-            background: url('bg-login.png') no-repeat center center / cover;
+            background: url('bg-login.jpg') no-repeat center center / cover;
+            background-size: cover; /* बैकग्राउंड को स्क्रीन के हिसाब से फिट करो */
             
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 0; /* पैडिंग हटा दी */
             position: relative;
+            margin: 0;
         }
-        /* Image ke upar ek dark overlay jisse card clear dikhe */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(6, 11, 29, 0.6);
-            z-index: 0;
-        }
-
         .top-header, .login-wrapper, .bottom-stats { position: relative; z-index: 1; }
         
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
