@@ -19,7 +19,7 @@
 
     <div class="upload-card">
         <h3 class="mb-3 text-primary"><i class="fa-solid fa-cloud-upload-alt me-2"></i>Bulk Excel Upload</h3>
-        <p class="text-muted small">Upload your formatted Excel file. Records with existing EMP IDs will be safely skipped.</p>
+        <p class="text-muted small">Upload your formatted Excel file. <strong>Existing EMP IDs will be UPDATED with new details.</strong></p>
         
         <label for="excelFileInput" class="drop-zone w-100 d-block mt-3">
             <i class="fa-solid fa-file-excel fa-3x text-success mb-2"></i>
@@ -136,9 +136,9 @@
                         return;
                     }
 
-                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Checking for duplicates in database...</span>`;
+                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Checking database for existing IDs...</span>`;
 
-                    // 2. Fetch Existing Records to avoid duplicates
+                    // 2. Fetch Existing Records from DB
                     const { data: existingData, error: fetchError } = await supabaseClient
                         .from('staff')
                         .select('empid');
@@ -159,60 +159,98 @@
                     }
 
                     const fileDuplicateSkipped = allExtractedStaff.length - uniqueNewRecords.length;
-                    if (fileDuplicateSkipped > 0) {
-                        statusDiv.innerHTML = `<span class="text-warning">⚠️ Found ${fileDuplicateSkipped} duplicate rows inside the file. Keeping only unique ones.</span>`;
-                    }
 
-                    // Filter against the Database
-                    const finalRecords = uniqueNewRecords.filter(record => !existingEmpIds.has(record.empid));
+                    // 3. Separate into two lists: To INSERT (New) and To UPDATE (Existing)
+                    const toInsert = [];
+                    const toUpdate = [];
 
-                    const dbDuplicateSkipped = uniqueNewRecords.length - finalRecords.length;
-                    const totalSkipped = fileDuplicateSkipped + dbDuplicateSkipped;
-
-                    if (finalRecords.length === 0) {
-                        statusDiv.innerHTML = `<span class="text-warning fw-bold">⚠️ No new records to insert. All ${totalSkipped} records are duplicates.</span>`;
-                        return;
-                    }
-
-                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Uploading ${finalRecords.length} new records...</span>`;
-
-                    const chunkSize = 500; 
-                    let successCount = 0;
-                    let finalSkippedCount = 0;
-                    
-                    for (let i = 0; i < finalRecords.length; i += chunkSize) {
-                        const chunk = finalRecords.slice(i, i + chunkSize);
-                        
-                        // 🟢 ROBUST INSERT: Try-Catch use kar rahe hain.
-                        try {
-                            const { error } = await supabaseClient
-                                .from('staff')
-                                .insert(chunk);
-
-                            if (error) {
-                                // Agar error "unique constraint" ka hai, toh us chunk ko skip karo
-                                if (error.message && error.message.includes("unique constraint")) {
-                                    finalSkippedCount += chunk.length;
-                                    console.warn("Skipped a chunk due to duplicate constraint violation.");
-                                } else {
-                                    throw error; // Agar koi aur error hai toh throw karo
-                                }
-                            } else {
-                                successCount += chunk.length;
-                            }
-                        } catch (err) {
-                            // Agar insert fail ho jaye toh bhi UI crash nahi hoga, bus skip ho jayega
-                            console.error("Chunk insert failed, skipping:", err.message);
-                            finalSkippedCount += chunk.length;
+                    for (const record of uniqueNewRecords) {
+                        if (existingEmpIds.has(record.empid)) {
+                            toUpdate.push(record);
+                        } else {
+                            toInsert.push(record);
                         }
-                        
-                        statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Uploaded ${successCount} / ${finalRecords.length} (${finalSkippedCount} skipped during insert)</span>`;
                     }
 
-                    statusDiv.innerHTML = `<span class="text-success fw-bold">✅ Success! ${successCount} new records inserted. ${totalSkipped + finalSkippedCount} duplicates skipped.</span>`;
+                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Processing: ${toInsert.length} new, ${toUpdate.length} updates...</span>`;
+
+                    let successInsert = 0;
+                    let successUpdate = 0;
+                    
+                    // 4. Perform Batch Insert (For New Records)
+                    if (toInsert.length > 0) {
+                        const insertChunkSize = 500; 
+                        for (let i = 0; i < toInsert.length; i += insertChunkSize) {
+                            const chunk = toInsert.slice(i, i + insertChunkSize);
+                            const { error } = await supabaseClient.from('staff').insert(chunk);
+                            if (error) {
+                                console.error("Insert Error:", error);
+                            } else {
+                                successInsert += chunk.length;
+                            }
+                            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Inserted ${successInsert}/${toInsert.length} new records...</span>`;
+                        }
+                    }
+
+                    // 5. Perform Batch Update (For Existing Records)
+                    if (toUpdate.length > 0) {
+                        const updateChunkSize = 100; 
+                        for (let i = 0; i < toUpdate.length; i += updateChunkSize) {
+                            const chunk = toUpdate.slice(i, i + updateChunkSize);
+                            
+                            // Properly loop through chunk and update individually with 'empid' filter
+                            for (const record of chunk) {
+                                const { error } = await supabaseClient
+                                    .from('staff')
+                                    .update({
+                                        name: record.name,
+                                        designation: record.designation,
+                                        company: record.company,
+                                        location: record.location,
+                                        branchcode: record.branchcode,
+                                        mobile: record.mobile,
+                                        email: record.email,
+                                        address: record.address
+                                    })
+                                    .eq('empid', record.empid);
+                                
+                                if (!error) {
+                                    successUpdate++;
+                                } else {
+                                    console.error("Update Error for Emp ID", record.empid, error);
+                                }
+                            }
+                            statusDiv.innerHTML = `<span class="text-success"><i class="fa-solid fa-spinner fa-spin me-1"></i> Updated ${successUpdate}/${toUpdate.length} existing records...</span>`;
+                        }
+                    }
+
+                    // Final Report to the User
+                    const totalSkippedInsideFile = fileDuplicateSkipped;
+                    const totalExistingUpdated = successUpdate;
+                    const totalNewInserted = successInsert;
+
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-success mt-3 shadow-sm text-start">
+                            <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-circle-check me-1"></i> Upload Completed!</h6>
+                            <div class="small">
+                                <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                    <span>✅ New Records Inserted:</span>
+                                    <span class="fw-bold">${totalNewInserted}</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                    <span>🔄 Existing Records Updated:</span>
+                                    <span class="fw-bold">${totalExistingUpdated}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>⏭️ Duplicate Rows Skipped (Inside File):</span>
+                                    <span class="fw-bold text-muted">${totalSkippedInsideFile}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
 
                 } catch (err) {
-                    console.error(err);
+                    console.error("Upload Error:", err);
                     statusDiv.innerHTML = `<span class="text-danger fw-bold">❌ Error: ${err.message || 'Unknown error'}</span>`;
                 } finally {
                     event.target.value = "";
