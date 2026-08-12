@@ -73,15 +73,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
-        // Check for Library Load Failures
         if (typeof XLSX === 'undefined') {
-            document.getElementById('uploadStatus').innerHTML = `<span class="text-danger fw-bold">❌ Error: XLSX library failed to load. Please refresh the page.</span>`;
+            document.getElementById('uploadStatus').innerHTML = `<span class="text-danger fw-bold">❌ Error: XLSX library failed to load. Please refresh.</span>`;
             throw new Error("XLSX library not loaded");
-        }
-
-        if (typeof supabase === 'undefined') {
-            document.getElementById('uploadStatus').innerHTML = `<span class="text-danger fw-bold">❌ Error: Supabase library failed to load. Please refresh the page.</span>`;
-            throw new Error("Supabase library not loaded");
         }
 
         const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
@@ -94,7 +88,7 @@
             if (!file) return;
 
             const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Processing file... Please wait.</span>`;
+            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Parsing Excel file... Please wait.</span>`;
 
             const reader = new FileReader();
             reader.onload = async function(e) {
@@ -103,8 +97,8 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     let allExtractedStaff = [];
 
-                    // 1. Parse Excel Sheets
-                    for(let s = 0; s < workbook.SheetNames.length; s++) {
+                    // 1. Excel Parsing
+                    for (let s = 0; s < workbook.SheetNames.length; s++) {
                         const sheetName = workbook.SheetNames[s];
                         const ws = workbook.Sheets[sheetName];
                         const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
@@ -118,19 +112,19 @@
                                 break;
                             }
                         }
-                        if (headerRowIndex === -1) continue; 
+                        if (headerRowIndex === -1) continue;
 
                         const headers = rows[headerRowIndex].map(h => String(h).trim());
                         
-                        const idxCompany = headers.findIndex(h => h.trim().toUpperCase() === "COMPANY");
-                        const idxLocation = headers.findIndex(h => h.trim().toUpperCase() === "STATE/ BRANCH");
-                        const idxAddress = headers.findIndex(h => h.trim().toUpperCase() === "ADDRESS");
-                        const idxBranchCode = headers.findIndex(h => h.trim().toUpperCase() === "BRANCH CODE");
-                        const idxEmpCode = headers.findIndex(h => h.trim().toUpperCase() === "EMP. CODE");
-                        const idxName = headers.findIndex(h => h.trim().toUpperCase() === "OFFICIAL");
-                        const idxDesig = headers.findIndex(h => h.trim().toUpperCase() === "DESIGNATION/ DEPARMENT");
-                        const idxMobile = headers.findIndex(h => h.trim().toUpperCase() === "CONTACT NO.");
-                        const idxEmail = headers.findIndex(h => h.trim().toUpperCase() === "E-MAIL");
+                        const idxCompany = headers.findIndex(h => h.toUpperCase() === "COMPANY");
+                        const idxLocation = headers.findIndex(h => h.toUpperCase() === "STATE/ BRANCH");
+                        const idxAddress = headers.findIndex(h => h.toUpperCase() === "ADDRESS");
+                        const idxBranchCode = headers.findIndex(h => h.toUpperCase() === "BRANCH CODE");
+                        const idxEmpCode = headers.findIndex(h => h.toUpperCase() === "EMP. CODE");
+                        const idxName = headers.findIndex(h => h.toUpperCase() === "OFFICIAL");
+                        const idxDesig = headers.findIndex(h => h.toUpperCase() === "DESIGNATION/ DEPARMENT");
+                        const idxMobile = headers.findIndex(h => h.toUpperCase() === "CONTACT NO.");
+                        const idxEmail = headers.findIndex(h => h.toUpperCase() === "E-MAIL");
 
                         let currentCompany = "", currentLocation = "", currentAddress = "", currentBranchCode = "";
 
@@ -146,7 +140,7 @@
                                 if (idxLocation !== -1) currentLocation = String(row[idxLocation] || "").trim();
                                 if (idxAddress !== -1) currentAddress = String(row[idxAddress] || "").trim();
                                 if (idxBranchCode !== -1) currentBranchCode = String(row[idxBranchCode] || "").trim();
-                                continue; 
+                                continue;
                             }
 
                             if (!name || !empId) continue;
@@ -159,152 +153,68 @@
                             let mobile = idxMobile !== -1 ? String(row[idxMobile] || "").trim() : "";
                             let email = idxEmail !== -1 ? String(row[idxEmail] || "").trim() : "";
 
-                            const staffRecord = {
+                            allExtractedStaff.push({
+                                empid: empId,
                                 name: name.toUpperCase(),
                                 company: company || "N/A",
                                 location: location || "N/A",
                                 address: address || "N/A",
                                 branchcode: branchCode || "N/A",
-                                empid: empId,
                                 designation: designation,
                                 mobile: mobile || "N/A",
                                 email: email || "N/A"
-                            };
-                            allExtractedStaff.push(staffRecord);
+                            });
                         }
                     }
 
                     if (allExtractedStaff.length === 0) {
-                        statusDiv.innerHTML = `<span class="text-danger">❌ No valid records found in the uploaded file.</span>`;
+                        statusDiv.innerHTML = `<span class="text-danger">❌ No valid staff records found in the Excel file.</span>`;
                         return;
                     }
 
-                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Checking database for existing IDs...</span>`;
+                    // 2. Remove duplicate EMP IDs inside the file itself (keep latest record)
+                    const uniqueStaffMap = new Map();
+                    allExtractedStaff.forEach(item => uniqueStaffMap.set(item.empid, item));
+                    const uniqueStaffRecords = Array.from(uniqueStaffMap.values());
+                    const insideFileDuplicates = allExtractedStaff.length - uniqueStaffRecords.length;
 
-                    // 2. Fetch Existing Records from Supabase Database
-                    const { data: existingData, error: fetchError } = await supabaseClient
-                        .from('staff')
-                        .select('empid');
+                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Syncing ${uniqueStaffRecords.length} records with Supabase...</span>`;
 
-                    if (fetchError) throw fetchError;
+                    // 3. Native Upsert in Batches (Automatic Insert/Update based on empid conflict)
+                    const chunkSize = 200;
+                    let processedCount = 0;
 
-                    const existingEmpIds = new Set(existingData.map(item => item.empid));
+                    for (let i = 0; i < uniqueStaffRecords.length; i += chunkSize) {
+                        const chunk = uniqueStaffRecords.slice(i, i + chunkSize);
 
-                    // Filter out duplicates present inside the same uploaded file
-                    const uniqueFileEmpIds = new Set();
-                    const uniqueNewRecords = [];
+                        const { error } = await supabaseClient
+                            .from('staff')
+                            .upsert(chunk, { onConflict: 'empid' });
 
-                    for (const record of allExtractedStaff) {
-                        if (!uniqueFileEmpIds.has(record.empid)) {
-                            uniqueFileEmpIds.add(record.empid);
-                            uniqueNewRecords.push(record);
+                        if (error) {
+                            throw error;
                         }
+
+                        processedCount += chunk.length;
+                        statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Processed ${processedCount}/${uniqueStaffRecords.length} records...</span>`;
                     }
 
-                    const fileDuplicateSkipped = allExtractedStaff.length - uniqueNewRecords.length;
-
-                    // 3. Split into Insert vs Update Batches
-                    const toInsert = [];
-                    const toUpdate = [];
-
-                    for (const record of uniqueNewRecords) {
-                        if (existingEmpIds.has(record.empid)) {
-                            toUpdate.push(record);
-                        } else {
-                            toInsert.push(record);
-                        }
-                    }
-
-                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Processing: ${toInsert.length} new, ${toUpdate.length} updates...</span>`;
-
-                    let successInsert = 0;
-                    let successUpdate = 0;
-                    let updateErrorMsg = "";
-
-                    // 4. Perform Batch Insert
-                    if (toInsert.length > 0) {
-                        const insertChunkSize = 500; 
-                        for (let i = 0; i < toInsert.length; i += insertChunkSize) {
-                            const chunk = toInsert.slice(i, i + insertChunkSize);
-                            const { error } = await supabaseClient.from('staff').insert(chunk);
-                            if (error) {
-                                console.error("Insert Error:", error);
-                                throw new Error(`Insert failed: ${error.message}`);
-                            } else {
-                                successInsert += chunk.length;
-                            }
-                            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Inserted ${successInsert}/${toInsert.length} new records...</span>`;
-                        }
-                    }
-
-                    // 5. Perform Row Updates
-                    if (toUpdate.length > 0) {
-                        for (let i = 0; i < toUpdate.length; i++) {
-                            const record = toUpdate[i];
-                            
-                            const { error } = await supabaseClient
-                                .from('staff')
-                                .update({
-                                    name: record.name,
-                                    designation: record.designation,
-                                    company: record.company,
-                                    location: record.location,
-                                    branchcode: record.branchcode,
-                                    mobile: record.mobile,
-                                    email: record.email,
-                                    address: record.address
-                                })
-                                .eq('empid', record.empid);
-                            
-                            if (error) {
-                                console.error("Update Failed for EMP ID:", record.empid, error);
-                                updateErrorMsg = error.message;
-                                break; // Halt updates on permission/RLS failure
-                            } else {
-                                successUpdate++;
-                            }
-                            
-                            if (i % 10 === 0) {
-                                statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Updating ${successUpdate}/${toUpdate.length} records...</span>`;
-                            }
-                        }
-                    }
-
-                    // Handle RLS or Update Failures
-                    if (updateErrorMsg) {
-                        statusDiv.innerHTML = `
-                            <div class="alert alert-danger mt-3 shadow-sm text-start">
-                                <h6 class="fw-bold text-danger mb-2"><i class="fa-solid fa-circle-exclamation me-1"></i> ERROR!</h6>
-                                <div class="small text-danger">
-                                    ❌ Update failed for existing records.<br>
-                                    <strong>Details:</strong> ${updateErrorMsg}<br>
-                                    <strong>Likely Cause:</strong> Supabase RLS is blocking UPDATE queries.<br>
-                                    Ensure Row Level Security (RLS) policies allow updates for public users, or temporarily disable RLS on the <code>staff</code> table.
-                                </div>
-                            </div>
-                            <div class="alert alert-info mt-2 text-start small">
-                                <strong>Partial Progress:</strong> ${successInsert} New Inserted, ${successUpdate} Updated before error.
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    // Final Summary Report
+                    // 4. Success UI
                     statusDiv.innerHTML = `
                         <div class="alert alert-success mt-3 shadow-sm text-start">
-                            <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-circle-check me-1"></i> Upload Completed!</h6>
+                            <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-circle-check me-1"></i> Sync Completed Successfully!</h6>
                             <div class="small">
                                 <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
-                                    <span>New Records Inserted:</span>
-                                    <span class="fw-bold text-success">${successInsert}</span>
+                                    <span>Total File Records Processed:</span>
+                                    <span class="fw-bold text-primary">${uniqueStaffRecords.length}</span>
                                 </div>
                                 <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
-                                    <span>Existing Records Updated:</span>
-                                    <span class="fw-bold text-primary">${successUpdate}</span>
+                                    <span>Status:</span>
+                                    <span class="fw-bold text-success">Inserted / Updated Automatically</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span>Duplicate Rows Skipped Inside File:</span>
-                                    <span class="fw-bold text-secondary">${fileDuplicateSkipped}</span>
+                                    <span>Duplicate Rows Skipped (In Excel):</span>
+                                    <span class="fw-bold text-secondary">${insideFileDuplicates}</span>
                                 </div>
                             </div>
                         </div>
@@ -312,14 +222,15 @@
 
                 } catch (err) {
                     console.error("Upload Error:", err);
-                    statusDiv.innerHTML = `<div class="alert alert-danger mt-3 text-start small">❌ Error: ${err.message || 'Unknown processing error'}</div>`;
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-danger mt-3 shadow-sm text-start">
+                            <h6 class="fw-bold text-danger mb-1"><i class="fa-solid fa-circle-exclamation me-1"></i> Upload Failed</h6>
+                            <div class="small">${err.message || 'Unknown error occurred'}</div>
+                        </div>
+                    `;
                 } finally {
                     event.target.value = "";
                 }
-            };
-
-            reader.onerror = function() {
-                statusDiv.innerHTML = `<span class="text-danger fw-bold">❌ Error reading local file.</span>`;
             };
 
             reader.readAsArrayBuffer(file);
