@@ -266,44 +266,66 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetEditState()"></button>
                 </div>
                 
-                <div class="modal-body pt-3" id="editFormContainer">
+                                <div class="modal-body pt-3" id="editFormContainer">
                     <div class="row g-2">
+                        <!-- 🟢 Name Field Added -->
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-user me-1 text-primary"></i> Name</span>
+                                <span class="val" id="modalNameVal" data-field="name">VIMAL KUMAR</span>
+                            </div>
+                        </div>
+                        
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-id-card me-1 text-primary"></i> EMP Code</span>
                                 <span class="val" id="modalEmpCode">39751</span>
                             </div>
                         </div>
+                        
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-briefcase me-1 text-primary"></i> Designation</span>
                                 <span class="val" id="modalDesignation" data-field="designation">MANAGER</span>
                             </div>
                         </div>
+                        
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-building me-1 text-primary"></i> Company</span>
                                 <span class="val" id="modalCompany" data-field="company">OLSC</span>
                             </div>
                         </div>
-                         <div class="col-md-6">
+                        
+                        <!-- 🟢 Branch Code Field Added -->
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-qrcode me-1 text-primary"></i> Branch Code</span>
+                                <span class="val" id="modalBranchCode" data-field="branchcode">1601</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-location-dot me-1 text-primary"></i> Location / Branch</span>
                                 <span class="val" id="modalLocationVal" data-field="location">DELHI</span>
                             </div>
                         </div>
+                        
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-phone me-1 text-primary"></i> Mobile</span>
                                 <span class="val" id="modalMobile" data-field="mobile">9218300604</span>
                             </div>
                         </div>
+                        
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-envelope me-1 text-primary"></i> Email</span>
                                 <span class="val" id="modalEmail" data-field="email" style="font-size: 0.85rem;">damegactrl2@olsc.in</span>
                             </div>
                         </div>
+                        
                         <div class="col-12">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-map-pin me-1 text-primary"></i> Full Address</span>
@@ -727,7 +749,7 @@ window.onload = function() {
             }
         }
 
-        function openProfileModal(item) {
+                function openProfileModal(item) {
             currentEditingItem = item;
             resetEditState();
 
@@ -739,6 +761,12 @@ window.onload = function() {
             document.getElementById("modalLocation").innerHTML = `<i class="fa-solid fa-location-dot me-1"></i> ${(item.location || "MAIN OFFICE").toUpperCase()}`;
             document.getElementById("modalEmpCode").innerText = item.empid || "N/A";
             
+            // ✅ Branch Code
+            document.getElementById("modalBranchCode").innerText = item.branchcode || "N/A";
+            
+            // ✅ Name field (Modal mein edit karne ke liye)
+            document.getElementById("modalNameVal").innerText = name.toUpperCase();
+            
             document.getElementById("modalDesignation").innerText = item.designation || "N/A";
             document.getElementById("modalCompany").innerText = item.company || "N/A";
             document.getElementById("modalLocationVal").innerText = item.location || "N/A";
@@ -749,7 +777,6 @@ window.onload = function() {
             const modal = new bootstrap.Modal(document.getElementById('profileModal'));
             modal.show();
         }
-
         function toggleEditMode(enable) {
             const container = document.getElementById('editFormContainer');
             const editBtn = document.getElementById('editBtn');
@@ -788,7 +815,7 @@ window.onload = function() {
             document.getElementById('cancelEditBtn').classList.add('d-none');
         }
 
-        async function saveStaffChanges() {
+                async function saveStaffChanges() {
             if (!currentEditingItem) return;
 
             const container = document.getElementById('editFormContainer');
@@ -796,7 +823,8 @@ window.onload = function() {
             
             container.querySelectorAll('input[data-field]').forEach(input => {
                 const field = input.dataset.field;
-                if (['designation', 'company', 'location', 'mobile', 'email', 'address'].includes(field)) {
+                // 🟢 अब 'name' और 'branchcode' भी इसमें शामिल हैं
+                if (['name', 'designation', 'company', 'location', 'branchcode', 'mobile', 'email', 'address'].includes(field)) {
                     updates[field] = input.value.trim();
                 }
             });
@@ -833,7 +861,6 @@ window.onload = function() {
                 saveBtn.innerHTML = `<i class="fa-solid fa-check me-1"></i> Save Changes`;
             }
         }
-
         function checkAndDeletePreview(empCode) {
             empCode = empCode.trim();
             const previewBox = document.getElementById("deletePreviewBox");
