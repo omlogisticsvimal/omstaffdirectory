@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Upload | OM Directory</title>
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <style>
@@ -35,7 +38,18 @@
         </button>
     </div>
 
-        <script>
+    <!-- 🔥 ALL SCRIPTS LOADED HERE (Error-Free) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // 🟢 Verification: Agar library load nahi hui toh error dikhao
+        if (typeof XLSX === 'undefined') {
+            document.getElementById('uploadStatus').innerHTML = `<span class="text-danger fw-bold">❌ Error: XLSX library failed to load. Please refresh the page.</span>`;
+            throw new Error("XLSX library not loaded");
+        }
+
         const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waWtldHpoZ3Nja2thY2J4eHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzY5MTYsImV4cCI6MjEwMTYxMjkxNn0.QeXDPFLKiFgbBYJ1nGY4Hw17LJba53-4hD7cYfoaf10";
 
@@ -188,12 +202,12 @@
                         }
                     }
 
-                    // 5. Perform Batch Update (For Existing Records) - WITH ROBUST ERROR HANDLING
+                    // 5. Perform Batch Update (For Existing Records)
                     if (toUpdate.length > 0) {
                         for (let i = 0; i < toUpdate.length; i++) {
                             const record = toUpdate[i];
                             
-                            // ✅ `update` me saare fields daale hain, taaki kuch bhi chhoote nahi
+                            // ✅ `update` me saare fields daale hain
                             const { error } = await supabaseClient
                                 .from('staff')
                                 .update({
@@ -238,7 +252,7 @@
                                 <strong>Partial Result:</strong> ${successInsert} Inserted, ${successUpdate} Updated.
                             </div>
                         `;
-                        return; // Code ko yahan rok do taaki sahi report na dikhe
+                        return;
                     }
 
                     // Final Success Report
@@ -255,7 +269,7 @@
                                     <span class="fw-bold">${totalNewInserted}</span>
                                 </div>
                                 <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
-                                    <span>🔄 Existing Records Updated (Mobile, Branch, etc):</span>
+                                    <span>🔄 Existing Records Updated:</span>
                                     <span class="fw-bold text-success">${totalExistingUpdated}</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
