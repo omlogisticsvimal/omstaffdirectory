@@ -25,7 +25,7 @@
         .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12); }
         .stat-box .title { font-size: 0.75rem; font-weight: 700; color: #6c757d; text-transform: uppercase; }
         .stat-box .value { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
-.staff-card { 
+        .staff-card { 
             background: #ffffff; 
             border-radius: 14px; 
             padding: 18px; 
@@ -34,32 +34,31 @@
             position: relative; 
             transition: transform 0.2s ease, box-shadow 0.2s ease; 
             cursor: pointer; 
-            text-wrap: balance; /* 🟢 यह टेक्स्ट को लेफ्ट-राइट बैलेंस करके तोड़ेगा */
+            text-wrap: balance; 
         }
         .staff-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 48, 134, 0.12); border-color: var(--primary-purple); }
         .avatar-circle { width: 42px; height: 42px; background-color: #e0e7ff; color: #3730a3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
-                /* नया User Icon Avatar */
         .avatar-icon {
             width: 42px; height: 42px;
-            background-color: #3b3086; /* पर्पल बैकग्राउंड (आप #3b82f6 नीला भी कर सकते हैं) */
+            background-color: #3b3086;
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem; /* Icon का साइज */
+            font-size: 1.2rem;
         }
         .emp-badge { 
             background-color: #3b82f6; 
             color: white; 
-            font-size: 0.75rem; /* 🟢 थोड़ा छोटा किया ताकि ज्यादा जगह न ले */
+            font-size: 0.75rem; 
             padding: 4px 10px; 
             border-radius: 20px; 
             font-weight: 600; 
-            white-space: nowrap; /* 🟢 यह बैज को एक ही लाइन में रखेगा */
-            max-width: 110px; /* 🟢 बैज की अधिकतम चौड़ाई तय की */
+            white-space: nowrap; 
+            max-width: 110px; 
             overflow: hidden;
-            text-overflow: ellipsis; /* अगर फिर भी बड़ा है तो ... लगा देगा */
+            text-overflow: ellipsis;
         }
         .btn-action-green { background-color: #10b981; color: white; border: none; }
         .btn-action-red { background-color: #ef4444; color: white; border: none; }
@@ -99,17 +98,25 @@
                 <span class="fw-bold text-white small" style="font-size: 0.8rem;">Connected</span>
             </div>
             <button class="btn btn-warning btn-sm px-3 rounded-3 fw-bold admin-only" onclick="window.location.href='upload.html'">
-                <i class="fa-solid fa-database me-1"></i> Admin Upload
+                <i class="fa-solid fa-database me-1"></i> DB Upload
             </button>
             <button class="btn btn-dark btn-sm px-3 rounded-3 fw-bold admin-only" onclick="deleteAllStaffData()">
-                <i class="fa-solid fa-trash-can me-1"></i> Delete All DB Records
+                <i class="fa-solid fa-trash-can me-1"></i> Format DB
             </button>
             
             <button class="btn btn-action-red btn-sm px-3 rounded-3" data-bs-toggle="modal" data-bs-target="#deleteStaffModal">
                 <i class="fa-solid fa-trash me-1"></i> Delete
             </button>  
             <button class="btn btn-info btn-sm px-3 rounded-3 fw-bold text-white admin-only" onclick="window.location.href='convert.html'">
-                <i class="fa-solid fa-file-export me-1"></i> Convert Directory Raw File
+                <i class="fa-solid fa-file-export me-1"></i> Convert File
+            </button>
+            <button class="btn btn-info btn-sm px-3 rounded-3 fw-bold text-white admin-only" onclick="window.location.href='live-users.html'">
+                <i class="fa-solid fa-users-viewfinder me-1"></i> Live Users
+            </button>   
+            
+            <!-- 🟢 Updated Profile Button (Points to new Password Modal) -->
+            <button class="btn btn-outline-light btn-sm px-3 rounded-3 me-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <i class="fa-solid fa-key me-1"></i> Change Password
             </button>
             <button class="btn btn-outline-light btn-sm px-3 rounded-3 ms-1" onclick="logout()">
                 <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
@@ -212,7 +219,7 @@
                     <h5 class="fw-bold text-primary"><i class="fa-solid fa-user-plus me-2"></i>Add New Staff</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                                <div class="modal-body pt-3">
+                <div class="modal-body pt-3">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">EMP CODE</label>
@@ -277,7 +284,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="resetEditState()"></button>
                 </div>
                 
-                                <div class="modal-body pt-3" id="editFormContainer">
+                <div class="modal-body pt-3" id="editFormContainer">
                     <div class="row g-2">
                         <!-- 🟢 Name Field Added -->
                         <div class="col-md-6">
@@ -402,7 +409,44 @@
         </div>
     </div>
 
-    <!-- Create User Modal -->
+    <!-- 🟢 NEW: Change Password Modal (Separate from Profile) -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-primary"><i class="fa-solid fa-key me-2"></i>Change My Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-bold small text-secondary">EMPLOYEE ID</label>
+                        <input type="text" id="changePassEmpId" class="form-control bg-light" readonly placeholder="Your Emp ID">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-bold small text-secondary">CURRENT PASSWORD</label>
+                        <input type="password" id="changePassCurrent" class="form-control" placeholder="Enter current password">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-bold small text-secondary">NEW PASSWORD</label>
+                        <input type="password" id="changePassNew" class="form-control" placeholder="Enter new password">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-bold small text-secondary">CONFIRM NEW PASSWORD</label>
+                        <input type="password" id="changePassConfirm" class="form-control" placeholder="Re-enter new password">
+                    </div>
+                    <div id="changePassMsg" class="small fw-bold text-start mb-2"></div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold" style="background-color: var(--primary-purple); border: none;" onclick="executePasswordChange()">
+                        <i class="fa-solid fa-save me-1"></i> Update Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Create User Modal (Correctly placed OUTSIDE the Change Password Modal) -->
     <div class="modal fade" id="createUserModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg p-3">
@@ -412,8 +456,8 @@
                 </div>
                 <div class="modal-body pt-3">
                     <div class="mb-3">
-                        <label class="form-label fw-bold small text-secondary">USERNAME</label>
-                        <input type="text" id="newUsername" class="form-control" placeholder="Enter username">
+                        <label class="form-label fw-bold small text-secondary">EMPLOYEE ID</label>
+                        <input type="text" id="newUserEmpId" class="form-control" placeholder="Enter Employee ID (e.g. 15743)">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-secondary">PASSWORD</label>
@@ -433,6 +477,18 @@
                         <i class="fa-solid fa-check me-1"></i> Create User
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟢 Custom Toast Notification for Alerts -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+        <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">
+                    This is a notification message.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
@@ -462,48 +518,59 @@
         const PAGE_SIZE = 100;
         let currentFilteredData = [];
 
-        // ✅ YEH CODE DASHBOARD.JS KE SHURU MEIN DAALEIN (Before window.onload)
-function checkLoginExpiry() {
-    const loginTime = localStorage.getItem("loginTime");
-    const loginStatus = localStorage.getItem("login");
+        function checkLoginExpiry() {
+            const loginTime = localStorage.getItem("loginTime");
+            const loginStatus = localStorage.getItem("login");
 
-    // Agar login nahi hai, toh seedha logout
-    if (loginStatus !== "yes") {
-        window.location.href = "index.html";
-        return;
-    }
+            if (loginStatus !== "yes") {
+                window.location.href = "index.html";
+                return;
+            }
 
-    if (loginTime) {
-        const currentTime = Date.now();
-        const elapsedTime = currentTime - parseInt(loginTime);
-        const twentyFourHours = 10 * 60 * 60 * 1000; // 10 hours in milliseconds
+            if (loginTime) {
+                const currentTime = Date.now();
+                const elapsedTime = currentTime - parseInt(loginTime);
+                const twentyFourHours = 10 * 60 * 60 * 1000; // 10 hours
 
-        // Agar 24 ghante se zyada ho gaye
-        if (elapsedTime >= twentyFourHours) {
-            alert("Your session has expired. Please login again."); // Optional: User ko batao
-            localStorage.clear(); // Saara data clear kar do
-            window.location.href = "index.html"; // Login page par bhej do
+                if (elapsedTime >= twentyFourHours) {
+                    alert("Your session has expired. Please login again.");
+                    localStorage.clear();
+                    window.location.href = "index.html";
+                }
+            } else {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
         }
-    } else {
-        // Agar loginTime missing hai (Edge case), toh force logout
-        localStorage.clear();
-        window.location.href = "index.html";
-    }
-}
 
-// Apne existing window.onload function ke andar, sabse pehle ise call karein:
-window.onload = function() {
-    checkLoginExpiry(); // ✅ YEH LINE SABSE PEHLE CALL KAREIN
-    
-    if (localStorage.getItem("login") !== "yes") {
-        window.location.href = "index.html";
-        return;
-    }
-    displayCurrentUserInfo();
-    fetchStaffFromDatabase();
-};
+        window.onload = function() {
+            checkLoginExpiry();
+            
+            if (localStorage.getItem("login") !== "yes") {
+                window.location.href = "index.html";
+                return;
+            }
+            displayCurrentUserInfo();
 
-        
+            // 🟢 Ping System
+            const currentEmpId = localStorage.getItem("currentEmpId");
+            if (currentEmpId) {
+                const pingUser = async () => {
+                    try {
+                        await supabaseClient
+                            .from('user_sessions')
+                            .update({ last_ping_time: new Date().toISOString() })
+                            .eq('empid', currentEmpId);
+                    } catch (err) {
+                        console.error("Ping failed:", err);
+                    }
+                };
+                pingUser();
+                setInterval(pingUser, 15000);
+            }
+            fetchStaffFromDatabase();
+        };
+
         function displayCurrentUserInfo() {
             const username = localStorage.getItem("currentUser") || "GUEST";
             const role = localStorage.getItem("userRole") || "User";
@@ -526,7 +593,6 @@ window.onload = function() {
             }
         }
 
-        // 🟢 Fetch ALL records using Pagination
         async function fetchStaffFromDatabase() {
             try {
                 document.getElementById("totalRecordCount").innerText = "Loading...";
@@ -570,7 +636,6 @@ window.onload = function() {
                 document.getElementById("searchInput").disabled = false;
                 document.getElementById("branchSelect").disabled = false;
 
-                // 🟢 Reset limit and render first chunk
                 currentLimit = PAGE_SIZE;
                 currentFilteredData = allStaffData;
                 renderStaffGrid(currentFilteredData.slice(0, currentLimit));
@@ -583,7 +648,6 @@ window.onload = function() {
             }
         }
 
-        // 🟢 OPTIMIZED: Renders only the current limit
         function renderStaffGrid(dataList) {
             const grid = document.getElementById("staffCardGrid");
             grid.innerHTML = "";
@@ -609,7 +673,7 @@ window.onload = function() {
 
                 const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
 
-                                let mobileHtml = `
+                let mobileHtml = `
                     <div class="d-flex align-items-center">
                         <i class="fa-solid fa-phone me-2 text-muted"></i>
                         <span>${mobile}</span>
@@ -629,8 +693,8 @@ window.onload = function() {
                     `;
                 }
                 mobileHtml += `</div>`;
-                
-                                const tempDiv = document.createElement('div');
+
+                const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = `
                     <div class="col-md-4">
                         <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
@@ -644,7 +708,6 @@ window.onload = function() {
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <span class="emp-badge">Emp ID : ${empId}</span>
-                                    <!-- 🟢 यहां Delete Icon Add किया गया है -->
                                     <button onclick="event.stopPropagation(); openDeleteModalFromCard('${empId}')" class="btn btn-link p-0 ms-2 text-danger" title="Delete Staff" style="font-size: 1.1rem; border: none; background: none;">
                                         <i class="fa-solid fa-trash-can fa-lg"></i>
                                     </button>
@@ -664,7 +727,6 @@ window.onload = function() {
 
             grid.appendChild(fragment);
 
-            // 🟢 Manage Load More Button
             const loadMoreContainer = document.getElementById("loadMoreContainer");
             if (currentFilteredData.length > currentLimit) {
                 loadMoreContainer.style.display = 'block';
@@ -674,7 +736,6 @@ window.onload = function() {
             }
         }
 
-        // 🟢 LOAD MORE FUNCTION
         function loadMore() {
             currentLimit += PAGE_SIZE;
             const nextChunk = currentFilteredData.slice(currentLimit - PAGE_SIZE, currentLimit);
@@ -696,7 +757,7 @@ window.onload = function() {
 
                     const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
 
-                                        let mobileHtml = `
+                    let mobileHtml = `
                         <div class="d-flex align-items-center">
                             <i class="fa-solid fa-phone me-2 text-muted"></i>
                             <span>${mobile}</span>
@@ -716,8 +777,8 @@ window.onload = function() {
                         `;
                     }
                     mobileHtml += `</div>`;
-                    
-                                        const tempDiv = document.createElement('div');
+
+                    const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = `
                         <div class="col-md-4">
                             <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
@@ -731,7 +792,6 @@ window.onload = function() {
                                     </div>
                                     <div class="d-flex align-items-center">
                                         <span class="emp-badge">Emp ID : ${empId}</span>
-                                        <!-- 🟢 यहां भी Delete Icon Add किया गया है -->
                                         <button onclick="event.stopPropagation(); openDeleteModalFromCard('${empId}')" class="btn btn-link p-0 ms-2 text-danger" title="Delete Staff" style="font-size: 1.1rem; border: none; background: none;">
                                             <i class="fa-solid fa-trash-can fa-lg"></i>
                                         </button>
@@ -751,7 +811,6 @@ window.onload = function() {
 
                 grid.appendChild(fragment);
 
-                // Update Load More Button
                 if (currentFilteredData.length > currentLimit) {
                     document.getElementById("loadMoreBtn").innerText = `Load More (${currentLimit} / ${currentFilteredData.length} shown)`;
                 } else {
@@ -760,7 +819,7 @@ window.onload = function() {
             }
         }
 
-                function openProfileModal(item) {
+        function openProfileModal(item) {
             currentEditingItem = item;
             resetEditState();
 
@@ -772,10 +831,7 @@ window.onload = function() {
             document.getElementById("modalLocation").innerHTML = `<i class="fa-solid fa-location-dot me-1"></i> ${(item.location || "MAIN OFFICE").toUpperCase()}`;
             document.getElementById("modalEmpCode").innerText = item.empid || "N/A";
             
-            // ✅ Branch Code
             document.getElementById("modalBranchCode").innerText = item.branchcode || "N/A";
-            
-            // ✅ Name field (Modal mein edit karne ke liye)
             document.getElementById("modalNameVal").innerText = name.toUpperCase();
             
             document.getElementById("modalDesignation").innerText = item.designation || "N/A";
@@ -788,6 +844,7 @@ window.onload = function() {
             const modal = new bootstrap.Modal(document.getElementById('profileModal'));
             modal.show();
         }
+
         function toggleEditMode(enable) {
             const container = document.getElementById('editFormContainer');
             const editBtn = document.getElementById('editBtn');
@@ -826,7 +883,7 @@ window.onload = function() {
             document.getElementById('cancelEditBtn').classList.add('d-none');
         }
 
-                async function saveStaffChanges() {
+        async function saveStaffChanges() {
             if (!currentEditingItem) return;
 
             const container = document.getElementById('editFormContainer');
@@ -834,7 +891,6 @@ window.onload = function() {
             
             container.querySelectorAll('input[data-field]').forEach(input => {
                 const field = input.dataset.field;
-                // 🟢 अब 'name' और 'branchcode' भी इसमें शामिल हैं
                 if (['name', 'designation', 'company', 'location', 'branchcode', 'mobile', 'email', 'address'].includes(field)) {
                     updates[field] = input.value.trim();
                 }
@@ -872,6 +928,7 @@ window.onload = function() {
                 saveBtn.innerHTML = `<i class="fa-solid fa-check me-1"></i> Save Changes`;
             }
         }
+
         function checkAndDeletePreview(empCode) {
             empCode = empCode.trim();
             const previewBox = document.getElementById("deletePreviewBox");
@@ -945,13 +1002,10 @@ window.onload = function() {
             document.getElementById("confirmDeleteBtn").disabled = true;
             foundStaffForDelete = null;
         }
-                // 🟢 Card par click karne par Delete Modal open karne ka naya function
+
         function openDeleteModalFromCard(empId) {
-            // Input field mein Emp ID auto-fill kar do
             document.getElementById("deleteEmpCodeInput").value = empId;
-            // Preview check trigger kar do
             checkAndDeletePreview(empId);
-            // Modal ko open kar do
             const modal = new bootstrap.Modal(document.getElementById('deleteStaffModal'));
             modal.show();
         }
@@ -966,7 +1020,6 @@ window.onload = function() {
             });
         }
 
-        // 🟢 OPTIMIZED SEARCH (Debounce 500ms)
         function filterStaffData() {
             clearTimeout(searchTimeout);
             
@@ -977,7 +1030,6 @@ window.onload = function() {
                 const query = document.getElementById("searchInput").value.toLowerCase().trim();
                 const branchCodeQuery = document.getElementById("branchCodeInput").value.trim();
 
-                // 🟢 FIX: Agar Branch Code input mein kuch likha hai to dropdown ko ALL pe reset kar do
                 if (branchCodeQuery) {
                     document.getElementById("branchSelect").value = "ALL";
                 }
@@ -1003,6 +1055,7 @@ window.onload = function() {
                 renderStaffGrid(currentFilteredData.slice(0, currentLimit));
             }, 500);
         }
+
         function clearSearch() {
             document.getElementById("searchInput").value = "";
             document.getElementById("branchSelect").value = "ALL";
@@ -1016,47 +1069,78 @@ window.onload = function() {
         }
 
         function logout() {
+            const currentEmpId = localStorage.getItem("currentEmpId");
+            if (currentEmpId && supabaseClient) {
+                supabaseClient
+                    .from('user_sessions')
+                    .delete()
+                    .eq('empid', currentEmpId)
+                    .then(() => console.log("Session removed"))
+                    .catch(err => console.error("Logout delete error:", err));
+            }
+
             localStorage.removeItem("login");
             localStorage.removeItem("currentUser");
             localStorage.removeItem("userRole");
+            localStorage.removeItem("loginTime");
+            localStorage.removeItem("currentEmpId");
             window.location.href = "index.html";
         }
 
         function openAddUserModal() {
             const role = localStorage.getItem("userRole") || "User";
             if (role.toLowerCase() !== "admin") {
-                alert("Aapke paas user create karne ki permission nahi hai!");
+                showToast("Aapke paas user create karne ki permission nahi hai!", "warning");
                 return;
             }
             const modal = new bootstrap.Modal(document.getElementById('createUserModal'));
             modal.show();
         }
 
+        // 🟢 Corrected executeCreateUser function (matches the new Modal IDs)
         async function executeCreateUser() {
-            const usernameInput = document.getElementById("newUsername");
+            const empIdInput = document.getElementById("newUserEmpId");
             const passwordInput = document.getElementById("newPassword");
             const roleInput = document.getElementById("newUserRole");
 
-            const username = usernameInput.value.trim();
+            const empId = empIdInput.value.trim();
             const password = passwordInput.value.trim();
             const role = roleInput.value;
 
-            if (!username || !password) {
-                alert("Please enter username and password!");
+            if (!empId || !password) {
+                showToast("Please enter Employee ID and Password!", "warning");
                 return;
             }
 
             try {
+                const { data: existing, error: checkError } = await supabaseClient
+                    .from('app_users')
+                    .select('empid')
+                    .eq('empid', empId)
+                    .maybeSingle();
+
+                if (checkError) {
+                    console.error("Check Error:", checkError);
+                    showToast("Error checking existing user!", "error");
+                    return;
+                }
+
+                if (existing) {
+                    showToast(`❌ User with Employee ID "${empId}" already exists!`, "error");
+                    return;
+                }
+
                 const { error } = await supabaseClient
                     .from('app_users')
-                    .insert([{ username: username, password: password, role: role }]);
+                    .insert([{ empid: empId, password: password, role: role }]);
 
                 if (error) throw error;
 
-                alert(`✅ Success! User '${username}' successfully created.`);
+                showToast(`✅ Success! User (Emp ID: ${empId}) created successfully.`, "success");
                 
-                usernameInput.value = "";
+                empIdInput.value = "";
                 passwordInput.value = "";
+                roleInput.value = "user";
                 
                 const modalEl = document.getElementById('createUserModal');
                 const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -1064,7 +1148,7 @@ window.onload = function() {
 
             } catch (err) {
                 console.error("Create User Error:", err);
-                alert("❌ User create karne mein error aayi: " + err.message);
+                showToast("❌ Error creating user: " + err.message, "error");
             }
         }
 
@@ -1242,6 +1326,103 @@ window.onload = function() {
             } finally {
                 document.getElementById('loadingOverlay').classList.remove('show');
             }
+        }
+
+        const changePassModalEl = document.getElementById('changePasswordModal');
+        changePassModalEl.addEventListener('show.bs.modal', function () {
+            const empId = localStorage.getItem("currentEmpId") || "N/A";
+            document.getElementById("changePassEmpId").value = empId;
+            document.getElementById("changePassCurrent").value = "";
+            document.getElementById("changePassNew").value = "";
+            document.getElementById("changePassConfirm").value = "";
+            document.getElementById("changePassMsg").innerText = "";
+        });
+
+        async function executePasswordChange() {
+            const empId = document.getElementById("changePassEmpId").value.trim();
+            const currentPass = document.getElementById("changePassCurrent").value.trim();
+            const newPass = document.getElementById("changePassNew").value.trim();
+            const confirmPass = document.getElementById("changePassConfirm").value.trim();
+            const msgEl = document.getElementById("changePassMsg");
+
+            if (!currentPass || !newPass || !confirmPass) {
+                msgEl.style.color = "#dc2626";
+                msgEl.innerText = "Please fill in all password fields.";
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                msgEl.style.color = "#dc2626";
+                msgEl.innerText = "New Password and Confirm Password do not match.";
+                return;
+            }
+
+            if (newPass.length < 4) {
+                msgEl.style.color = "#dc2626";
+                msgEl.innerText = "New password must be at least 4 characters.";
+                return;
+            }
+
+            msgEl.style.color = "#2563eb";
+            msgEl.innerText = "Verifying current password...";
+
+            try {
+                const { data: userData, error: userError } = await supabaseClient
+                    .from('app_users')
+                    .select('empid')
+                    .eq('empid', empId)
+                    .eq('password', currentPass)
+                    .single();
+
+                if (userError || !userData) {
+                    msgEl.style.color = "#dc2626";
+                    msgEl.innerText = "❌ Current password is incorrect.";
+                    return;
+                }
+
+                msgEl.style.color = "#2563eb";
+                msgEl.innerText = "Updating password...";
+
+                const { error: updateError } = await supabaseClient
+                    .from('app_users')
+                    .update({ password: newPass })
+                    .eq('empid', empId);
+
+                if (updateError) throw updateError;
+
+                showToast("✅ Password changed successfully! Please use the new password next time.", "success");
+                
+                const modalEl = document.getElementById('changePasswordModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+
+            } catch (err) {
+                console.error("Password Change Error:", err);
+                msgEl.style.color = "#dc2626";
+                msgEl.innerText = "Error updating password: " + (err.message || "Unknown error");
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toastEl = document.getElementById('liveToast');
+            const toastBody = document.getElementById('toastMessage');
+            
+            if (!toastEl || !toastBody) {
+                alert(message);
+                return;
+            }
+
+            const toast = new bootstrap.Toast(toastEl);
+
+            toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+
+            if (type === 'success') toastEl.classList.add('bg-success');
+            else if (type === 'error' || type === 'danger') toastEl.classList.add('bg-danger');
+            else if (type === 'warning') toastEl.classList.add('bg-warning');
+            else toastEl.classList.add('bg-info');
+
+            toastBody.innerText = message;
+            toast.show();
         }
     </script>
 </body>
