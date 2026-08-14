@@ -179,10 +179,10 @@
 
             <form onsubmit="event.preventDefault(); handleLogin();">
                 <div class="mb-3 text-start">
-                    <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Username</label>
+                    <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Employee ID</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
-                        <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+                        <span class="input-group-text"><i class="fa-regular fa-id-card"></i></span>
+                        <input type="text" id="empid" class="form-control" placeholder="Enter Employee ID (e.g. 15743)" required>
                     </div>
                 </div>
                 <div class="mb-3 text-start">
@@ -236,21 +236,15 @@
             }
         }
 
-        async function logUserLogin(username, role) {
-            if (!supabaseClient) return;
-            try {
-                await supabaseClient.from('user_sessions').insert([{ username: username, role: role }]);
-            } catch (err) { console.error("Logging failed:", err); }
-        }
-
+        // 🟢 CORRECTED SINGLE handleLogin FUNCTION (No duplicates, No logUserLogin)
         async function handleLogin() {
-            let u = document.getElementById("username").value.trim();
+            let e = document.getElementById("empid").value.trim();
             let p = document.getElementById("password").value.trim();
             let msgEl = document.getElementById("msg");
 
-            if (!u || !p) {
+            if (!e || !p) {
                 msgEl.style.color = "#dc2626";
-                msgEl.innerText = "Please enter Username & Password!";
+                msgEl.innerText = "Please enter Employee ID & Password!";
                 return;
             }
 
@@ -262,33 +256,63 @@
                     throw new Error("Supabase client not initialized!");
                 }
 
-                const { data, error } = await supabaseClient
+                // Step 1: Check user in app_users table
+                const { data: userData, error: userError } = await supabaseClient
                     .from('app_users')
                     .select('*')
-                    .eq('password', p);
+                    .eq('empid', e)
+                    .eq('password', p)
+                    .single();
 
-                if (error) {
-                    throw new Error(error.message);
+                if (userError) {
+                    if (userError.code === 'PGRST116') {
+                        msgEl.style.color = "#dc2626";
+                        msgEl.innerText = "Invalid Employee ID or Password!";
+                        return;
+                    }
+                    throw new Error(userError.message);
                 }
 
-                if (data && data.length > 0) {
-                    const matchedUser = data.find(user => user.username.toLowerCase() === u.toLowerCase());
+                if (userData) {
+                    // Step 2: Fetch Real Name from staff table
+                    const { data: staffData, error: staffError } = await supabaseClient
+                        .from('staff')
+                        .select('name')
+                        .eq('empid', e)
+                        .single();
 
-                    if (matchedUser) {
-                        localStorage.setItem("login", "yes");
-                        localStorage.setItem("currentUser", matchedUser.username);
-                        localStorage.setItem("userRole", matchedUser.role || "User");
-                        localStorage.setItem("loginTime", Date.now());
-
-                        await logUserLogin(matchedUser.username, matchedUser.role);
-                        window.location.href = "dashboard.html";
-                    } else {
-                        msgEl.style.color = "#dc2626";
-                        msgEl.innerText = "Invalid Username or Password!";
+                    let displayName = e;
+                    if (!staffError && staffData) {
+                        displayName = staffData.name.toUpperCase();
                     }
-                } else {
-                    msgEl.style.color = "#dc2626";
-                    msgEl.innerText = "Invalid Username or Password!";
+
+                    localStorage.setItem("login", "yes");
+                    localStorage.setItem("currentUser", displayName);
+                    localStorage.setItem("currentEmpId", e);
+                    localStorage.setItem("userRole", userData.role || "User");
+                    localStorage.setItem("loginTime", Date.now());
+
+                    // 🟢 Insert session into user_sessions table with Error reporting
+                    if (supabaseClient) {
+                        const { error: insertError } = await supabaseClient
+                            .from('user_sessions')
+                            .insert([{ empid: e, user_name: displayName }]);
+                        
+                        if (insertError) {
+                            console.error("🔴 Session Insert Error:", insertError);
+                            msgEl.style.color = "#dc2626";
+                            if (insertError.message.includes("violates row-level security")) {
+                                msgEl.innerText = "❌ Database blocked! Please TURN OFF RLS for 'user_sessions' table in Supabase.";
+                            } else {
+                                msgEl.innerText = "❌ DB Error: " + insertError.message;
+                            }
+                            return; // Stop login if session fails
+                        } else {
+                            console.log("✅ Session saved successfully to DB!");
+                        }
+                    }
+
+                    window.location.href = "dashboard.html";
                 }
 
             } catch (err) {
