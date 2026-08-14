@@ -15,7 +15,6 @@
             padding: 20px; 
         }
 
-        /* 🟢 Main Container */
         .main-card { 
             background: #ffffff; 
             border-radius: 16px; 
@@ -24,7 +23,6 @@
             border: 1px solid #e9eef3;
         }
 
-        /* 🟢 Header Styling */
         .header-title { font-size: 1.6rem; font-weight: 700; color: #111827; }
         .header-title i { color: #1e293b; }
         
@@ -43,7 +41,6 @@
         }
         .btn-back:hover { background: #2d236e; color: white; }
 
-        /* 🟢 Cards - FIXED ALIGNMENT */
         .stat-card { 
             border-radius: 12px; padding: 16px 20px; 
             text-align: center; color: white; 
@@ -52,13 +49,12 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 80px; /* Height ko thoda fix kiya taaki sab barabar dikhein */
+            min-height: 80px;
         }
         .stat-number { font-size: 1.8rem; font-weight: 700; line-height: 1.2; margin-top: 2px; }
         .stat-label { font-size: 0.7rem; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
         .stat-label i { font-size: 0.65rem; }
 
-        /* 🟢 Clean Table */
         .table-clean th {
             background: #ffffff; color: #6b7280; font-weight: 600; 
             font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
@@ -91,6 +87,13 @@
             border-top: 1px solid #e5e7eb; margin-top: 5px;
         }
 
+        /* 🔄 Refreshing Animation Overlay */
+        .refreshing-overlay {
+            pointer-events: none;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
         @media (max-width: 768px) {
             .header-title { font-size: 1.2rem; }
             .stat-number { font-size: 1.4rem; }
@@ -108,30 +111,27 @@
                 <i class="fa-solid fa-users-viewfinder me-2"></i>Live Active Users
             </div>
             <div class="d-flex align-items-center gap-2">
-                <span class="live-badge"><i class="fa-solid fa-circle"></i> Live</span>
+                <span class="live-badge"><i class="fa-solid fa-circle"></i> Live </span>
                 <button class="btn btn-back" onclick="window.location.href='dashboard.html'">
                     <i class="fa-solid fa-arrow-left me-1"></i> Back
                 </button>
             </div>
         </div>
 
-        <!-- 🟢 Stats Cards (Perfect Alignment) -->
+        <!-- 🟢 Stats Cards -->
         <div class="row g-3 mb-4">
-            <!-- Card 1: Purple (Active) -->
             <div class="col-md-4">
                 <div class="stat-card" style="background: #2d236e;">
                     <div class="stat-label"><i class="fa-regular fa-circle-dot"></i> ACTIVE</div>
                     <div class="stat-number" id="liveCount">0</div>
                 </div>
             </div>
-            <!-- Card 2: Blue (Refresh) -->
             <div class="col-md-4">
                 <div class="stat-card" style="background: #2c5282;">
-                    <div class="stat-label"><i class="fa-regular fa-clock"></i> REFRESH</div>
-                    <div class="stat-number" style="font-size: 1.2rem;">Realtime</div>
+                    <div class="stat-label"><i class="fa-regular fa-clock"></i>Om Logistics Directory Live User</div>
+                    <div class="stat-number" style="font-size: 1.2rem;">For Admin </div>
                 </div>
             </div>
-            <!-- Card 3: Green (Updated) -->
             <div class="col-md-4">
                 <div class="stat-card" style="background: #276749;">
                     <div class="stat-label"><i class="fa-regular fa-calendar"></i> UPDATED</div>
@@ -142,7 +142,7 @@
 
         <!-- 🟢 Table -->
         <div class="main-card">
-            <div class="table-responsive">
+            <div class="table-responsive" id="tableContainer">
                 <table class="table table-clean mb-0">
                     <thead>
                         <tr>
@@ -156,7 +156,7 @@
                     <tbody id="liveUsersTableBody">
                         <tr>
                             <td colspan="5" class="text-center text-muted py-4">
-                                <i class="fa-solid fa-spinner fa-spin me-2"></i> Connecting to live stream...
+                                <i class="fa-solid fa-spinner fa-spin me-2"></i> Loading...
                             </td>
                         </tr>
                     </tbody>
@@ -185,6 +185,8 @@
             "https://npiketzhgsckkacbxxqb.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waWtldHpoZ3Nja2thY2J4eHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzY5MTYsImV4cCI6MjEwMTYxMjkxNn0.QeXDPFLKiFgbBYJ1nGY4Hw17LJba53-4hD7cYfoaf10"
         );
+
+        let refreshInterval = null;
 
         async function fetchLiveUsers() {
             try {
@@ -228,14 +230,13 @@
                                 <td><span class="emp-badge">${user.empid}</span></td>
                                 <td class="fw-bold">${user.user_name || 'N/A'}</td>
                                 <td class="text-muted">${timeString}</td>
-                                <td><span class="status-active"><i class="fa-solid fa-circle"></i> Active</span></td>
+                                <td><span class="status-active"><i class="fa-solid fa-circle me-1"></i> Active</span></td>
                             </tr>
                         `;
                     });
                     tbody.innerHTML = html;
                 }
 
-                // Update time in the green card
                 document.getElementById('lastUpdated').innerText = new Date().toLocaleTimeString();
 
             } catch (err) {
@@ -250,16 +251,26 @@
             }
         }
 
+        // 🟢 Function to trigger a flash blink effect on refresh
+        function refreshWithAnimation() {
+            const container = document.getElementById('tableContainer');
+            container.classList.add('refreshing-overlay');
+            
+            fetchLiveUsers().finally(() => {
+                setTimeout(() => {
+                    container.classList.remove('refreshing-overlay');
+                }, 200);
+            });
+        }
+
         // 1. Load instantly
-        fetchLiveUsers();
+        refreshWithAnimation();
 
-        // 2. 🔥 Supabase Realtime Live Connection (Bina refresh ke)
-        supabaseClient
-            .channel('live_users_sync')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'user_sessions' }, () => fetchLiveUsers())
-            .subscribe();
+        // 2. 🟢 Auto-Refresh every 5 Seconds (No manual refresh needed ever!)
+        if (refreshInterval) clearInterval(refreshInterval);
+        refreshInterval = setInterval(refreshWithAnimation, 1000);
 
-        console.log("✅ Real-time live stream connected.");
+        console.log("✅ Auto-Refresh system is active. Updates every 5 seconds.");
     </script>
 </body>
 </html>
