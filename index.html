@@ -293,23 +293,20 @@
                     localStorage.setItem("loginTime", Date.now());
 
                     // 🟢 Insert session into user_sessions table with Error reporting
+                                        // 🟢 Step 1: Pehle purani session delete karo (agar kisi aur device se login ho toh)
                     if (supabaseClient) {
+                        // Purani entry delete karo
+                        await supabaseClient
+                            .from('user_sessions')
+                            .delete()
+                            .eq('empid', e);
+
+                        // Ab nayi entry insert karo
                         const { error: insertError } = await supabaseClient
                             .from('user_sessions')
                             .insert([{ empid: e, user_name: displayName }]);
                         
-                        if (insertError) {
-                            console.error("🔴 Session Insert Error:", insertError);
-                            msgEl.style.color = "#dc2626";
-                            if (insertError.message.includes("violates row-level security")) {
-                                msgEl.innerText = "❌ Database blocked! Please TURN OFF RLS for 'user_sessions' table in Supabase.";
-                            } else {
-                                msgEl.innerText = "❌ DB Error: " + insertError.message;
-                            }
-                            return; // Stop login if session fails
-                        } else {
-                            console.log("✅ Session saved successfully to DB!");
-                        }
+                        if (insertError) console.error("Session Insert Error:", insertError);
                     }
 
                     window.location.href = "dashboard.html";
