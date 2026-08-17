@@ -90,7 +90,7 @@
         /* 🔄 Refreshing Animation Overlay */
         .refreshing-overlay {
             pointer-events: none;
-            opacity: 0.5;
+            opacity: 0.6;
             transition: opacity 0.2s;
         }
 
@@ -174,7 +174,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // 🟢 Security Check
+        // 🟢 Security Check (Client-side)
         const userRole = localStorage.getItem("userRole");
         if (!userRole || userRole.toLowerCase().trim() !== "admin") {
             alert("⚠️ Access Denied! Admins only.");
@@ -187,6 +187,15 @@
         );
 
         let refreshInterval = null;
+
+        // 🛡️ Helper Function to Prevent XSS Attacks
+        function escapeHTML(str) {
+            if (!str) return 'N/A';
+            return String(str).replace(/[&<>"']/g, match => {
+                const escapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return escapeMap[match];
+            });
+        }
 
         async function fetchLiveUsers() {
             try {
@@ -227,8 +236,8 @@
                         html += `
                             <tr>
                                 <td class="text-muted">${index + 1}</td>
-                                <td><span class="emp-badge">${user.empid}</span></td>
-                                <td class="fw-bold">${user.user_name || 'N/A'}</td>
+                                <td><span class="emp-badge">${escapeHTML(user.empid)}</span></td>
+                                <td class="fw-bold">${escapeHTML(user.user_name)}</td>
                                 <td class="text-muted">${timeString}</td>
                                 <td><span class="status-active"><i class="fa-solid fa-circle me-1"></i> Active</span></td>
                             </tr>
@@ -251,7 +260,7 @@
             }
         }
 
-        // 🟢 Function to trigger a flash blink effect on refresh
+        // 🟢 Flash effect during refresh
         function refreshWithAnimation() {
             const container = document.getElementById('tableContainer');
             container.classList.add('refreshing-overlay');
@@ -263,14 +272,14 @@
             });
         }
 
-        // 1. Load instantly
+        // 1. Initial Load
         refreshWithAnimation();
 
-        // 2. 🟢 Auto-Refresh every 5 Seconds (No manual refresh needed ever!)
+        // 2. 🟢 Auto-Refresh every 5 Seconds (5000 ms)
         if (refreshInterval) clearInterval(refreshInterval);
-        refreshInterval = setInterval(refreshWithAnimation, 1000);
+        refreshInterval = setInterval(refreshWithAnimation, 5000);
 
-        console.log("✅ Auto-Refresh system is active. Updates every 5 seconds.");
+        console.log("✅ Auto-Refresh system active. Updates every 5 seconds.");
     </script>
 </body>
 </html>
