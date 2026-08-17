@@ -19,26 +19,108 @@
             min-height: 100vh; 
             margin: 0;
             padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .upload-card { 
             background: #fff; 
             padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            border-radius: 24px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06); 
             width: 100%; 
-            max-width: 600px; 
+            max-width: 700px; 
             text-align: center; 
         }
+        
+        .upload-header {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .upload-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .upload-option-box {
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .upload-option-box:hover {
+            border-color: #3b3086;
+            background: #f3f4f6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 48, 134, 0.1);
+        }
+
+        .upload-option-box.selected {
+            border-color: #3b3086;
+            background: #f3f0ff;
+        }
+
+        .upload-option-box input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .upload-option-box .icon-box {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #3b3086;
+            color: white;
+            border-radius: 12px;
+            line-height: 40px;
+            text-align: center;
+            margin-right: 12px;
+        }
+
+        .option-title {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .option-desc {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .hidden-zone {
+            display: none;
+            margin-top: 20px;
+        }
+        .hidden-zone.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .drop-zone { 
             border: 2px dashed #3b3086; 
-            border-radius: 12px; 
-            padding: 30px; 
+            border-radius: 16px; 
+            padding: 40px 30px; 
             cursor: pointer; 
             transition: all 0.3s ease; 
-            background: #f8f9fa; 
+            background: #fff; 
         }
         .drop-zone:hover { 
-            background: #e2e8f0; 
+            background: #f8fafc; 
             border-color: #2d236e; 
         }
         #uploadStatus { 
@@ -50,31 +132,48 @@
 <body>
 
     <div class="upload-card">
-        <h3 class="mb-3 text-primary"><i class="fa-solid fa-cloud-upload-alt me-2"></i>Bulk Excel Upload</h3>
-        <p class="text-muted small">Upload your formatted Excel file. <strong>Existing EMP IDs will be UPDATED with new details.</strong></p>
-        
-        <label for="excelFileInput" class="drop-zone w-100 d-block mt-3">
-            <i class="fa-solid fa-file-excel fa-3x text-success mb-2"></i>
-            <div class="fw-bold">Click to Select Excel File</div>
-            <div class="text-muted small">(.xlsx, .xls)</div>
-            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleExcelUpload(event)">
-        </label>
+        <div class="upload-header">
+            <h3 class="mb-1 text-primary"><i class="fa-solid fa-cloud-upload-alt me-2"></i>Bulk Upload</h3>
+            <p class="text-muted small mb-0">Select the directory type you want to upload.</p>
+        </div>
 
-        <div id="uploadStatus" class="text-muted">Waiting for file...</div>
-        
-        <button class="btn btn-outline-secondary mt-3 w-100" onclick="window.location.href='dashboard.html'">
+        <!-- 🟢 Unified Upload -->
+        <div class="upload-options">
+            <label class="upload-option-box selected" id="optUnified">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box"><i class="fa-solid fa-file-excel"></i></div>
+                    <div class="text-start">
+                        <div class="option-title">Directory Excel Upload</div>
+                        <div class="option-desc">Corporate aur Branch dono files ke liye same module. Available columns automatically map honge.</div>
+                    </div>
+                </div>
+            </label>
+        </div>
+
+        <div id="unifiedZone" class="active">
+            <label for="directoryFileInput" class="drop-zone w-100 d-block">
+                <i class="fa-solid fa-file-arrow-up fa-3x text-primary mb-2"></i>
+                <div class="fw-bold">Click to Upload Directory Excel File</div>
+                <div class="text-muted small">Any sheet name allowed • Missing data will be saved as <strong>N/A</strong></div>
+                <input type="file" id="directoryFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleDirectoryUpload(event)">
+            </label>
+            <div id="uploadStatus" class="text-muted mt-2 small">Waiting for Excel file...</div>
+        </div>
+
+        <!-- 🟢 Back Button -->
+        <button class="btn btn-outline-secondary mt-4 w-100" onclick="window.location.href='dashboard.html'">
             <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
         </button>
     </div>
 
-    <!-- CDN Script Libraries -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
         if (typeof XLSX === 'undefined') {
-            document.getElementById('uploadStatus').innerHTML = `<span class="text-danger fw-bold">❌ Error: XLSX library failed to load. Please refresh.</span>`;
+            alert("❌ Error: XLSX library failed to load. Please refresh the page.");
             throw new Error("XLSX library not loaded");
         }
 
@@ -83,151 +182,231 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function handleExcelUpload(event) {
+        // Convert any Excel cell value to clean text.
+        function sanitizeText(val) {
+            if (val === null || val === undefined) return "";
+            return String(val).trim();
+        }
+
+        // Normalize a header so different spellings still map correctly.
+        function normalizeHeader(value) {
+            return sanitizeText(value)
+                .toUpperCase()
+                .replace(/[.]/g, "")
+                .replace(/[_-]+/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+        }
+
+        function findColumn(headers, type) {
+            return headers.findIndex(h => {
+                const x = normalizeHeader(h);
+
+                if (type === "company")
+                    return x === "COMPANY" || x.includes("COMPANY");
+                if (type === "location")
+                    return x === "STATE/ BRANCH" || x === "STATE / BRANCH" || x.includes("STATE") || x === "BRANCH" || x.includes("LOCATION");
+                if (type === "branchcode")
+                    return x === "BRANCH CODE" || x.includes("BRANCH CODE");
+                if (type === "address")
+                    return x === "ADDRESS" || x.includes("ADDRESS");
+                if (type === "empid")
+                    return x === "EMP CODE" || x.includes("EMP CODE") || x === "EMPLOYEE CODE" || x.includes("EMPLOYEE CODE");
+                if (type === "name")
+                    return x === "OFFICIAL" || x === "NAME" || x.includes("OFFICIAL") || x.includes("EMPLOYEE NAME");
+                if (type === "designation")
+                    return x === "DESIGNATION" || x.includes("DESIGNATION");
+                if (type === "mobile")
+                    return x === "CONTACT NO" || x.includes("CONTACT") || x.includes("MOBILE") || x.includes("PHONE");
+                if (type === "email")
+                    return x === "E MAIL" || x.includes("E MAIL") || x.includes("EMAIL");
+                if (type === "department")
+                    return x === "DEPARTMENT" || x.includes("DEPARTMENT");
+                if (type === "extension")
+                    return x === "EXTENSION" || x.includes("EXTENSION");
+                return false;
+            });
+        }
+
+        function valueFromRow(row, index, fallback = "N/A") {
+            if (index === -1) return fallback;
+            const value = sanitizeText(row[index]);
+            return value || fallback;
+        }
+
+        // Normalize Employee ID so values like 11707, "11707" and " 11707 "
+        // are treated as the same employee during duplicate checking/upsert.
+        function normalizeEmpId(value) {
+            return sanitizeText(value).replace(/\.0+$/, "").trim();
+        }
+
+        function findHeaderRow(rows) {
+            for (let i = 0; i < Math.min(rows.length, 20); i++) {
+                const rowStr = rows[i].map(cell => normalizeHeader(cell)).join(" ");
+                const hasEmp = rowStr.includes("EMP CODE") || rowStr.includes("EMPLOYEE CODE");
+                const hasName = rowStr.includes("OFFICIAL") || rowStr.includes("NAME");
+                if (hasEmp && hasName) return i;
+            }
+            return -1;
+        }
+
+        async function uploadToSupabase(records) {
+            const chunkSize = 200;
+
+            // IMPORTANT: empid is the unique key in the Supabase staff table.
+            // If an Employee ID already exists, upsert will UPDATE/OVERWRITE
+            // that employee's complete details instead of creating a duplicate.
+            for (let i = 0; i < records.length; i += chunkSize) {
+                const chunk = records.slice(i, i + chunkSize);
+                const { error } = await supabaseClient
+                    .from('staff')
+                    .upsert(chunk, {
+                        onConflict: 'empid',
+                        ignoreDuplicates: false
+                    });
+
+                if (error) {
+                    console.error("Supabase upload error:", error);
+                    throw new Error(`Database upload failed: ${error.message}`);
+                }
+            }
+        }
+
+        // 🟢 ONE UPLOAD MODULE FOR BOTH CORPORATE + BRANCH FILES
+        async function handleDirectoryUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Parsing Excel file... Please wait.</span>`;
+            statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Reading Excel file...</span>`;
 
             const reader = new FileReader();
             reader.onload = async function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    let allExtractedStaff = [];
+                    const workbook = XLSX.read(data, { type: 'array', raw: false });
+                    let allRecords = [];
+                    let sheetsProcessed = 0;
+                    let sheetsSkipped = 0;
 
-                    // 1. Excel Parsing
-                    for (let s = 0; s < workbook.SheetNames.length; s++) {
-                        const sheetName = workbook.SheetNames[s];
+                    for (const sheetName of workbook.SheetNames) {
                         const ws = workbook.Sheets[sheetName];
-                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-                        if (!rows || rows.length === 0) continue;
+                        const rows = XLSX.utils.sheet_to_json(ws, {
+                            header: 1,
+                            defval: "",
+                            raw: false
+                        });
 
-                        let headerRowIndex = -1;
-                        for (let i = 0; i < Math.min(rows.length, 10); i++) {
-                            const rowStr = rows[i].map(cell => String(cell).trim()).join(" ");
-                            if (rowStr.includes("EMP. CODE") && rowStr.includes("OFFICIAL")) {
-                                headerRowIndex = i;
-                                break;
-                            }
+                        if (!rows || rows.length === 0) {
+                            sheetsSkipped++;
+                            continue;
                         }
-                        if (headerRowIndex === -1) continue;
 
-                        const headers = rows[headerRowIndex].map(h => String(h).trim());
-                        
-                        const idxCompany = headers.findIndex(h => h.toUpperCase() === "COMPANY");
-                        const idxLocation = headers.findIndex(h => h.toUpperCase() === "STATE/ BRANCH");
-                        const idxAddress = headers.findIndex(h => h.toUpperCase() === "ADDRESS");
-                        const idxBranchCode = headers.findIndex(h => h.toUpperCase() === "BRANCH CODE");
-                        const idxEmpCode = headers.findIndex(h => h.toUpperCase() === "EMP. CODE");
-                        const idxName = headers.findIndex(h => h.toUpperCase() === "OFFICIAL");
-                        const idxDesig = headers.findIndex(h => h.toUpperCase() === "DESIGNATION/ DEPARMENT");
-                        const idxMobile = headers.findIndex(h => h.toUpperCase() === "CONTACT NO.");
-                        const idxEmail = headers.findIndex(h => h.toUpperCase() === "E-MAIL");
+                        const headerRowIndex = findHeaderRow(rows);
+                        if (headerRowIndex === -1) {
+                            sheetsSkipped++;
+                            continue;
+                        }
 
-                        let currentCompany = "", currentLocation = "", currentAddress = "", currentBranchCode = "";
+                        const headers = rows[headerRowIndex];
+
+                        const idxCompany = findColumn(headers, "company");
+                        const idxLocation = findColumn(headers, "location");
+                        const idxBranchCode = findColumn(headers, "branchcode");
+                        const idxAddress = findColumn(headers, "address");
+                        const idxEmpCode = findColumn(headers, "empid");
+                        const idxName = findColumn(headers, "name");
+                        const idxDesig = findColumn(headers, "designation");
+                        const idxMobile = findColumn(headers, "mobile");
+                        const idxEmail = findColumn(headers, "email");
+                        const idxDepartment = findColumn(headers, "department");
+                        const idxExtension = findColumn(headers, "extension");
+
+                        if (idxEmpCode === -1 || idxName === -1) {
+                            sheetsSkipped++;
+                            continue;
+                        }
+
+                        // Branch files sometimes have company/location/address/branch code
+                        // only in a section row. Carry those values forward.
+                        let currentCompany = "N/A";
+                        let currentLocation = "N/A";
+                        let currentAddress = "N/A";
+                        let currentBranchCode = "N/A";
 
                         for (let r = headerRowIndex + 1; r < rows.length; r++) {
-                            const row = rows[r];
-                            if (!row || row.length === 0) continue;
+                            const row = rows[r] || [];
+                            const empId = normalizeEmpId(valueFromRow(row, idxEmpCode, ""));
+                            const name = valueFromRow(row, idxName, "");
 
-                            let empId = idxEmpCode !== -1 ? String(row[idxEmpCode] || "").trim() : "";
-                            let name = idxName !== -1 ? String(row[idxName] || "").trim() : "";
-
-                            if (!empId && name) {
-                                if (idxCompany !== -1) currentCompany = String(row[idxCompany] || "").trim();
-                                if (idxLocation !== -1) currentLocation = String(row[idxLocation] || "").trim();
-                                if (idxAddress !== -1) currentAddress = String(row[idxAddress] || "").trim();
-                                if (idxBranchCode !== -1) currentBranchCode = String(row[idxBranchCode] || "").trim();
+                            // Update section-level values when a row has branch information
+                            // but no employee code.
+                            if (!empId) {
+                                const rowHasData = row.some(cell => sanitizeText(cell) !== "");
+                                if (rowHasData) {
+                                    if (idxCompany !== -1 && sanitizeText(row[idxCompany])) currentCompany = sanitizeText(row[idxCompany]);
+                                    if (idxLocation !== -1 && sanitizeText(row[idxLocation])) currentLocation = sanitizeText(row[idxLocation]);
+                                    if (idxAddress !== -1 && sanitizeText(row[idxAddress])) currentAddress = sanitizeText(row[idxAddress]);
+                                    if (idxBranchCode !== -1 && sanitizeText(row[idxBranchCode])) currentBranchCode = sanitizeText(row[idxBranchCode]);
+                                }
                                 continue;
                             }
 
-                            if (!name || !empId) continue;
+                            // Employee name is mandatory because this is the directory record.
+                            if (!name) continue;
 
-                            let company = idxCompany !== -1 ? String(row[idxCompany] || "").trim() : currentCompany;
-                            let location = idxLocation !== -1 ? String(row[idxLocation] || "").trim() : currentLocation;
-                            let address = idxAddress !== -1 ? String(row[idxAddress] || "").trim() : currentAddress;
-                            let branchCode = idxBranchCode !== -1 ? String(row[idxBranchCode] || "").trim() : currentBranchCode;
-                            let designation = idxDesig !== -1 ? String(row[idxDesig] || "").trim() : "STAFF";
-                            let mobile = idxMobile !== -1 ? String(row[idxMobile] || "").trim() : "";
-                            let email = idxEmail !== -1 ? String(row[idxEmail] || "").trim() : "";
+                            const companyCell = valueFromRow(row, idxCompany, "");
+                            const locationCell = valueFromRow(row, idxLocation, "");
+                            const addressCell = valueFromRow(row, idxAddress, "");
+                            const branchCodeCell = valueFromRow(row, idxBranchCode, "");
 
-                            allExtractedStaff.push({
+                            const record = {
                                 empid: empId,
                                 name: name.toUpperCase(),
-                                company: company || "N/A",
-                                location: location || "N/A",
-                                address: address || "N/A",
-                                branchcode: branchCode || "N/A",
-                                designation: designation,
-                                mobile: mobile || "N/A",
-                                email: email || "N/A"
-                            });
-                        }
-                    }
+                                company: companyCell || currentCompany || "N/A",
+                                location: locationCell || currentLocation || "N/A",
+                                branchcode: branchCodeCell || currentBranchCode || "N/A",
+                                address: addressCell || currentAddress || "N/A",
+                                designation: valueFromRow(row, idxDesig, "N/A"),
+                                mobile: valueFromRow(row, idxMobile, "N/A"),
+                                email: valueFromRow(row, idxEmail, "N/A"),
+                                department: valueFromRow(row, idxDepartment, "N/A"),
+                                extension: valueFromRow(row, idxExtension, "N/A")
+                            };
 
-                    if (allExtractedStaff.length === 0) {
-                        statusDiv.innerHTML = `<span class="text-danger">❌ No valid staff records found in the Excel file.</span>`;
-                        return;
-                    }
-
-                    // 2. Remove duplicate EMP IDs inside the file itself (keep latest record)
-                    const uniqueStaffMap = new Map();
-                    allExtractedStaff.forEach(item => uniqueStaffMap.set(item.empid, item));
-                    const uniqueStaffRecords = Array.from(uniqueStaffMap.values());
-                    const insideFileDuplicates = allExtractedStaff.length - uniqueStaffRecords.length;
-
-                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Syncing ${uniqueStaffRecords.length} records with Supabase...</span>`;
-
-                    // 3. Native Upsert in Batches (Automatic Insert/Update based on empid conflict)
-                    const chunkSize = 200;
-                    let processedCount = 0;
-
-                    for (let i = 0; i < uniqueStaffRecords.length; i += chunkSize) {
-                        const chunk = uniqueStaffRecords.slice(i, i + chunkSize);
-
-                        const { error } = await supabaseClient
-                            .from('staff')
-                            .upsert(chunk, { onConflict: 'empid' });
-
-                        if (error) {
-                            throw error;
+                            allRecords.push(record);
                         }
 
-                        processedCount += chunk.length;
-                        statusDiv.innerHTML = `<span class="text-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> Processed ${processedCount}/${uniqueStaffRecords.length} records...</span>`;
+                        sheetsProcessed++;
                     }
 
-                    // 4. Success UI
+                    if (allRecords.length === 0) {
+                        throw new Error("No valid employee records found. Make sure the Excel contains EMP. CODE and OFFICIAL/NAME columns.");
+                    }
+
+                    // If the same employee appears multiple times in the workbook,
+                    // keep the last complete version.
+                    const uniqueMap = new Map();
+                    allRecords.forEach(record => uniqueMap.set(record.empid, record));
+                    const uniqueRecords = Array.from(uniqueMap.values());
+
+                    statusDiv.innerHTML = `<span class="text-warning"><i class="fa-solid fa-spinner fa-spin me-1"></i> Saving ${uniqueRecords.length} records to database...</span>`;
+
+                    await uploadToSupabase(uniqueRecords);
+
                     statusDiv.innerHTML = `
                         <div class="alert alert-success mt-3 shadow-sm text-start">
-                            <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-circle-check me-1"></i> Sync Completed Successfully!</h6>
-                            <div class="small">
-                                <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
-                                    <span>Total File Records Processed:</span>
-                                    <span class="fw-bold text-primary">${uniqueStaffRecords.length}</span>
-                                </div>
-                                <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
-                                    <span>Status:</span>
-                                    <span class="fw-bold text-success">Inserted / Updated Automatically</span>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Duplicate Rows Skipped (In Excel):</span>
-                                    <span class="fw-bold text-secondary">${insideFileDuplicates}</span>
-                                </div>
-                            </div>
+                            <h6 class="fw-bold text-success mb-1"><i class="fa-solid fa-circle-check me-1"></i> Upload Completed!</h6>
+                            <div class="small">✅ ${uniqueRecords.length} employee records saved/updated successfully.</div>
+                            <div class="small text-muted mt-1">📄 ${sheetsProcessed} sheet(s) processed${sheetsSkipped ? `, ${sheetsSkipped} sheet(s) skipped` : ""}.</div>
+                            <div class="small text-muted">ℹ️ Any missing/blank column value is saved as <strong>N/A</strong>.</div>
+                            <div class="small text-muted">🔄 If Employee ID already exists, its details are overwritten with the latest Excel data.</div>
                         </div>
                     `;
 
                 } catch (err) {
-                    console.error("Upload Error:", err);
-                    statusDiv.innerHTML = `
-                        <div class="alert alert-danger mt-3 shadow-sm text-start">
-                            <h6 class="fw-bold text-danger mb-1"><i class="fa-solid fa-circle-exclamation me-1"></i> Upload Failed</h6>
-                            <div class="small">${err.message || 'Unknown error occurred'}</div>
-                        </div>
-                    `;
+                    console.error(err);
+                    statusDiv.innerHTML = `<span class="text-danger fw-bold">❌ Error: ${err.message}</span>`;
                 } finally {
                     event.target.value = "";
                 }
