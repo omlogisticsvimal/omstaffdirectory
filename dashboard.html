@@ -10,6 +10,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
+    
     <style>
         :root {
             --primary-purple: #3b3086;
@@ -18,6 +19,22 @@
             --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
+        /* Input Validation Styles */
+        .input-error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 3px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        
         body { background-color: var(--bg-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .top-navbar { background-color: var(--navbar-bg); color: white; padding: 12px 24px; }
         .brand-logo { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -67,10 +84,29 @@
         .detail-row { padding: 10px 14px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
         .detail-row .label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
         .detail-row .val { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
+        .department-text-highlight {
+            display: inline-block;
+            background: #f5f3ff;
+            color: #3730a3;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+        .department-card-highlight {
+            color: #3730a3;
+            font-weight: 700;
+            background: transparent;
+            border: 0;
+            padding: 0;
+        }
         .edit-mode .val input { width: 100%; padding: 4px 8px; border: 1px solid var(--primary-purple); border-radius: 6px; font-size: 0.85rem; background-color: #ffffff; }
         .spinner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .spinner-overlay.show { display: flex; }
         .spinner-box { background: white; padding: 30px; border-radius: 16px; text-align: center; }
+        .extension-icon {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -83,7 +119,7 @@
     </div>
 
     <!-- Top Navbar Header -->
-    <div class="top-navbar d-flex justify-content-between align-items-center">
+    <div class="top-navbar d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div class="brand-logo">
             <i class="fa-solid fa-address-book"></i>
             <div>
@@ -92,10 +128,10 @@
             </div>
         </div>
         
-        <div class="d-flex align-items-center gap-2">
-            <div class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;">
-                <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
-                <span class="fw-bold text-white small" style="font-size: 0.8rem;">Connected</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div id="connectionBadge" class="d-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;">
+                <span id="connectionDot" style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
+                <span id="connectionText" class="fw-bold text-white small" style="font-size: 0.8rem;">Connected</span>
             </div>
             <button class="btn btn-warning btn-sm px-3 rounded-3 fw-bold admin-only" onclick="window.location.href='upload.html'">
                 <i class="fa-solid fa-database me-1"></i> DB Upload
@@ -114,7 +150,6 @@
                 <i class="fa-solid fa-users-viewfinder me-1"></i> Live Users
             </button>   
             
-            <!-- 🟢 Updated Profile Button (Points to new Password Modal) -->
             <button class="btn btn-outline-light btn-sm px-3 rounded-3 me-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                 <i class="fa-solid fa-key me-1"></i> Change Password
             </button>
@@ -142,7 +177,7 @@
                         <div class="title">Status</div>
                         <div class="value text-success fs-6 mt-1" id="dbStatus">Connected</div>
                     </div>
-                    <i class="fa-solid fa-database text-warning fs-3 opacity-50"></i>
+                    <i class="fa-solid fa-server text-warning fs-3 opacity-50"></i>
                 </div>
             </div>
             <div class="col-md-3">
@@ -175,7 +210,7 @@
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by name, EMP ID, mobile, designation..." oninput="filterStaffData()">
+                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by name, EMP ID, mobile, designation, department..." oninput="filterStaffData()">
                     <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">Clear</button>
                 </div>
             </div>
@@ -198,10 +233,16 @@
             </div>
         </div>
 
+        <!-- Dynamic Datalists for Suggestions -->
+        <datalist id="suggestCompany"></datalist>
+        <datalist id="suggestDesignation"></datalist>
+        <datalist id="suggestLocation"></datalist>
+        <datalist id="suggestBranchCode"></datalist>
+
         <!-- Staff Cards Grid View -->
         <div class="row g-3" id="staffCardGrid"></div>
 
-        <!-- 🟢 LOAD MORE BUTTON (Added for Pagination) -->
+        <!-- LOAD MORE BUTTON -->
         <div class="row mt-3" id="loadMoreContainer" style="display: none;">
             <div class="col-12 text-center">
                 <button class="btn btn-outline-primary rounded-pill px-4" id="loadMoreBtn" onclick="loadMore()">
@@ -223,39 +264,48 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">EMP CODE</label>
-                            <input type="text" id="newStaffEmpCode" class="form-control" placeholder="e.g. 15743">
+                            <input type="number" id="newStaffEmpCode" class="form-control" placeholder="e.g. 15743" min="1">
+                            <div id="newStaffEmpCode_error" class="error-message"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">NAME</label>
                             <input type="text" id="newStaffName" class="form-control" placeholder="Enter full name">
+                            <div id="newStaffName_error" class="error-message"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">DESIGNATION</label>
-                            <input type="text" id="newStaffDesignation" class="form-control" placeholder="e.g. AREA MANAGER">
+                            <input type="text" id="newStaffDesignation" class="form-control" placeholder="e.g. AREA MANAGER" list="suggestDesignation">
+                            <div id="newStaffDesignation_error" class="error-message"></div>    
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">COMPANY</label>
-                            <input type="text" id="newStaffCompany" class="form-control" placeholder="e.g. OLSC BRANCHES">
+                            <input type="text" id="newStaffCompany" class="form-control" placeholder="e.g. OLSC BRANCHES" list="suggestCompany">
+                            <div id="newStaffCompany_error" class="error-message"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">LOCATION / BRANCH</label>
-                            <input type="text" id="newStaffLocation" class="form-control" placeholder="e.g. HYDERABAD">
+                            <input type="text" id="newStaffLocation" class="form-control" placeholder="e.g. HYDERABAD" list="suggestLocation">
+                            <div id="newStaffLocation_error" class="error-message"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">BRANCH CODE</label>
-                            <input type="text" id="newStaffBranchCode" class="form-control" placeholder="e.g. 1601">
+                            <input type="number" id="newStaffBranchCode" class="form-control" placeholder="e.g. 1601" min="1" list="suggestBranchCode">
+                            <div id="newStaffBranchCode_error" class="error-message"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">MOBILE</label>
-                            <input type="text" id="newStaffMobile" class="form-control" placeholder="e.g. 8886332174">
+                            <input type="tel" id="newStaffMobile" class="form-control" placeholder="e.g. 8886332174">
+                            <div id="newStaffMobile_error" class="error-message"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-secondary">E-MAIL</label>
                             <input type="text" id="newStaffEmail" class="form-control" placeholder="e.g. navneet@omlogistics.co.in">
+                            <div id="newStaffEmail_error" class="error-message"></div>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold small text-secondary">ADDRESS</label>
                             <input type="text" id="newStaffAddress" class="form-control" placeholder="Enter address...">
+                            <div id="newStaffAddress_error" class="error-message"></div>
                         </div>
                     </div>
                 </div>
@@ -286,7 +336,6 @@
                 
                 <div class="modal-body pt-3" id="editFormContainer">
                     <div class="row g-2">
-                        <!-- 🟢 Name Field Added -->
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-user me-1 text-primary"></i> Name</span>
@@ -296,7 +345,7 @@
                         
                         <div class="col-md-6">
                             <div class="detail-row">
-                                <span class="label"><i class="fa-solid fa-id-card me-1 text-primary"></i> EMP Code</span>
+                                <span class="label"><i class="fa-solid fa-id-card me-1 text-primary"></i> Emp Code</span>
                                 <span class="val" id="modalEmpCode">39751</span>
                             </div>
                         </div>
@@ -315,7 +364,6 @@
                             </div>
                         </div>
                         
-                        <!-- 🟢 Branch Code Field Added -->
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-qrcode me-1 text-primary"></i> Branch Code</span>
@@ -330,6 +378,13 @@
                             </div>
                         </div>
                         
+                        <div class="col-md-6" id="modalDepartmentRow" style="display:none;">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-layer-group me-1 text-primary"></i> Department</span>
+                                <span class="val" id="modalDepartment" data-field="department">N/A</span>
+                            </div>
+                        </div>
+
                         <div class="col-md-6">
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-phone me-1 text-primary"></i> Mobile</span>
@@ -348,6 +403,13 @@
                             <div class="detail-row">
                                 <span class="label"><i class="fa-solid fa-map-pin me-1 text-primary"></i> Full Address</span>
                                 <span class="val" id="modalAddress" data-field="address" style="font-weight: 500;">Delhi, India</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" id="modalExtensionRow">
+                            <div class="detail-row">
+                                <span class="label"><i class="fa-solid fa-phone-volume me-1 text-primary extension-icon"></i> Extension</span>
+                                <span class="val" id="modalExtension" data-field="extension">N/A</span>
                             </div>
                         </div>
                     </div>
@@ -396,7 +458,7 @@
                         </div>
                     </div>
                     <div id="deleteNotFoundBox" class="d-none text-danger small mt-2">
-                        <i class="fa-solid fa-circle-xmark me-1"></i> Koi record nahi mila is EMP ID se.
+                        <i class="fa-solid fa-circle-xmark me-1"></i> No record found for this EMP ID.
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
@@ -409,7 +471,7 @@
         </div>
     </div>
 
-    <!-- 🟢 NEW: Change Password Modal (Separate from Profile) -->
+    <!-- Change Password Modal -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg p-3">
@@ -446,7 +508,7 @@
         </div>
     </div>
 
-    <!-- ✅ Create User Modal (Correctly placed OUTSIDE the Change Password Modal) -->
+    <!-- Create User Modal -->
     <div class="modal fade" id="createUserModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg p-3">
@@ -481,7 +543,7 @@
         </div>
     </div>
 
-    <!-- 🟢 Custom Toast Notification for Alerts -->
+    <!-- Custom Toast Notification -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
         <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
@@ -497,7 +559,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
 
     <script>
         const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
@@ -506,21 +567,31 @@
         let supabaseClient;
         if (typeof supabase !== 'undefined') {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } else {
+            console.error("Supabase library not loaded!");
         }
 
         let allStaffData = [];
         let currentEditingItem = null;
         let foundStaffForDelete = null;
-        let searchTimeout;
+        let searchDebounceTimeout = null;
 
-        // 🟢 NEW: Pagination Variables
+        let suggestions = {
+            designations: [],
+            companies: [],
+            locations: [],
+            branchcodes: []
+        };
+
+        // Pagination Variables
         let currentLimit = 100;
         const PAGE_SIZE = 100;
         let currentFilteredData = [];
 
-        function checkLoginExpiry() {
+        async function checkLoginExpiry() {
             const loginTime = localStorage.getItem("loginTime");
             const loginStatus = localStorage.getItem("login");
+            const currentEmpId = localStorage.getItem("currentEmpId");
 
             if (loginStatus !== "yes") {
                 window.location.href = "index.html";
@@ -530,10 +601,20 @@
             if (loginTime) {
                 const currentTime = Date.now();
                 const elapsedTime = currentTime - parseInt(loginTime);
-                const twentyFourHours = 10 * 60 * 60 * 1000; // 10 hours
+                const tenHours = 10 * 60 * 60 * 1000;
 
-                if (elapsedTime >= twentyFourHours) {
+                if (elapsedTime >= tenHours) {
                     alert("Your session has expired. Please login again.");
+                    
+                    if (currentEmpId && supabaseClient) {
+                        try {
+                            await supabaseClient
+                                .from('user_sessions')
+                                .delete()
+                                .eq('empid', currentEmpId);
+                        } catch (e) {}
+                    }
+
                     localStorage.clear();
                     window.location.href = "index.html";
                 }
@@ -552,22 +633,20 @@
             }
             displayCurrentUserInfo();
 
-            // 🟢 Ping System
             const currentEmpId = localStorage.getItem("currentEmpId");
-            if (currentEmpId) {
+            if (currentEmpId && supabaseClient) {
                 const pingUser = async () => {
                     try {
                         await supabaseClient
                             .from('user_sessions')
                             .update({ last_ping_time: new Date().toISOString() })
                             .eq('empid', currentEmpId);
-                    } catch (err) {
-                        console.error("Ping failed:", err);
-                    }
+                    } catch (err) {}
                 };
                 pingUser();
                 setInterval(pingUser, 15000);
             }
+            
             fetchStaffFromDatabase();
         };
 
@@ -593,15 +672,50 @@
             }
         }
 
+        function updateConnectionStatus(isConnected, message) {
+            const statusEl = document.getElementById("dbStatus");
+            const badgeEl = document.getElementById("connectionBadge");
+            const dotEl = document.getElementById("connectionDot");
+            const textEl = document.getElementById("connectionText");
+
+            if (isConnected) {
+                if (statusEl) {
+                    statusEl.innerText = "Connected";
+                    statusEl.className = "value text-success fs-6 mt-1";
+                }
+                if (badgeEl) {
+                    badgeEl.style.backgroundColor = "rgba(16, 185, 129, 0.2)";
+                    badgeEl.style.borderColor = "#10b981";
+                }
+                if (dotEl) dotEl.style.backgroundColor = "#10b981";
+                if (textEl) textEl.innerText = "Connected";
+            } else {
+                if (statusEl) {
+                    statusEl.innerText = message || "Disconnected";
+                    statusEl.className = "value text-danger fs-6 mt-1";
+                }
+                if (badgeEl) {
+                    badgeEl.style.backgroundColor = "rgba(239, 68, 68, 0.2)";
+                    badgeEl.style.borderColor = "#ef4444";
+                }
+                if (dotEl) dotEl.style.backgroundColor = "#ef4444";
+                if (textEl) textEl.innerText = "DB Error";
+            }
+        }
+
         async function fetchStaffFromDatabase() {
             try {
                 document.getElementById("totalRecordCount").innerText = "Loading...";
                 document.getElementById("staffCardGrid").innerHTML = `
                     <div class="col-12 text-center py-5">
                         <div class="spinner-border text-primary" role="status"></div>
-                        <div class="text-muted mt-2">Loading records...</div>
+                        <div class="text-muted mt-2">Loading records from Supabase...</div>
                     </div>
                 `;
+
+                if (!supabaseClient) {
+                    throw new Error("Supabase Client is not initialized.");
+                }
 
                 const { count, error: countError } = await supabaseClient
                     .from('staff')
@@ -609,43 +723,160 @@
 
                 if (countError) throw countError;
 
-                let allRecords = [];
-                let start = 0;
+                const total = count || 0;
                 const limit = 1000;
-                let fetchMore = true;
+                const fetchPromises = [];
 
-                while (fetchMore) {
-                    const { data, error } = await supabaseClient
-                        .from('staff')
-                        .select('*')
-                        .range(start, start + limit - 1);
-
-                    if (error) throw error;
-
-                    if (data.length === 0) {
-                        fetchMore = false;
-                    } else {
-                        allRecords = allRecords.concat(data);
-                        start += limit;
-                    }
+                for (let start = 0; start < total; start += limit) {
+                    fetchPromises.push(
+                        supabaseClient
+                            .from('staff')
+                            .select('*')
+                            .range(start, start + limit - 1)
+                    );
                 }
 
+                const results = await Promise.all(fetchPromises);
+                let allRecords = [];
+                results.forEach(res => {
+                    if (res.data) allRecords = allRecords.concat(res.data);
+                });
+
                 allStaffData = allRecords || [];
+                updateConnectionStatus(true);
                 
                 populateBranchDropdown(allStaffData);
+                extractAndRenderSuggestions(allStaffData);
+
                 document.getElementById("searchInput").disabled = false;
                 document.getElementById("branchSelect").disabled = false;
 
-                currentLimit = PAGE_SIZE;
+                currentLimit = PAGE_SIZE || 24;
                 currentFilteredData = allStaffData;
+                
                 renderStaffGrid(currentFilteredData.slice(0, currentLimit));
                 
-                document.getElementById("totalRecordCount").innerText = count || 0; 
+                document.getElementById("totalRecordCount").innerText = allStaffData.length; 
 
             } catch (err) {
                 console.error("Error fetching staff:", err);
-                document.getElementById("staffCardGrid").innerHTML = `<div class="col-12 text-center text-danger py-5">Error loading data</div>`;
+                updateConnectionStatus(false, "DB Error");
+                document.getElementById("totalRecordCount").innerText = "0";
+                document.getElementById("staffCardGrid").innerHTML = `
+                    <div class="col-12 text-center text-danger py-5">
+                        <i class="fa-solid fa-circle-exclamation fa-2x mb-2"></i>
+                        <div class="fw-bold">Database Error: ${err.message || 'Unable to fetch records'}</div>
+                        <div class="small text-muted mt-1">Please verify Supabase URL, Key, or RLS policies.</div>
+                        <button class="btn btn-outline-primary btn-sm mt-3 rounded-pill" onclick="fetchStaffFromDatabase()">
+                            <i class="fa-solid fa-rotate me-1"></i> Retry
+                        </button>
+                    </div>
+                `;
             }
+        }
+
+        function extractAndRenderSuggestions(dataList) {
+            if (!dataList || dataList.length === 0) return;
+
+            suggestions.companies = [...new Set(dataList.map(item => item.company ? String(item.company).trim() : "").filter(Boolean))];
+            suggestions.designations = [...new Set(dataList.map(item => item.designation ? String(item.designation).trim() : "").filter(Boolean))];
+            suggestions.locations = [...new Set(dataList.map(item => item.location ? String(item.location).trim() : "").filter(Boolean))];
+            suggestions.branchcodes = [...new Set(dataList.map(item => item.branchcode ? String(item.branchcode).trim() : "").filter(Boolean))];
+
+            renderDatalists();
+        }
+
+        function renderDatalists() {
+            const updateList = (id, items) => {
+                const list = document.getElementById(id);
+                if (list) {
+                    list.innerHTML = items.map(item => `<option value="${item.replace(/"/g, '&quot;')}">`).join('');
+                }
+            };
+
+            updateList('suggestCompany', suggestions.companies);
+            updateList('suggestDesignation', suggestions.designations);
+            updateList('suggestLocation', suggestions.locations);
+            updateList('suggestBranchCode', suggestions.branchcodes);
+        }
+
+        function getStaffCardHtml(item) {
+            const name = item.name || "UNNAMED STAFF";
+            const empId = item.empid || "N/A";
+            const location = item.location || "MAIN OFFICE";
+            const branchCode = item.branchcode || "N/A";
+            const company = item.company || "";
+            const designation = item.designation || "STAFF";
+            const departmentRaw = item.department;
+            const department = departmentRaw && String(departmentRaw).trim() && String(departmentRaw).trim().toUpperCase() !== "N/A"
+                ? String(departmentRaw).trim()
+                : "";
+            const mobile = item.mobile || "N/A";
+            const extension = item.extension || "N/A";
+
+            const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
+
+            let mobileHtml = `
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-phone me-2 text-muted"></i>
+                    <span>${mobile}</span>
+            `;
+            
+            if (mobile !== "N/A") {
+                const cleanNumber = String(mobile).replace(/[^0-9]/g, '');
+                const whatsappLink = `https://web.whatsapp.com/send?phone=${cleanNumber}`;
+                
+                mobileHtml += `
+                    <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web" onclick="event.stopPropagation();">
+                        <i class="fa-brands fa-whatsapp fa-lg"></i>
+                    </a>
+                    <button onclick="event.stopPropagation(); copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-2 text-secondary" title="Copy Number" style="font-size: 1.1rem; border: none; background: none;">
+                        <i class="fa-regular fa-copy fa-lg"></i>
+                    </button>
+                `;
+            }
+            mobileHtml += `</div>`;
+
+            // Extension display - only show if not N/A with old telephone icon
+            let extensionHtml = '';
+            if (extension !== "N/A" && extension.trim() !== "") {
+                extensionHtml = `
+                    <div class="mb-1" style="font-size: 0.9rem;">
+                        <i class="fa-solid fa-phone-volume me-2 text-muted extension-icon"></i>
+                        <span style="font-weight: 500;">EXT : ${extension}</span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="col-md-4">
+                    <div class="staff-card" onclick="openProfileModalByEmpId('${empId}')">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-icon"><i class="fa-solid fa-user"></i></div>
+                                <div>
+                                    <div class="fw-bold text-dark" style="line-height: 1.2;">${name.toUpperCase()}</div>
+                                    <div class="text-primary small fw-semibold">${locationDisplay}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="emp-badge">Emp ID : ${empId}</span>
+                                <button onclick="event.stopPropagation(); openDeleteModalFromCard('${empId}')" class="btn btn-link p-0 ms-2 text-danger" title="Delete Staff" style="font-size: 1.1rem; border: none; background: none;">
+                                    <i class="fa-solid fa-trash-can fa-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-secondary small">
+                            ${department ? `<div class="mb-2 department-card-highlight"><i class="fa-solid fa-layer-group me-2"></i>DEPARTMENT : ${department.toUpperCase()}</div>` : ''}
+                            <div class="mb-1"><i class="fa-solid fa-briefcase me-2 text-muted"></i>${designation.toUpperCase()}</div>
+                            ${item.email && String(item.email).trim() && String(item.email).trim().toUpperCase() !== "N/A" ? `<div class="mb-1"><i class="fa-solid fa-envelope me-2 text-muted"></i>${String(item.email).trim()}</div>` : ''}
+                            ${mobileHtml}
+                            ${extensionHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         function renderStaffGrid(dataList) {
@@ -653,79 +884,17 @@
             grid.innerHTML = "";
 
             if (!dataList || dataList.length === 0) {
-                grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">No staff records found.</div>`;
+                grid.innerHTML = `<div class="col-12 text-center py-5 text-muted"><i class="fa-solid fa-folder-open fa-2x mb-2"></i><div>No staff records found.</div></div>`;
                 document.getElementById("loadMoreContainer").style.display = 'none';
                 return;
             }
 
-            const fragment = document.createDocumentFragment();
-
-            dataList.forEach((item) => {
-                const name = item.name || "UNNAMED STAFF";
-                const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                
-                const empId = item.empid || "N/A";
-                const location = item.location || "MAIN OFFICE";
-                const branchCode = item.branchcode || "N/A";
-                const company = item.company || "";
-                const designation = item.designation || "STAFF";
-                const mobile = item.mobile || "N/A";
-
-                const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
-
-                let mobileHtml = `
-                    <div class="d-flex align-items-center">
-                        <i class="fa-solid fa-phone me-2 text-muted"></i>
-                        <span>${mobile}</span>
-                `;
-                
-                if (mobile !== "N/A") {
-                    const cleanNumber = mobile.replace(/[^0-9]/g, '');
-                    const whatsappLink = `https://web.whatsapp.com/send?phone=${cleanNumber}`;
-                    
-                    mobileHtml += `
-                        <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web" onclick="event.stopPropagation();">
-                            <i class="fa-brands fa-whatsapp fa-lg"></i>
-                        </a>
-                        <button onclick="event.stopPropagation(); copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-2 text-secondary" title="Copy Number" style="font-size: 1.1rem; border: none; background: none;">
-                            <i class="fa-regular fa-copy fa-lg"></i>
-                        </button>
-                    `;
-                }
-                mobileHtml += `</div>`;
-
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = `
-                    <div class="col-md-4">
-                        <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar-icon"><i class="fa-solid fa-user"></i></div>
-                                    <div>
-                                        <div class="fw-bold text-dark" style="line-height: 1.2;">${name.toUpperCase()}</div>
-                                        <div class="text-primary small fw-semibold">${locationDisplay}</div>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="emp-badge">Emp ID : ${empId}</span>
-                                    <button onclick="event.stopPropagation(); openDeleteModalFromCard('${empId}')" class="btn btn-link p-0 ms-2 text-danger" title="Delete Staff" style="font-size: 1.1rem; border: none; background: none;">
-                                        <i class="fa-solid fa-trash-can fa-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="mt-3 text-secondary small">
-                                <div class="mb-1"><i class="fa-solid fa-briefcase me-2 text-muted"></i>${designation.toUpperCase()}</div>
-                                ${company ? `<div class="mb-1"><i class="fa-solid fa-building me-2 text-muted"></i>${company.toUpperCase()}</div>` : ''}
-                                ${mobileHtml}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                fragment.appendChild(tempDiv.firstElementChild);
+            let htmlString = "";
+            dataList.forEach(item => {
+                htmlString += getStaffCardHtml(item);
             });
 
-            grid.appendChild(fragment);
+            grid.innerHTML = htmlString;
 
             const loadMoreContainer = document.getElementById("loadMoreContainer");
             if (currentFilteredData.length > currentLimit) {
@@ -742,74 +911,13 @@
             
             if (nextChunk.length > 0) {
                 const grid = document.getElementById("staffCardGrid");
-                const fragment = document.createDocumentFragment();
+                let htmlString = "";
 
                 nextChunk.forEach((item) => {
-                    const name = item.name || "UNNAMED STAFF";
-                    const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                    
-                    const empId = item.empid || "N/A";
-                    const location = item.location || "MAIN OFFICE";
-                    const branchCode = item.branchcode || "N/A";
-                    const company = item.company || "";
-                    const designation = item.designation || "STAFF";
-                    const mobile = item.mobile || "N/A";
-
-                    const locationDisplay = location.toUpperCase() + (branchCode !== "N/A" ? ` (${branchCode})` : "");
-
-                    let mobileHtml = `
-                        <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-phone me-2 text-muted"></i>
-                            <span>${mobile}</span>
-                    `;
-                    
-                    if (mobile !== "N/A") {
-                        const cleanNumber = mobile.replace(/[^0-9]/g, '');
-                        const whatsappLink = `https://web.whatsapp.com/send?phone=${cleanNumber}`;
-                        
-                        mobileHtml += `
-                            <a href="${whatsappLink}" target="_blank" class="text-success ms-2" title="WhatsApp Web" onclick="event.stopPropagation();">
-                                <i class="fa-brands fa-whatsapp fa-lg"></i>
-                            </a>
-                            <button onclick="event.stopPropagation(); copyMobileNumber('${mobile}')" class="btn btn-link p-0 ms-2 text-secondary" title="Copy Number" style="font-size: 1.1rem; border: none; background: none;">
-                                <i class="fa-regular fa-copy fa-lg"></i>
-                            </button>
-                        `;
-                    }
-                    mobileHtml += `</div>`;
-
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = `
-                        <div class="col-md-4">
-                            <div class="staff-card" onclick='openProfileModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="avatar-icon"><i class="fa-solid fa-user"></i></div>
-                                        <div>
-                                            <div class="fw-bold text-dark" style="line-height: 1.2;">${name.toUpperCase()}</div>
-                                            <div class="text-primary small fw-semibold">${locationDisplay}</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="emp-badge">Emp ID : ${empId}</span>
-                                        <button onclick="event.stopPropagation(); openDeleteModalFromCard('${empId}')" class="btn btn-link p-0 ms-2 text-danger" title="Delete Staff" style="font-size: 1.1rem; border: none; background: none;">
-                                            <i class="fa-solid fa-trash-can fa-lg"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="mt-3 text-secondary small">
-                                    <div class="mb-1"><i class="fa-solid fa-briefcase me-2 text-muted"></i>${designation.toUpperCase()}</div>
-                                    ${company ? `<div class="mb-1"><i class="fa-solid fa-building me-2 text-muted"></i>${company.toUpperCase()}</div>` : ''}
-                                    ${mobileHtml}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    fragment.appendChild(tempDiv.firstElementChild);
+                    htmlString += getStaffCardHtml(item);
                 });
 
-                grid.appendChild(fragment);
+                grid.insertAdjacentHTML('beforeend', htmlString);
 
                 if (currentFilteredData.length > currentLimit) {
                     document.getElementById("loadMoreBtn").innerText = `Load More (${currentLimit} / ${currentFilteredData.length} shown)`;
@@ -819,12 +927,19 @@
             }
         }
 
+        function openProfileModalByEmpId(empId) {
+            const item = allStaffData.find(x => String(x.empid) === String(empId));
+            if (item) {
+                openProfileModal(item);
+            }
+        }
+
         function openProfileModal(item) {
             currentEditingItem = item;
             resetEditState();
 
             const name = item.name || "UNNAMED STAFF";
-            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || "VK";
             
             document.getElementById("modalAvatar").innerText = initials;
             document.getElementById("modalName").innerText = name.toUpperCase();
@@ -836,10 +951,29 @@
             
             document.getElementById("modalDesignation").innerText = item.designation || "N/A";
             document.getElementById("modalCompany").innerText = item.company || "N/A";
+
+            const departmentValue = item.department && String(item.department).trim() && String(item.department).trim().toUpperCase() !== "N/A"
+                ? String(item.department).trim()
+                : "";
+            document.getElementById("modalDepartment").innerText = departmentValue || "N/A";
+            document.getElementById("modalDepartmentRow").style.display = departmentValue ? "" : "none";
+
             document.getElementById("modalLocationVal").innerText = item.location || "N/A";
             document.getElementById("modalMobile").innerText = item.mobile || "N/A";
             document.getElementById("modalEmail").innerText = item.email || "N/A";
             document.getElementById("modalAddress").innerText = item.address || "N/A";
+            
+            // Extension - show old telephone icon with extension
+            const extensionValue = item.extension || "N/A";
+            document.getElementById("modalExtension").innerText = extensionValue;
+            
+            // Show extension row only if extension exists and not N/A
+            const extensionRow = document.getElementById("modalExtensionRow");
+            if (extensionValue !== "N/A" && extensionValue.trim() !== "") {
+                extensionRow.style.display = "";
+            } else {
+                extensionRow.style.display = "none";
+            }
 
             const modal = new bootstrap.Modal(document.getElementById('profileModal'));
             modal.show();
@@ -856,12 +990,15 @@
                 container.querySelectorAll('.val[data-field]').forEach(el => {
                     const currentText = el.innerText === "N/A" ? "" : el.innerText;
                     const fieldName = el.dataset.field;
-                    el.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentText}" data-field="${fieldName}">`;
-                });
 
-                const addressVal = document.getElementById('modalAddress');
-                const currentAddressText = addressVal.innerText === "N/A" ? "" : addressVal.innerText;
-                addressVal.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentAddressText}" data-field="address">`;
+                    let listAttr = '';
+                    if (fieldName === 'company') listAttr = 'list="suggestCompany"';
+                    else if (fieldName === 'designation') listAttr = 'list="suggestDesignation"';
+                    else if (fieldName === 'location') listAttr = 'list="suggestLocation"';
+                    else if (fieldName === 'branchcode') listAttr = 'list="suggestBranchCode"';
+
+                    el.innerHTML = `<input type="text" class="form-control form-control-sm" value="${currentText.replace(/"/g, '&quot;')}" data-field="${fieldName}" ${listAttr}>`;
+                });
 
                 editBtn.classList.add('d-none');
                 saveBtn.classList.remove('d-none');
@@ -891,7 +1028,7 @@
             
             container.querySelectorAll('input[data-field]').forEach(input => {
                 const field = input.dataset.field;
-                if (['name', 'designation', 'company', 'location', 'branchcode', 'mobile', 'email', 'address'].includes(field)) {
+                if (['name', 'designation', 'company', 'location', 'branchcode', 'department', 'mobile', 'email', 'address', 'extension'].includes(field)) {
                     updates[field] = input.value.trim();
                 }
             });
@@ -910,7 +1047,7 @@
 
                 if (error) throw error;
 
-                alert("Staff details updated successfully!");
+                showToast("✅ Staff details updated successfully!", "success");
                 Object.assign(currentEditingItem, updates);
                 
                 resetEditState();
@@ -922,7 +1059,7 @@
 
             } catch (err) {
                 console.error("Update Error:", err);
-                alert("Error updating record: " + (err.message || "Unknown error"));
+                showToast("Error updating record: " + (err.message || "Unknown error"), "error");
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = `<i class="fa-solid fa-check me-1"></i> Save Changes`;
@@ -930,7 +1067,7 @@
         }
 
         function checkAndDeletePreview(empCode) {
-            empCode = empCode.trim();
+            empCode = String(empCode).trim();
             const previewBox = document.getElementById("deletePreviewBox");
             const notFoundBox = document.getElementById("deleteNotFoundBox");
             const deleteBtn = document.getElementById("confirmDeleteBtn");
@@ -968,7 +1105,7 @@
 
             const empCode = foundStaffForDelete.empid;
 
-            if (!confirm(`Are Your Sure You Want To  Delete "${foundStaffForDelete.name} (EMP ID: ${empCode})" From Directory ?`)) {
+            if (!confirm(`Are you sure you want to delete "${foundStaffForDelete.name} (EMP ID: ${empCode})" from Directory?`)) {
                 return;
             }
 
@@ -980,7 +1117,7 @@
 
                 if (error) throw error;
 
-                alert(`Done!! Record Successfully Deleted From Directory.`);
+                showToast(`Done!! Record successfully deleted from Directory.`, "success");
                 
                 const modalEl = document.getElementById('deleteStaffModal');
                 const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -991,7 +1128,7 @@
 
             } catch (err) {
                 console.error("Delete Error:", err);
-                alert("Delete karne mein error aayi: " + err.message);
+                showToast("Delete Error: " + err.message, "error");
             }
         }
 
@@ -1012,7 +1149,7 @@
 
         function populateBranchDropdown(dataList) {
             const select = document.getElementById("branchSelect");
-            const locations = [...new Set(dataList.map(item => item.location ? item.location.trim() : "").filter(Boolean))];
+            const locations = [...new Set(dataList.map(item => item.location ? String(item.location).trim() : "").filter(Boolean))];
             
             select.innerHTML = `<option value="ALL">All Branches / Companies</option>`;
             locations.forEach(loc => {
@@ -1021,39 +1158,39 @@
         }
 
         function filterStaffData() {
-            clearTimeout(searchTimeout);
+            clearTimeout(searchDebounceTimeout);
             
-            const grid = document.getElementById("staffCardGrid");
-            grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">Searching...</div>`;
-
-            searchTimeout = setTimeout(() => {
+            searchDebounceTimeout = setTimeout(() => {
                 const query = document.getElementById("searchInput").value.toLowerCase().trim();
-                const branchCodeQuery = document.getElementById("branchCodeInput").value.trim();
+                const selectedBranch = document.getElementById("branchSelect").value;
+                const branchCodeQuery = document.getElementById("branchCodeInput").value.trim().toLowerCase();
 
                 if (branchCodeQuery) {
                     document.getElementById("branchSelect").value = "ALL";
                 }
 
-                const selectedBranch = document.getElementById("branchSelect").value;
-
                 const filtered = allStaffData.filter(item => {
                     const nameMatch = (item.name || "").toLowerCase().includes(query);
-                    const branchMatchSearch = (String(item.branchcode || "")).toLowerCase().includes(query);
-                    const empMatch = (String(item.empid || "")).toLowerCase().includes(query);
-                    const mobileMatch = (String(item.mobile || "")).toLowerCase().includes(query);
+                    const empMatch = String(item.empid || "").toLowerCase().includes(query);
+                    const mobileMatch = String(item.mobile || "").toLowerCase().includes(query);
                     const desigMatch = (item.designation || "").toLowerCase().includes(query);
+                    const departmentMatch = (item.department || "").toLowerCase().includes(query);
                     const companyMatch = (item.company || "").toLowerCase().includes(query);
+                    const branchMatchSearch = String(item.branchcode || "").toLowerCase().includes(query);
+                    const extensionMatch = String(item.extension || "").toLowerCase().includes(query);
 
                     const branchFilterMatch = (selectedBranch === "ALL" || (item.location || "").trim() === selectedBranch);
-                    const branchCodeMatch = !branchCodeQuery || String(item.branchcode || "") === branchCodeQuery;
+                    const branchCodeMatch = !branchCodeQuery || String(item.branchcode || "").toLowerCase() === branchCodeQuery;
 
-                    return (nameMatch || branchMatchSearch || empMatch || mobileMatch || desigMatch || companyMatch) && branchFilterMatch && branchCodeMatch;
+                    return (nameMatch || empMatch || mobileMatch || desigMatch || departmentMatch || companyMatch || branchMatchSearch || extensionMatch) 
+                        && branchFilterMatch 
+                        && branchCodeMatch;
                 });
 
                 currentFilteredData = filtered;
                 currentLimit = PAGE_SIZE;
                 renderStaffGrid(currentFilteredData.slice(0, currentLimit));
-            }, 500);
+            }, 250);
         }
 
         function clearSearch() {
@@ -1068,15 +1205,15 @@
             filterStaffData();
         }
 
-        function logout() {
+        async function logout() {
             const currentEmpId = localStorage.getItem("currentEmpId");
             if (currentEmpId && supabaseClient) {
-                supabaseClient
-                    .from('user_sessions')
-                    .delete()
-                    .eq('empid', currentEmpId)
-                    .then(() => console.log("Session removed"))
-                    .catch(err => console.error("Logout delete error:", err));
+                try {
+                    await supabaseClient
+                        .from('user_sessions')
+                        .delete()
+                        .eq('empid', currentEmpId);
+                } catch(e) {}
             }
 
             localStorage.removeItem("login");
@@ -1090,14 +1227,13 @@
         function openAddUserModal() {
             const role = localStorage.getItem("userRole") || "User";
             if (role.toLowerCase() !== "admin") {
-                showToast("Aapke paas user create karne ki permission nahi hai!", "warning");
+                showToast("You don't have permission to create users!", "warning");
                 return;
             }
             const modal = new bootstrap.Modal(document.getElementById('createUserModal'));
             modal.show();
         }
 
-        // 🟢 Corrected executeCreateUser function (matches the new Modal IDs)
         async function executeCreateUser() {
             const empIdInput = document.getElementById("newUserEmpId");
             const passwordInput = document.getElementById("newPassword");
@@ -1152,7 +1288,28 @@
             }
         }
 
+        function setFieldError(inputId, errorMsg) {
+            const input = document.getElementById(inputId);
+            const msgDiv = document.getElementById(inputId + '_error');
+            
+            if (!input) return;
+
+            input.classList.add('input-error');
+            
+            if (msgDiv) {
+                msgDiv.innerText = errorMsg;
+                msgDiv.classList.add('show');
+            }
+        }
+
+        function clearAllErrors() {
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+            document.querySelectorAll('.error-message.show').forEach(el => el.classList.remove('show'));
+        }
+
         async function executeAddStaff() {
+            clearAllErrors();
+
             const empCode = document.getElementById("newStaffEmpCode").value.trim();
             const name = document.getElementById("newStaffName").value.trim();
             const designation = document.getElementById("newStaffDesignation").value.trim();
@@ -1163,45 +1320,62 @@
             const email = document.getElementById("newStaffEmail").value.trim();
             const address = document.getElementById("newStaffAddress").value.trim();
 
-            if (!empCode || !name) {
-                alert("Please Enter EMP CODE and EMP NAME!");
-                return;
+            let isValid = true;
+
+            if (!empCode) {
+                setFieldError("newStaffEmpCode", "EMP CODE is required.");
+                isValid = false;
+            }
+            if (!name) {
+                setFieldError("newStaffName", "NAME is required.");
+                isValid = false;
             }
 
-            const { data: existing, error: checkError } = await supabaseClient
-                .from('staff')
-                .select('empid, name')
-                .eq('empid', empCode)
-                .maybeSingle();
-
-            if (checkError) {
-                console.error("Check Error:", checkError);
-                alert("Error checking existing record!");
-                return;
+            if (empCode && !/^\d+$/.test(empCode)) {
+                setFieldError("newStaffEmpCode", "❌ Only numbers allowed.");
+                isValid = false;
             }
 
-            if (existing) {
-                alert(`❌ EMP CODE "${empCode}" already exists for ${existing.name || 'a staff member'}. Please use a unique code.`);
+            if (!isValid) {
+                const firstError = document.querySelector('.input-error');
+                if (firstError) firstError.focus();
                 return;
             }
-
-            const newStaff = {
-                empid: empCode,
-                name: name.toUpperCase(),
-                designation: designation || "STAFF",
-                company: company || "N/A",
-                location: location || "N/A",
-                branchcode: branchCode || "N/A",
-                mobile: mobile || "N/A",
-                email: email || "N/A",
-                address: address || "N/A"
-            };
 
             try {
+                const { data: existing, error: checkError } = await supabaseClient
+                    .from('staff')
+                    .select('empid, name')
+                    .eq('empid', empCode)
+                    .maybeSingle();
+
+                if (checkError) {
+                    console.error("Check Error:", checkError);
+                    setFieldError("newStaffEmpCode", "❌ Database connection error.");
+                    return;
+                }
+
+                if (existing) {
+                    setFieldError("newStaffEmpCode", `❌ Emp ID "${empCode}" already exists!`);
+                    return;
+                }
+
+                const newStaff = {
+                    empid: empCode,
+                    name: name.toUpperCase(),
+                    designation: designation || "STAFF",
+                    company: company || "N/A",
+                    location: location || "N/A",
+                    branchcode: branchCode || "N/A",
+                    mobile: mobile || "N/A",
+                    email: email || "N/A",
+                    address: address || "N/A"
+                };
+
                 const { error } = await supabaseClient.from('staff').insert([newStaff]);
                 if (error) throw error;
 
-                alert(`✅ Success! Staff ${name} added successfully.`);
+                showToast(`✅ Success! Staff ${name} added successfully.`, "success");
                 
                 document.getElementById("newStaffEmpCode").value = "";
                 document.getElementById("newStaffName").value = "";
@@ -1221,7 +1395,7 @@
 
             } catch (err) {
                 console.error("Add Staff Error:", err);
-                alert("❌ Error adding staff: " + err.message);
+                setFieldError("newStaffEmpCode", "❌ Error adding staff: " + err.message);
             }
         }
 
@@ -1229,10 +1403,9 @@
             if (!number || number === "N/A") return;
             
             navigator.clipboard.writeText(number).then(() => {
-                alert(`📋 Mobile number ${number} copied to clipboard!`);
+                showToast(`📋 Mobile number ${number} copied to clipboard!`, "info");
             }).catch(err => {
                 console.error("Failed to copy: ", err);
-                alert("Failed to copy number. Please copy manually.");
             });
         }
 
@@ -1253,16 +1426,17 @@
 
                     if (error) throw error;
 
-                    if (data.length === 0) {
+                    if (!data || data.length === 0) {
                         fetchMore = false;
                     } else {
                         allRecords = allRecords.concat(data);
-                        start += limit;
+                        if (data.length < limit) fetchMore = false;
+                        else start += limit;
                     }
                 }
 
                 if (allRecords.length === 0) {
-                    alert("No data available to export.");
+                    showToast("No data available to export.", "warning");
                     return;
                 }
 
@@ -1275,14 +1449,15 @@
                     "OFFICIAL": item.name || "N/A",
                     "DESIGNATION/ DEPARMENT": item.designation || "N/A",
                     "CONTACT NO.": item.mobile || "N/A",
-                    "E-MAIL": item.email || "N/A"
+                    "E-MAIL": item.email || "N/A",
+                    "EXTENSION": item.extension || "N/A"
                 }));
 
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.json_to_sheet(formattedData);
 
                 ws['!cols'] = [
-                    { wch: 20 }, { wch: 20 }, { wch: 15 }, { wch: 50 }, { wch: 15 }, { wch: 30 }, { wch: 30 }, { wch: 20 }, { wch: 35 }
+                    { wch: 20 }, { wch: 20 }, { wch: 15 }, { wch: 50 }, { wch: 15 }, { wch: 30 }, { wch: 30 }, { wch: 20 }, { wch: 35 }, { wch: 15 }
                 ];
 
                 XLSX.utils.book_append_sheet(wb, ws, "Staff Data");
@@ -1290,21 +1465,22 @@
                 const today = new Date().toISOString().split('T')[0];
                 XLSX.writeFile(wb, `OM_Directory_Export_${today}.xlsx`);
 
-                alert(`✅ Success! All ${allRecords.length} records exported to Excel.`);
+                showToast(`✅ Success! All ${allRecords.length} records exported to Excel.`, "success");
 
             } catch (err) {
                 console.error("Export Error:", err);
-                alert("❌ Error exporting data: " + err.message);
+                showToast("❌ Error exporting data: " + err.message, "error");
             } finally {
                 document.getElementById('loadingOverlay').classList.remove('show');
             }
         }
 
         async function deleteAllStaffData() {
-            if (!confirm("⚠️ WARNING: Ar you sure? " + allStaffData.length + " Wants to delete record parmanently?")) {
+            if (!confirm("⚠️ WARNING: Are you sure you want to permanently delete all " + allStaffData.length + " records?")) {
                 return;
             }
-            if (!confirm("Are you absolutely sure? Type 'YES' to confirm.")) {
+            const userInput = prompt("Are you absolutely sure? Type 'YES' to confirm formatting the entire DB:");
+            if (userInput !== 'YES') {
                 return;
             }
 
@@ -1312,31 +1488,36 @@
 
             try {
                 const { error } = await supabaseClient.rpc('delete_all_staff_data');
-                if (error) throw error;
+                if (error) {
+                    const { error: delError } = await supabaseClient.from('staff').delete().neq('empid', '0');
+                    if (delError) throw delError;
+                }
 
                 allStaffData = [];
                 renderStaffGrid([]);
                 document.getElementById("totalRecordCount").innerText = "0";
                 
-                alert("✅ Success! All records successfully deleted.");
+                showToast("✅ Success! All records successfully deleted.", "success");
                 
             } catch (err) {
                 console.error("Delete All Error:", err);
-                alert("❌ Error in deleting all records: " + err.message);
+                showToast("❌ Error in deleting records: " + err.message, "error");
             } finally {
                 document.getElementById('loadingOverlay').classList.remove('show');
             }
         }
 
         const changePassModalEl = document.getElementById('changePasswordModal');
-        changePassModalEl.addEventListener('show.bs.modal', function () {
-            const empId = localStorage.getItem("currentEmpId") || "N/A";
-            document.getElementById("changePassEmpId").value = empId;
-            document.getElementById("changePassCurrent").value = "";
-            document.getElementById("changePassNew").value = "";
-            document.getElementById("changePassConfirm").value = "";
-            document.getElementById("changePassMsg").innerText = "";
-        });
+        if (changePassModalEl) {
+            changePassModalEl.addEventListener('show.bs.modal', function () {
+                const empId = localStorage.getItem("currentEmpId") || "N/A";
+                document.getElementById("changePassEmpId").value = empId;
+                document.getElementById("changePassCurrent").value = "";
+                document.getElementById("changePassNew").value = "";
+                document.getElementById("changePassConfirm").value = "";
+                document.getElementById("changePassMsg").innerText = "";
+            });
+        }
 
         async function executePasswordChange() {
             const empId = document.getElementById("changePassEmpId").value.trim();
@@ -1390,7 +1571,7 @@
 
                 if (updateError) throw updateError;
 
-                showToast("✅ Password changed successfully! Please use the new password next time.", "success");
+                showToast("✅ Password changed successfully!", "success");
                 
                 const modalEl = document.getElementById('changePasswordModal');
                 const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -1424,6 +1605,7 @@
             toastBody.innerText = message;
             toast.show();
         }
+
     </script>
 </body>
 </html>
