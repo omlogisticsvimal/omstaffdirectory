@@ -3,283 +3,2352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Live Users | OM Directory</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    >
 
     <style>
-        body { 
-            background-color: #f4f6fb; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            padding: 20px; 
+        :root {
+            --primary: #3b3086;
+            --primary-dark: #2d236e;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f4f6fb;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
         }
 
-        .main-card { 
-            background: #ffffff; 
-            border-radius: 16px; 
-            padding: 24px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04); 
-            border: 1px solid #e9eef3;
+        * {
+            box-sizing: border-box;
         }
 
-        .header-title { font-size: 1.6rem; font-weight: 700; color: #111827; }
-        .header-title i { color: #1e293b; }
-        
-        .live-badge { 
-            background: #d1fae5; color: #065f46; 
-            padding: 5px 14px; border-radius: 30px; 
-            font-weight: 600; font-size: 0.75rem; 
-        }
-        .live-badge i { font-size: 0.4rem; animation: blink 1.5s infinite; margin-right: 4px;}
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at top left, rgba(59,48,134,0.06), transparent 28%),
+                radial-gradient(circle at top right, rgba(44,82,130,0.05), transparent 25%),
+                var(--bg);
 
-        .btn-back { 
-            background: #3b3086; color: white; border: none; 
-            padding: 6px 18px; border-radius: 30px; 
-            font-weight: 600; font-size: 0.85rem; transition: 0.2s; 
-        }
-        .btn-back:hover { background: #2d236e; color: white; }
+            font-family:
+                "Segoe UI",
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
 
-        .stat-card { 
-            border-radius: 12px; padding: 16px 20px; 
-            text-align: center; color: white; 
-            border: none;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 1280px;
+            margin: auto;
+        }
+
+        .top-header {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            min-height: 80px;
+            gap: 15px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
         }
-        .stat-number { font-size: 1.8rem; font-weight: 700; line-height: 1.2; margin-top: 2px; }
-        .stat-label { font-size: 0.7rem; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-        .stat-label i { font-size: 0.65rem; }
 
-        .table-clean th {
-            background: #ffffff; color: #6b7280; font-weight: 600; 
-            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
-            border-bottom: 1px solid #e5e7eb; padding: 12px 10px;
+        .title-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
-        .table-clean td {
-            color: #1f2937; font-size: 0.9rem; padding: 14px 10px; 
-            border-bottom: 1px solid #f3f4f6;
+
+        .title-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                #5548ad
+            );
+
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+
+            box-shadow:
+                0 8px 18px rgba(59,48,134,0.20);
         }
-        .table-clean tbody tr:last-child td { border-bottom: none; }
-        
-        .emp-badge { 
-            background: #eef2ff; color: #4338ca; 
-            padding: 4px 14px; border-radius: 30px; 
-            font-weight: 600; font-size: 0.8rem; 
+
+        .page-title {
+            margin: 0;
+            font-size: 1.45rem;
+            font-weight: 750;
+            letter-spacing: -0.3px;
         }
-        .status-active { 
-            background: #d1fae5; color: #065f46; 
-            padding: 4px 14px; border-radius: 30px; 
-            font-weight: 600; font-size: 0.75rem; 
+
+        .page-subtitle {
+            margin: 3px 0 0;
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .live-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-        }
-        .status-active i { font-size: 0.4rem; }
+            gap: 7px;
 
-        .table-footer { 
-            background: #fafbfc; color: #6b7280; 
-            font-size: 0.8rem; padding: 12px 10px; 
-            border-top: 1px solid #e5e7eb; margin-top: 5px;
+            background: #dcfce7;
+            color: #166534;
+
+            border: 1px solid #bbf7d0;
+
+            padding: 8px 13px;
+            border-radius: 30px;
+
+            font-size: 0.76rem;
+            font-weight: 700;
         }
 
-        /* 🔄 Refreshing Animation Overlay */
-        .refreshing-overlay {
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #16a34a;
+
+            animation: pulseDot 1.5s infinite;
+        }
+
+        @keyframes pulseDot {
+
+            0% {
+                box-shadow: 0 0 0 0 rgba(22,163,74,0.45);
+            }
+
+            70% {
+                box-shadow: 0 0 0 7px rgba(22,163,74,0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(22,163,74,0);
+            }
+        }
+
+        .btn-custom {
+            border: none;
+            border-radius: 10px;
+            padding: 9px 14px;
+            font-size: 0.82rem;
+            font-weight: 650;
+            transition: 0.2s ease;
+        }
+
+        .btn-refresh {
+            background: white;
+            color: #374151;
+            border: 1px solid var(--border);
+        }
+
+        .btn-refresh:hover {
+            background: #f9fafb;
+            transform: translateY(-1px);
+        }
+
+        .btn-back {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-back:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+
+            background: white;
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+            padding: 18px;
+
+            min-height: 120px;
+
+            box-shadow:
+                0 5px 20px rgba(17,24,39,0.035);
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+
+            width: 90px;
+            height: 90px;
+
+            right: -35px;
+            top: -35px;
+
+            border-radius: 50%;
+
+            background: rgba(59,48,134,0.05);
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            font-weight: 750;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 14px;
+        }
+
+        .stat-value {
+            margin-top: 11px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.8px;
+        }
+
+        .stat-description {
+            margin-top: 8px;
+            color: #9ca3af;
+            font-size: 0.72rem;
+        }
+
+        .stat-primary .stat-icon {
+            background: #ede9fe;
+            color: var(--primary);
+        }
+
+        .stat-primary .stat-value {
+            color: var(--primary);
+        }
+
+        .stat-success .stat-icon {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .stat-success .stat-value {
+            color: #15803d;
+        }
+
+        .stat-info .stat-icon {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .stat-warning .stat-icon {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .main-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            box-shadow:
+                0 7px 25px rgba(17,24,39,0.04);
+
+            overflow: hidden;
+        }
+
+        .card-toolbar {
+            padding: 18px;
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 40px;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            padding:
+                0
+                12px
+                0
+                37px;
+
+            font-size: 0.83rem;
+            outline: none;
+
+            transition: 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #8b82d0;
+
+            box-shadow:
+                0 0 0 3px rgba(59,48,134,0.08);
+        }
+
+        .filter-select {
+            height: 40px;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            padding: 0 35px 0 12px;
+
+            font-size: 0.8rem;
+
+            outline: none;
+            background: white;
+
+            cursor: pointer;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .auto-refresh-toggle {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #4b5563;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .refresh-countdown {
+            color: #9ca3af;
+            font-size: 0.72rem;
+        }
+
+        .table-responsive {
+            max-height: 570px;
+            overflow-y: auto;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+        .table-clean {
+            margin: 0;
+            min-width: 900px;
+        }
+
+        .table-clean thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+
+            background: #fafbfc;
+
+            color: #6b7280;
+            font-size: 0.7rem;
+
+            font-weight: 750;
+            text-transform: uppercase;
+
+            letter-spacing: 0.6px;
+
+            padding: 13px 15px;
+
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .table-clean tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f5;
+
+            color: #1f2937;
+
+            font-size: 0.83rem;
+
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .table-clean tbody tr {
+            transition: 0.18s ease;
+        }
+
+        .table-clean tbody tr:hover {
+            background: #fafaff;
+        }
+
+        .table-clean tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .serial-number {
+            color: #9ca3af;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .employee-badge {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 5px 10px;
+            border-radius: 8px;
+
+            background: #eef2ff;
+            color: #4338ca;
+
+            font-size: 0.76rem;
+            font-weight: 750;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+
+            flex-shrink: 0;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ede9fe,
+                    #ddd6fe
+                );
+
+            color: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 0.83rem;
+            font-weight: 800;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .user-role {
+            color: #9ca3af;
+            font-size: 0.7rem;
+        }
+
+        .last-active {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .last-active-main {
+            font-weight: 650;
+            color: #374151;
+        }
+
+        .last-active-full {
+            color: #9ca3af;
+            font-size: 0.69rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 5px 10px;
+            border-radius: 30px;
+
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-online {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-online .status-dot {
+            background: #16a34a;
+        }
+
+        .status-recent {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-recent .status-dot {
+            background: #d97706;
+        }
+
+        .duration-cell {
+            font-weight: 650;
+            color: #374151;
+        }
+
+        .device-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            color: #4b5563;
+            font-size: 0.78rem;
+        }
+
+        .device-info i {
+            color: #9ca3af;
+        }
+
+        .ip-text {
+            color: #6b7280;
+            font-family: Consolas, monospace;
+            font-size: 0.73rem;
+        }
+
+        .table-footer {
+            border-top: 1px solid var(--border);
+
+            background: #fafbfc;
+
+            min-height: 50px;
+
+            padding:
+                12px 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+        .footer-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .footer-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            color: #9ca3af;
+            font-size: 0.72rem;
+        }
+
+        .footer-live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .loading-state {
+            padding: 60px 20px !important;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 35px;
+            height: 35px;
+
+            border:
+                3px solid #e5e7eb;
+
+            border-top-color: var(--primary);
+
+            border-radius: 50%;
+
+            animation: spin 0.8s linear infinite;
+
+            margin: 0 auto 13px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .state-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .state-description {
+            margin-top: 4px;
+            font-size: 0.74rem;
+            color: #9ca3af;
+        }
+
+        .refreshing {
+            opacity: 0.65;
             pointer-events: none;
-            opacity: 0.6;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s ease;
+        }
+
+        .refresh-icon.spin {
+            animation: spin 0.7s linear infinite;
+        }
+
+        .error-banner {
+            display: none;
+
+            margin: 15px 18px 0;
+
+            border:
+                1px solid #fecaca;
+
+            background: #fef2f2;
+
+            color: #991b1b;
+
+            border-radius: 10px;
+
+            padding: 11px 13px;
+
+            font-size: 0.77rem;
+        }
+
+        .error-banner.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
         }
 
         @media (max-width: 768px) {
-            .header-title { font-size: 1.2rem; }
-            .stat-number { font-size: 1.4rem; }
-            .stat-card { min-height: 60px; padding: 12px; }
+
+            body {
+                padding: 12px;
+            }
+
+            .page-title {
+                font-size: 1.15rem;
+            }
+
+            .page-subtitle {
+                font-size: 0.72rem;
+            }
+
+            .title-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions > * {
+                flex: 1;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 14px;
+                min-height: 105px;
+            }
+
+            .stat-value {
+                font-size: 1.45rem;
+            }
+
+            .card-toolbar {
+                padding: 14px;
+            }
+
+            .toolbar-left {
+                width: 100%;
+                min-width: 0;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .toolbar-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .table-footer {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .title-area {
+                width: 100%;
+            }
+
+            .header-actions {
+                flex-direction: column;
+            }
+
+            .header-actions > * {
+                width: 100%;
+            }
+
+            .live-badge {
+                justify-content: center;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="container-fluid" style="max-width: 1100px;">
+<div class="page-container">
 
-        <!-- 🟢 Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <div class="header-title">
-                <i class="fa-solid fa-users-viewfinder me-2"></i>Live Active Users
+    <!-- HEADER -->
+    <div class="top-header">
+
+        <div class="title-area">
+
+            <div class="title-icon">
+                <i class="fa-solid fa-users-viewfinder"></i>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="live-badge"><i class="fa-solid fa-circle"></i> Live </span>
-                <button class="btn btn-back" onclick="window.location.href='dashboard.html'">
-                    <i class="fa-solid fa-arrow-left me-1"></i> Back
-                </button>
+
+            <div>
+
+                <h1 class="page-title">
+                    Live Active Users
+                </h1>
+
+                <p class="page-subtitle">
+                    OM Logistics Employee Directory · Real-time session monitoring
+                </p>
+
             </div>
+
         </div>
 
-        <!-- 🟢 Stats Cards -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="stat-card" style="background: #2d236e;">
-                    <div class="stat-label"><i class="fa-regular fa-circle-dot"></i> ACTIVE</div>
-                    <div class="stat-number" id="liveCount">0</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card" style="background: #2c5282;">
-                    <div class="stat-label"><i class="fa-regular fa-clock"></i>Om Logistics Directory Live User</div>
-                    <div class="stat-number" style="font-size: 1.2rem;">For Admin </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card" style="background: #276749;">
-                    <div class="stat-label"><i class="fa-regular fa-calendar"></i> UPDATED</div>
-                    <div class="stat-number" style="font-size: 1.2rem;" id="lastUpdated">--:--:--</div>
-                </div>
-            </div>
-        </div>
+        <div class="header-actions">
 
-        <!-- 🟢 Table -->
-        <div class="main-card">
-            <div class="table-responsive" id="tableContainer">
-                <table class="table table-clean mb-0">
-                    <thead>
-                        <tr>
-                            <th style="width: 50px;">#</th>
-                            <th>Employee ID</th>
-                            <th>User Name</th>
-                            <th>Last Active</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="liveUsersTableBody">
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <i class="fa-solid fa-spinner fa-spin me-2"></i> Loading...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="live-badge">
+                <span class="live-dot"></span>
+                LIVE MONITORING
             </div>
-            <!-- 🟢 Table Footer -->
-            <div class="table-footer" id="tableFooter">
-                Showing 0 users
-            </div>
+
+            <button
+                class="btn-custom btn-refresh"
+                id="manualRefreshBtn"
+                onclick="manualRefresh()"
+            >
+                <i
+                    class="fa-solid fa-arrows-rotate refresh-icon me-1"
+                    id="refreshIcon"
+                ></i>
+
+                Refresh
+            </button>
+
+            <button
+                class="btn-custom btn-back"
+                onclick="window.location.href='dashboard.html'"
+            >
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Back to Dashboard
+            </button>
+
         </div>
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script>
-        // 🟢 Security Check (Client-side)
-        const userRole = localStorage.getItem("userRole");
-        if (!userRole || userRole.toLowerCase().trim() !== "admin") {
-            alert("⚠️ Access Denied! Admins only.");
-            window.location.href = "dashboard.html";
+    <!-- STATS -->
+    <div class="stats-grid">
+
+        <div class="stat-card stat-primary">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Active Users
+                </span>
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                id="liveCount"
+            >
+                0
+            </div>
+
+            <div class="stat-description">
+                Currently active sessions
+            </div>
+
+        </div>
+
+        <div class="stat-card stat-success">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Directory Status
+                </span>
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-signal"></i>
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                style="font-size:1.15rem;"
+                id="directoryStatus"
+            >
+                ONLINE
+            </div>
+
+            <div class="stat-description">
+                Supabase connection status
+            </div>
+
+        </div>
+
+        <div class="stat-card stat-info">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Last Updated
+                </span>
+
+                <div class="stat-icon">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                style="font-size:1.12rem;"
+                id="lastUpdated"
+            >
+                --:--:--
+            </div>
+
+            <div class="stat-description">
+                Latest database refresh
+            </div>
+
+        </div>
+
+        <div class="stat-card stat-warning">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Next Refresh
+                </span>
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-rotate"></i>
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                style="font-size:1.45rem;"
+                id="countdown"
+            >
+                5s
+            </div>
+
+            <div class="stat-description">
+                Auto refresh interval
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN TABLE -->
+    <div class="main-card">
+
+        <div class="card-toolbar">
+
+            <div class="toolbar-left">
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="search-input"
+                        placeholder="Search employee ID or user name..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+                <select
+                    id="statusFilter"
+                    class="filter-select"
+                >
+                    <option value="all">All Users</option>
+                    <option value="active">Active</option>
+                    <option value="recent">Recent Activity</option>
+                </select>
+
+            </div>
+
+            <div class="toolbar-right">
+
+                <label class="auto-refresh-toggle">
+
+                    <input
+                        type="checkbox"
+                        id="autoRefreshToggle"
+                        checked
+                        style="accent-color:#3b3086;"
+                    >
+
+                    Auto Refresh
+
+                </label>
+
+                <span
+                    class="refresh-countdown"
+                    id="toolbarCountdown"
+                >
+                    Refreshing every 5s
+                </span>
+
+            </div>
+
+        </div>
+
+        <div
+            id="errorBanner"
+            class="error-banner"
+        >
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="errorText">
+                Unable to connect to database.
+            </span>
+        </div>
+
+        <div
+            class="table-responsive"
+            id="tableContainer"
+        >
+
+            <table class="table table-clean">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width:55px;">
+                            #
+                        </th>
+
+                        <th>
+                            Employee ID
+                        </th>
+
+                        <th>
+                            User
+                        </th>
+
+                        <th>
+                            Last Active
+                        </th>
+
+                        <th>
+                            Session
+                        </th>
+
+                        <th>
+                            Device
+                        </th>
+
+                        <th>
+                            IP Address
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="liveUsersTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="loading-state"
+                        >
+
+                            <div class="loading-spinner"></div>
+
+                            <div class="state-title">
+                                Loading live users...
+                            </div>
+
+                            <div class="state-description">
+                                Connecting to OM Directory session service
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="table-footer">
+
+            <div
+                class="footer-text"
+                id="tableFooter"
+            >
+                Showing 0 users
+            </div>
+
+            <div class="footer-status">
+
+                <span class="footer-live-dot"></span>
+
+                Live session monitoring active
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- BOOTSTRAP -->
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- SUPABASE -->
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script>
+
+    /* ======================================================
+       ADMIN SECURITY CHECK
+    ====================================================== */
+
+    const userRole =
+        localStorage.getItem("userRole");
+
+    if (
+        !userRole ||
+        userRole.toLowerCase().trim() !== "admin"
+    ) {
+
+        alert("⚠️ Access Denied! Admins only.");
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+
+    /* ======================================================
+       SUPABASE - FINAL FIXED VERSION
+       🔑 GET YOUR API KEY FROM:
+       https://app.supabase.com/project/npiketzhgsckkacbxxqb/settings/api
+    ====================================================== */
+
+    const SUPABASE_URL = "https://npiketzhgsckkacbxxqb.supabase.co";
+    
+    // ⚠️ IMPORTANT: Replace this with your actual key from Supabase dashboard
+    // Go to: https://app.supabase.com/project/npiketzhgsckkacbxxqb/settings/api
+    // Copy the "anon public" key or "service_role" key for testing
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waWtldHpoZ3Nja2thY2J4eHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzY5MTYsImV4cCI6MjEwMTYxMjkxNn0.QeXDPFLKiFgbBYJ1nGY4Hw17LJba53-4hD7cYfoaf10";
+
+    console.log("🚀 Initializing Supabase...");
+    console.log("📍 URL:", SUPABASE_URL);
+    console.log("📍 API Key (first 15 chars):", SUPABASE_ANON_KEY.substring(0, 15) + "...");
+
+    const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+    // Test connection immediately
+    (async function testConnection() {
+        try {
+            console.log("🔍 Testing Supabase connection...");
+            const { data, error, count } = await supabaseClient
+                .from("user_sessions")
+                .select("*", { count: 'exact', head: true });
+            
+            if (error) {
+                console.error("❌ Connection test failed:", error);
+                console.error("❌ Error Code:", error.code);
+                console.error("❌ Error Message:", error.message);
+                
+                // Show user-friendly error
+                const errorBanner = document.getElementById("errorBanner");
+                const errorText = document.getElementById("errorText");
+                errorBanner.classList.add("show");
+                
+                if (error.message.includes("API key") || error.code === "PGRST301") {
+                    errorText.innerText = "⚠️ Invalid API Key! Please update the Supabase anon key in the code.";
+                } else if (error.code === "42501") {
+                    errorText.innerText = "⚠️ Permission denied! Check RLS policies on user_sessions table.";
+                } else {
+                    errorText.innerText = `Error: ${error.message}`;
+                }
+            } else {
+                console.log("✅ Supabase connection successful!");
+                console.log(`📊 Total records in user_sessions: ${count || 0}`);
+            }
+        } catch (e) {
+            console.error("❌ Connection test error:", e);
+        }
+    })();
+
+
+    /* ======================================================
+       GLOBAL VARIABLES
+    ====================================================== */
+
+    let allUsers = [];
+
+    let refreshInterval = null;
+
+    let countdownInterval = null;
+
+    let secondsUntilRefresh = 5;
+
+    const REFRESH_SECONDS = 5;
+
+
+    /* ======================================================
+       HTML ESCAPE
+    ====================================================== */
+
+    function escapeHTML(str) {
+
+        if (
+            str === null ||
+            str === undefined ||
+            str === ""
+        ) {
+
+            return "N/A";
+
         }
 
-        const supabaseClient = supabase.createClient(
-            "https://npiketzhgsckkacbxxqb.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5waWtldHpoZ3Nja2thY2J4eHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzY5MTYsImV4cCI6MjEwMTYxMjkxNn0.QeXDPFLKiFgbBYJ1nGY4Hw17LJba53-4hD7cYfoaf10"
+        return String(str)
+            .replace(
+                /[&<>"']/g,
+                function(match) {
+
+                    const map = {
+
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        "\"": "&quot;",
+                        "'": "&#39;"
+
+                    };
+
+                    return map[match];
+
+                }
+            );
+
+    }
+
+
+    /* ======================================================
+       INITIALS
+    ====================================================== */
+
+    function getInitials(name) {
+
+        if (!name)
+            return "?";
+
+        const words =
+            String(name)
+                .trim()
+                .split(/\s+/);
+
+        if (words.length === 1) {
+
+            return words[0]
+                .substring(0, 2)
+                .toUpperCase();
+
+        }
+
+        return (
+            words[0][0] +
+            words[1][0]
+        ).toUpperCase();
+
+    }
+
+
+    /* ======================================================
+       FORMAT LAST ACTIVE
+    ====================================================== */
+
+    function getTimeAgo(dateString) {
+
+        if (!dateString) return "N/A";
+
+        const date =
+            new Date(dateString);
+
+        const diff =
+            Math.floor(
+                (Date.now() - date.getTime()) / 1000
+            );
+
+        if (diff < 5)
+            return "Just now";
+
+        if (diff < 60)
+            return `${diff}s ago`;
+
+        const minutes =
+            Math.floor(diff / 60);
+
+        if (minutes < 60)
+            return `${minutes}m ago`;
+
+        const hours =
+            Math.floor(minutes / 60);
+
+        if (hours < 24)
+            return `${hours}h ${minutes % 60}m ago`;
+
+        const days =
+            Math.floor(hours / 24);
+
+        return `${days}d ago`;
+
+    }
+
+
+    /* ======================================================
+       FORMAT DATE
+    ====================================================== */
+
+    function formatDate(dateString) {
+
+        if (!dateString)
+            return "N/A";
+
+        const date =
+            new Date(dateString);
+
+        return date.toLocaleString(
+            undefined,
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
         );
 
-        let refreshInterval = null;
+    }
 
-        // 🛡️ Helper Function to Prevent XSS Attacks
-        function escapeHTML(str) {
-            if (!str) return 'N/A';
-            return String(str).replace(/[&<>"']/g, match => {
-                const escapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-                return escapeMap[match];
-            });
+
+    /* ======================================================
+       DEVICE DETECTION
+    ====================================================== */
+
+    function getDeviceInfo(user) {
+
+        const possibleDevice =
+            user.device ||
+            user.device_name ||
+            user.device_type ||
+            user.browser ||
+            user.user_agent ||
+            "Desktop";
+
+        return escapeHTML(
+            String(possibleDevice)
+                .substring(0, 45)
+        );
+
+    }
+
+
+    /* ======================================================
+       IP DETECTION
+    ====================================================== */
+
+    function getIPAddress(user) {
+
+        const ip =
+            user.ip_address ||
+            user.ip ||
+            user.client_ip ||
+            user.remote_ip;
+
+        return ip
+            ? escapeHTML(ip)
+            : "Hidden";
+
+    }
+
+
+    /* ======================================================
+       USER ROLE / DEPARTMENT
+    ====================================================== */
+
+    function getUserSubInfo(user) {
+
+        const value =
+            user.designation ||
+            user.department ||
+            user.role ||
+            user.company ||
+            "";
+
+        return value
+            ? escapeHTML(value)
+            : "";
+
+    }
+
+
+    /* ======================================================
+       SESSION DURATION
+    ====================================================== */
+
+    function getSessionDuration(user) {
+
+        const start =
+            user.login_time ||
+            user.session_start ||
+            user.created_at;
+
+        if (!start)
+            return "N/A";
+
+        const diff =
+            Math.floor(
+                (Date.now() -
+                    new Date(start).getTime()) / 1000
+            );
+
+        if (diff < 60)
+            return `${diff}s`;
+
+        const minutes =
+            Math.floor(diff / 60);
+
+        if (minutes < 60)
+            return `${minutes}m`;
+
+        const hours =
+            Math.floor(minutes / 60);
+
+        return `${hours}h ${minutes % 60}m`;
+
+    }
+
+
+    /* ======================================================
+       FETCH LIVE USERS - FINAL VERSION
+    ====================================================== */
+
+    async function fetchLiveUsers(showAnimation = true) {
+
+        const container =
+            document.getElementById(
+                "tableContainer"
+            );
+
+        const refreshIcon =
+            document.getElementById(
+                "refreshIcon"
+            );
+
+        const errorBanner =
+            document.getElementById(
+                "errorBanner"
+            );
+
+        const errorText =
+            document.getElementById(
+                "errorText"
+            );
+
+        try {
+
+            if (showAnimation) {
+
+                container.classList.add(
+                    "refreshing"
+                );
+
+                refreshIcon.classList.add(
+                    "spin"
+                );
+
+            }
+
+            console.log("🔍 Fetching users from user_sessions...");
+
+            const { data, error, count } =
+                await supabaseClient
+                    .from("user_sessions")
+                    .select("*", { count: 'exact' });
+
+            if (error) {
+                console.error("❌ Supabase Error:", error);
+                console.error("❌ Error Code:", error.code);
+                console.error("❌ Error Message:", error.message);
+                console.error("❌ Error Details:", error.details);
+                console.error("❌ Error Hint:", error.hint);
+                
+                if (error.code === "PGRST301" || error.message.includes("API key")) {
+                    throw new Error("Invalid API Key - Please update the Supabase anon key");
+                }
+                
+                throw error;
+            }
+
+            console.log("✅ Total records in user_sessions:", data?.length || 0);
+            
+            if (data && data.length > 0) {
+                console.log("📊 Sample data:", data[0]);
+                console.log("📋 Available columns:", Object.keys(data[0]).join(", "));
+            } else {
+                console.log("⚠️ No records found in user_sessions table");
+            }
+
+            allUsers = data || [];
+
+            errorBanner.classList.remove("show");
+
+            document
+                .getElementById("directoryStatus")
+                .innerText = "ONLINE";
+
+            document
+                .getElementById("directoryStatus")
+                .style.color = "#15803d";
+
+            document
+                .getElementById("liveCount")
+                .innerText = allUsers.length;
+
+            document
+                .getElementById("lastUpdated")
+                .innerText = new Date().toLocaleTimeString();
+
+            renderUsers();
+
+            console.log(`📊 Showing ${allUsers.length} users in table`);
+
+        } catch (error) {
+
+            console.error("❌ Live users fetch error:", error);
+
+            document
+                .getElementById("directoryStatus")
+                .innerText = "ERROR";
+
+            document
+                .getElementById("directoryStatus")
+                .style.color = "#dc2626";
+
+            errorBanner.classList.add("show");
+
+            let errorMsg = error.message || "Unable to load live users.";
+            
+            if (errorMsg.includes("Invalid API key") || errorMsg.includes("API key")) {
+                errorMsg = "⚠️ Invalid Supabase API Key! Please update the API key in the code.\n\nGet it from: https://app.supabase.com/project/npiketzhgsckkacbxxqb/settings/api";
+            } else if (errorMsg.includes("permission")) {
+                errorMsg = "⚠️ Permission denied - Check RLS policies on user_sessions table";
+            }
+
+            errorText.innerText = errorMsg;
+
+            document
+                .getElementById("liveUsersTableBody")
+                .innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="loading-state"
+                        >
+
+                            <i
+                                class="fa-solid fa-cloud-slash"
+                                style="
+                                    font-size:30px;
+                                    color:#dc2626;
+                                    margin-bottom:12px;
+                                "
+                            ></i>
+
+                            <div class="state-title">
+                                Connection Error
+                            </div>
+
+                            <div class="state-description" style="white-space:pre-line;">
+                                ${errorMsg}
+                            </div>
+
+                            <div style="margin-top:10px; font-size:0.7rem; color:#9ca3af;">
+                                Check console (F12) for details
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+        } finally {
+
+            if (showAnimation) {
+
+                setTimeout(() => {
+
+                    container.classList.remove(
+                        "refreshing"
+                    );
+
+                    refreshIcon.classList.remove(
+                        "spin"
+                    );
+
+                }, 250);
+
+            }
+
         }
 
-        async function fetchLiveUsers() {
-            try {
-                const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-                const { data, error } = await supabaseClient
-                    .from('user_sessions')
-                    .select('*')
-                    .gte('last_ping_time', twoMinutesAgo)
-                    .order('last_ping_time', { ascending: false });
+    }
 
-                if (error) throw error;
 
-                const tbody = document.getElementById('liveUsersTableBody');
-                const countEl = document.getElementById('liveCount');
-                const footerEl = document.getElementById('tableFooter');
+    /* ======================================================
+       RENDER USERS
+    ====================================================== */
 
-                if (!data || data.length === 0) {
-                    countEl.innerText = "0";
-                    footerEl.innerText = "Showing 0 users";
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <i class="fa-regular fa-face-meh me-2"></i> No active users right now.
-                            </td>
-                        </tr>
-                    `;
-                } else {
-                    countEl.innerText = data.length;
-                    footerEl.innerText = `Showing 1-${data.length} of ${data.length} users`;
-                    
-                    let html = '';
-                    data.forEach((user, index) => {
-                        const lastActive = new Date(user.last_ping_time);
-                        const timeAgo = Math.floor((Date.now() - lastActive.getTime()) / 1000);
-                        let timeString = "Just now";
-                        if (timeAgo > 60) timeString = Math.floor(timeAgo / 60) + "m ago";
+    function renderUsers() {
 
-                        html += `
-                            <tr>
-                                <td class="text-muted">${index + 1}</td>
-                                <td><span class="emp-badge">${escapeHTML(user.empid)}</span></td>
-                                <td class="fw-bold">${escapeHTML(user.user_name)}</td>
-                                <td class="text-muted">${timeString}</td>
-                                <td><span class="status-active"><i class="fa-solid fa-circle me-1"></i> Active</span></td>
-                            </tr>
-                        `;
-                    });
-                    tbody.innerHTML = html;
+        const tbody =
+            document.getElementById(
+                "liveUsersTableBody"
+            );
+
+        const footer =
+            document.getElementById(
+                "tableFooter"
+            );
+
+        const searchValue =
+            document
+                .getElementById(
+                    "searchInput"
+                )
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const filter =
+            document
+                .getElementById(
+                    "statusFilter"
+                )
+                .value;
+
+
+        let filtered =
+            [...allUsers];
+
+
+        /* SEARCH */
+
+        if (searchValue) {
+
+            filtered =
+                filtered.filter(
+                    user => {
+
+                        const employee =
+                            String(
+                                user.empid ||
+                                user.employee_id ||
+                                user.emp_id ||
+                                ""
+                            ).toLowerCase();
+
+                        const name =
+                            String(
+                                user.user_name ||
+                                user.name ||
+                                user.username ||
+                                ""
+                            ).toLowerCase();
+
+                        return (
+                            employee.includes(
+                                searchValue
+                            ) ||
+                            name.includes(
+                                searchValue
+                            )
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* STATUS FILTER */
+
+        if (filter !== "all") {
+
+            filtered =
+                filtered.filter(
+                    user => {
+
+                        const lastPing =
+                            new Date(
+                                user.last_ping_time ||
+                                user.updated_at ||
+                                user.created_at ||
+                                Date.now()
+                            );
+
+                        const age =
+                            Date.now() -
+                            lastPing.getTime();
+
+                        const seconds =
+                            age / 1000;
+
+                        if (
+                            filter === "active"
+                        ) {
+
+                            return seconds <= 60;
+
+                        }
+
+                        if (
+                            filter === "recent"
+                        ) {
+
+                            return (
+                                seconds > 60 &&
+                                seconds <= 300
+                            );
+
+                        }
+
+                        return true;
+
+                    }
+                );
+
+        }
+
+
+        /* EMPTY */
+
+        if (filtered.length === 0) {
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="loading-state"
+                    >
+
+                        <i
+                            class="fa-regular fa-face-meh"
+                            style="
+                                font-size:30px;
+                                color:#9ca3af;
+                                margin-bottom:12px;
+                            "
+                        ></i>
+
+                        <div class="state-title">
+                            ${allUsers.length === 0 ? "No users in database" : "No matching users found"}
+                        </div>
+
+                        <div class="state-description">
+                            ${allUsers.length === 0 ? "Insert some test data into user_sessions table" : "Try changing your search or filter."}
+                        </div>
+
+                        ${allUsers.length === 0 ? `
+                            <div style="margin-top:10px; font-size:0.7rem; color:#9ca3af;">
+                                Total records in table: 0
+                            </div>
+                        ` : ""}
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            footer.innerText =
+                allUsers.length === 0 ? "No users found in database" : "Showing 0 users";
+
+            return;
+
+        }
+
+
+        /* BUILD ROWS */
+
+        let html = "";
+
+
+        filtered.forEach(
+            (user, index) => {
+
+                const empId =
+                    user.empid ||
+                    user.employee_id ||
+                    user.emp_id ||
+                    "N/A";
+
+
+                const name =
+                    user.user_name ||
+                    user.name ||
+                    user.username ||
+                    "Unknown User";
+
+
+                const role =
+                    getUserSubInfo(user);
+
+
+                const lastPing =
+                    user.last_ping_time ||
+                    user.updated_at ||
+                    user.created_at ||
+                    new Date().toISOString();
+
+
+                const ageSeconds =
+                    Math.floor(
+                        (
+                            Date.now() -
+                            new Date(
+                                lastPing
+                            ).getTime()
+                        ) / 1000
+                    );
+
+
+                let statusClass =
+                    "status-online";
+
+                let statusText =
+                    "Active";
+
+
+                if (
+                    ageSeconds > 60
+                ) {
+
+                    statusClass =
+                        "status-recent";
+
+                    statusText =
+                        "Recent";
+
                 }
 
-                document.getElementById('lastUpdated').innerText = new Date().toLocaleTimeString();
 
-            } catch (err) {
-                console.error("Error fetching live users:", err);
-                document.getElementById('liveUsersTableBody').innerHTML = `
+                const avatar =
+                    getInitials(name);
+
+
+                const device =
+                    getDeviceInfo(user);
+
+
+                const ip =
+                    getIPAddress(user);
+
+
+                const session =
+                    getSessionDuration(user);
+
+
+                html += `
+
                     <tr>
-                        <td colspan="5" class="text-center text-danger py-4">
-                            <i class="fa-solid fa-triangle-exclamation me-2"></i> Connection error.
+
+                        <td>
+
+                            <span class="serial-number">
+                                ${index + 1}
+                            </span>
+
                         </td>
+
+                        <td>
+
+                            <span class="employee-badge">
+
+                                ${escapeHTML(
+                                    empId
+                                )}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <div class="user-cell">
+
+                                <div class="user-avatar">
+
+                                    ${escapeHTML(
+                                        avatar
+                                    )}
+
+                                </div>
+
+                                <div class="user-info">
+
+                                    <div class="user-name">
+                                        ${escapeHTML(
+                                            name
+                                        )}
+                                    </div>
+
+                                    ${
+                                        role
+                                        ?
+                                        `
+                                        <div class="user-role">
+                                            ${role}
+                                        </div>
+                                        `
+                                        :
+                                        ""
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            <div class="last-active">
+
+                                <div class="last-active-main">
+
+                                    ${getTimeAgo(
+                                        lastPing
+                                    )}
+
+                                </div>
+
+                                <div class="last-active-full">
+
+                                    ${formatDate(
+                                        lastPing
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            <span class="duration-cell">
+
+                                <i
+                                    class="fa-regular fa-hourglass-half me-1"
+                                    style="
+                                        color:#9ca3af;
+                                    "
+                                ></i>
+
+                                ${session}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span class="device-info">
+
+                                <i
+                                    class="fa-solid fa-desktop"
+                                ></i>
+
+                                ${device}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span class="ip-text">
+
+                                ${ip}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="
+                                    status-badge
+                                    ${statusClass}
+                                "
+                            >
+
+                                <span
+                                    class="status-dot"
+                                ></span>
+
+                                ${statusText}
+
+                            </span>
+
+                        </td>
+
                     </tr>
+
                 `;
+
             }
-        }
+        );
 
-        // 🟢 Flash effect during refresh
-        function refreshWithAnimation() {
-            const container = document.getElementById('tableContainer');
-            container.classList.add('refreshing-overlay');
-            
-            fetchLiveUsers().finally(() => {
-                setTimeout(() => {
-                    container.classList.remove('refreshing-overlay');
-                }, 200);
-            });
-        }
 
-        // 1. Initial Load
-        refreshWithAnimation();
+        tbody.innerHTML =
+            html;
 
-        // 2. 🟢 Auto-Refresh every 5 Seconds (5000 ms)
-        if (refreshInterval) clearInterval(refreshInterval);
-        refreshInterval = setInterval(refreshWithAnimation, 5000);
 
-        console.log("✅ Auto-Refresh system active. Updates every 5 seconds.");
-    </script>
+        footer.innerText =
+            `Showing ${filtered.length} of ${allUsers.length} users`;
+
+    }
+
+
+    /* ======================================================
+       MANUAL REFRESH
+    ====================================================== */
+
+    async function manualRefresh() {
+
+        secondsUntilRefresh =
+            REFRESH_SECONDS;
+
+        await fetchLiveUsers(
+            true
+        );
+
+    }
+
+
+    /* ======================================================
+       COUNTDOWN
+    ====================================================== */
+
+    function startCountdown() {
+
+        clearInterval(
+            countdownInterval
+        );
+
+
+        secondsUntilRefresh =
+            REFRESH_SECONDS;
+
+
+        countdownInterval =
+            setInterval(
+                () => {
+
+                    const enabled =
+                        document
+                            .getElementById(
+                                "autoRefreshToggle"
+                            )
+                            .checked;
+
+
+                    if (!enabled) {
+
+                        document
+                            .getElementById(
+                                "countdown"
+                            )
+                            .innerText =
+                                "OFF";
+
+                        document
+                            .getElementById(
+                                "toolbarCountdown"
+                            )
+                            .innerText =
+                                "Auto refresh paused";
+
+                        return;
+
+                    }
+
+
+                    secondsUntilRefresh--;
+
+
+                    if (
+                        secondsUntilRefresh <= 0
+                    ) {
+
+                        secondsUntilRefresh =
+                            REFRESH_SECONDS;
+
+                    }
+
+
+                    document
+                        .getElementById(
+                            "countdown"
+                        )
+                        .innerText =
+                        secondsUntilRefresh +
+                        "s";
+
+
+                    document
+                        .getElementById(
+                            "toolbarCountdown"
+                        )
+                        .innerText =
+                        `Next refresh in ${secondsUntilRefresh}s`;
+
+
+                },
+                1000
+            );
+
+    }
+
+
+    /* ======================================================
+       AUTO REFRESH
+    ====================================================== */
+
+    function startAutoRefresh() {
+
+        clearInterval(
+            refreshInterval
+        );
+
+
+        refreshInterval =
+            setInterval(
+                () => {
+
+                    const enabled =
+                        document
+                            .getElementById(
+                                "autoRefreshToggle"
+                            )
+                            .checked;
+
+
+                    if (!enabled)
+                        return;
+
+
+                    fetchLiveUsers(
+                        false
+                    );
+
+                    secondsUntilRefresh =
+                        REFRESH_SECONDS;
+
+                },
+                REFRESH_SECONDS * 1000
+            );
+
+    }
+
+
+    /* ======================================================
+       SEARCH EVENTS
+    ====================================================== */
+
+    document
+        .getElementById(
+            "searchInput"
+        )
+        .addEventListener(
+            "input",
+            renderUsers
+        );
+
+
+    document
+        .getElementById(
+            "statusFilter"
+        )
+        .addEventListener(
+            "change",
+            renderUsers
+        );
+
+
+    /* ======================================================
+       AUTO REFRESH TOGGLE
+    ====================================================== */
+
+    document
+        .getElementById(
+            "autoRefreshToggle"
+        )
+        .addEventListener(
+            "change",
+            function() {
+
+                if (this.checked) {
+
+                    secondsUntilRefresh =
+                        REFRESH_SECONDS;
+
+                    startAutoRefresh();
+
+                } else {
+
+                    clearInterval(
+                        refreshInterval
+                    );
+
+                }
+
+            }
+        );
+
+
+    /* ======================================================
+       UPDATE RELATIVE TIMES
+    ====================================================== */
+
+    setInterval(
+        () => {
+
+            if (allUsers.length > 0) {
+
+                renderUsers();
+
+            }
+
+        },
+        10000
+    );
+
+
+    /* ======================================================
+       INITIAL LOAD
+    ====================================================== */
+
+    console.log("🚀 OM Directory Live Users Monitor Starting...");
+    console.log("📍 Supabase URL:", SUPABASE_URL);
+    console.log("📍 API Key (first 15 chars):", SUPABASE_ANON_KEY.substring(0, 15) + "...");
+
+    fetchLiveUsers(false);
+
+    startAutoRefresh();
+
+    startCountdown();
+
+    console.log("✅ OM Directory Live Users Monitor Started");
+
+
+</script>
+
 </body>
 </html>
